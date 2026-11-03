@@ -66,8 +66,11 @@ function msSince(startNs) {
 
 /** Load a payload package the way the plugins do, honouring its exports map. */
 async function loadPayload(specifier) {
+  // Inside the app bundle the directory is `dsh-payload`; in the repository it is `payload`.
   const payload = process.env.IOS_SIM_DSH_INSTALL
-    ?? join(process.env.DSHPORTE_BUNDLE ?? process.cwd(), 'payload');
+    ?? (process.env.DSHPORTE_BUNDLE
+      ? join(process.env.DSHPORTE_BUNDLE, 'dsh-payload')
+      : join(process.cwd(), 'payload'));
   const requireFromPayload = createRequire(join(payload, 'package.json'));
   return import(pathToFileURL(requireFromPayload.resolve(specifier)).href);
 }
