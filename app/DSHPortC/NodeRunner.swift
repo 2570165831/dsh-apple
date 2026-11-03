@@ -216,7 +216,7 @@ final class NodeRunner {
 
     var bundleRoot: URL { Bundle.main.bundleURL }
 
-    var payloadDirectory: URL { bundleRoot.appendingPathComponent("payload", isDirectory: true) }
+    var payloadDirectory: URL { bundleRoot.appendingPathComponent("dsh-payload", isDirectory: true) }
     var simDirectory: URL { bundleRoot.appendingPathComponent("sim", isDirectory: true) }
 
     /// Task-owned DSH plugins (the guest subprocess provider among them). A

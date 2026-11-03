@@ -170,6 +170,22 @@ end
 end
 
 add_folder_reference(project, target, PAYLOAD_DIR, 'payload')
+
+# App Store Connect rejects the upload (ITMS-90171, naming NodeMobile.framework as
+# a "standalone binary") when the bundle holds a directory called `payload`: the
+# .ipa's own top-level folder is `Payload`, and the validator mixes the two up.
+# Renaming only that directory makes the same archive pass, so the folder is
+# copied as `payload` and moved to `dsh-payload` before signing.
+rename = target.new_shell_script_build_phase('Rename payload for App Store')
+rename.shell_script = <<~SH
+  set -e
+  RES="$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH"
+  if [ -d "$RES/payload" ]; then
+    rm -rf "$RES/dsh-payload"
+    mv "$RES/payload" "$RES/dsh-payload"
+  fi
+SH
+rename.always_out_of_date = '1'
 add_folder_reference(project, target, SIM_DIR, 'sim')
 add_folder_reference(project, target, PLUGINS_DIR, 'plugins')
 # `profiles/` ships the ios-sim profile template the host copies into DSH_HOME.

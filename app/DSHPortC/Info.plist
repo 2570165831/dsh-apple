@@ -2,8 +2,14 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>local.dshportc.app.continued-processing.*</string>
+	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>zh_CN</string>
+	<key>CFBundleDisplayName</key>
+	<string>DSH</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -12,29 +18,40 @@
 	<string>6.0</string>
 	<key>CFBundleName</key>
 	<string>$(PRODUCT_NAME)</string>
-	<key>CFBundleDisplayName</key>
-	<string>DSH</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
 	<string>0.2.1</string>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>20</string>
 	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
 	<true/>
 	<key>MinimumOSVersion</key>
 	<string>17.0</string>
-	<!-- The launch screen's colour, from a colour asset with a light and a dark
-	     variant. An empty `UIColorName` means "the system default", which is white
-	     in both appearances: on a device in dark mode that is a white flash
-	     between the launch screen and the boot screen. The asset's two values are
-	     the same pair `MobileWebTuning.Palette` paints with, so the launch screen,
-	     the boot screen and the page cannot disagree. -->
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>DSH 在 App 进程内运行，网页界面通过本机回环地址访问，不需要访问局域网。</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>processing</string>
+	</array>
+	<key>UIFileSharingEnabled</key>
+	<true/>
 	<key>UILaunchScreen</key>
 	<dict>
 		<key>UIColorName</key>
 		<string>PageBackground</string>
 	</dict>
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+		<string>arm64</string>
+	</array>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
@@ -49,60 +66,5 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-
-	<!-- The DSH web UI is served by the in-process Node on loopback. iOS blocks
-	     plain HTTP by default; ATS's local-networking exception is the narrowest
-	     switch that permits exactly that and nothing else. -->
-	<key>NSAppTransportSecurity</key>
-	<dict>
-		<key>NSAllowsLocalNetworking</key>
-		<true/>
-	</dict>
-	<key>NSLocalNetworkUsageDescription</key>
-	<string>DSH 在 App 进程内运行，网页界面通过本机回环地址访问，不需要访问局域网。</string>
-
-	<!-- Step 13: continued processing.
-	     A turn started in the foreground may keep going after backgrounding
-	     under a BGContinuedProcessingTask (iOS 26+), instead of being frozen with
-	     the process. Two keys are required, and the difference between having them
-	     and not is `submit` succeeding versus `BGTaskSchedulerErrorCodeNotPermitted`
-	     — a silent failure the app reports as such rather than guessing at.
-
-	       * `UIBackgroundModes` includes `processing`: the mode the Background
-	         Tasks framework requires for a continued-processing request.
-	       * `BGTaskSchedulerPermittedIdentifiers` declares the identifier family.
-	         The header specifies wildcard notation `<bundle-id>.<context>.*`, and
-	         the app submits `<bundle-id>.continued-processing.<8 hex>`: a distinct
-	         identifier per turn, because registering the same identifier twice in
-	         one process is an error the system kills the app for.
-
-	     No entitlement is needed for the default resource set. The GPU resource
-	     would need `com.apple.developer.background-tasks.continued-processing.gpu`,
-	     and nothing here uses the GPU: Node runs jitless and the guest is a CPU
-	     interpreter, so that entitlement is deliberately absent. -->
-	<key>UIBackgroundModes</key>
-	<array>
-		<string>processing</string>
-	</array>
-	<key>BGTaskSchedulerPermittedIdentifiers</key>
-	<array>
-		<string>local.dshportc.app.continued-processing.*</string>
-	</array>
-
-	<!-- Let the file picker reach the app's Documents folder, so a future iSH
-	     step can put a shell's working tree somewhere the user can see. -->
-	<key>UIFileSharingEnabled</key>
-	<true/>
-	<key>LSSupportsOpeningDocumentsInPlace</key>
-	<true/>
-
-	<!-- The embedded Node slices are arm64 only; there is no x86_64 build to run. -->
-	<key>UIRequiredDeviceCapabilities</key>
-	<array>
-		<string>arm64</string>
-	</array>
-
-	<!-- Entitlement decisions (none requested) are recorded in
-	     DSHPortC.entitlements and REPORT-4A.md section 3. -->
 </dict>
 </plist>

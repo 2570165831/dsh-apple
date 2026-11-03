@@ -29,7 +29,8 @@ import { previewCombos } from './reset-plan.mjs';
 const HERE = dirname(fileURLToPath(import.meta.url));
 const BUNDLE = resolve(HERE, '..');
 
-const payload = process.env.IOS_SIM_DSH_INSTALL ?? join(BUNDLE, 'payload');
+// The app bundles it as `dsh-payload` (see gen-xcode-project.rb for why).
+const payload = process.env.IOS_SIM_DSH_INSTALL ?? join(BUNDLE, 'dsh-payload');
 const dshHome = process.env.DSH_HOME ?? '';
 const workspace = process.env.DSH_IOS_WORKSPACE ?? process.cwd();
 const launcher = join(payload, 'node_modules', '@deepseek-ai', 'dsh', 'lib', 'bin.js');
