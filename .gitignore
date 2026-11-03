@@ -1,0 +1,24 @@
+# Fetched or generated: see README.md
+/payload/node_modules/
+/vendor/
+/ish/src/
+/ish/.source-state
+/ish/build/
+/ish/build-*/
+/ish/buildroot/
+/ish/artifacts/
+/app/DSHPortC.xcodeproj/
+/tools/gems/
+/tools/venv/
+/tools/llvm/
+/tools/kbd/softkeyboard
+/build/
+/DerivedData/
+/DerivedData-*/
+/simdevices
+/logs/
+*.xcresult
+__pycache__/
+*.pyc
+.DS_Store
+._*

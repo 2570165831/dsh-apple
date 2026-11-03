@@ -1,0 +1,4 @@
+BASHTEST 通知验收：一轮很短的工作，切后台之后很快结束。
+STEP sh -c 'echo step16-quick-start; sleep 3; echo step16-quick-done'
+DESCRIPTION 三秒的一条命令：切到后台时仍在跑，之后立刻在后台窗口内结束
+TIMEOUTMS 60000

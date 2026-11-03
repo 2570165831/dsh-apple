@@ -1,0 +1,32 @@
+diff --git a/fs/fake.c b/fs/fake.c
+index ab3f82b7..b5d93f02 100644
+--- a/fs/fake.c
++++ b/fs/fake.c
+@@ -829,11 +829,27 @@ static int fakefs_stat(struct mount *mount, const char *path, struct statbuf *fa
+         if (stat(host_stat_path, &real_stat) < 0)
+             return errno_map();
+         /* Copy basic fields from real stat */
++        /* `dev` is copied for exactly the same reason the hook branch above
++         * copies it: fakefs_fstat() reaches the host through realfs.fstat ->
++         * copy_stat(), which sets dev from the host and is never overridden
++         * from meta.db. Leaving it at the memset zero here makes stat() report
++         * dev=0 while fstat() on the same file reports the real one, and
++         * coreutils' psame_inode() reads that as "file was replaced while being
++         * copied" — which is what made `cp -a` and repeated `cp` fail on a
++         * static bind mount while succeeding on a plain fakefs directory. */
++        fake_stat->dev = dev_fake_from_real(real_stat.st_dev);
++        fake_stat->blksize = real_stat.st_blksize;
++        fake_stat->blocks = real_stat.st_blocks;
+         fake_stat->size = real_stat.st_size;
+         fake_stat->nlink = real_stat.st_nlink;
+         fake_stat->atime = real_stat.st_atimespec.tv_sec;
+         fake_stat->mtime = real_stat.st_mtimespec.tv_sec;
+         fake_stat->ctime = real_stat.st_ctimespec.tv_sec;
++        fake_stat->atime_nsec = real_stat.st_atimespec.tv_nsec;
++        fake_stat->mtime_nsec = real_stat.st_mtimespec.tv_nsec;
++        fake_stat->ctime_nsec = real_stat.st_ctimespec.tv_nsec;
++        /* rdev and the meta.db-owned fields (inode/mode/uid/gid) are assigned
++         * below, exactly as before; only the host-owned ones are copied here. */
+         err = 0;
+     } else {
+         err = realfs.stat(mount, path, fake_stat);

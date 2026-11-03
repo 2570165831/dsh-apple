@@ -1,0 +1,2 @@
+BASHTEST
+STEP yes | head -c 10000000

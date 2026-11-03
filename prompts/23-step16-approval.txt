@@ -1,0 +1,2 @@
+APPROVALTEST 通知验收：触发一次需要人工批准的删除。
+TARGET /tmp/step16-approval-target

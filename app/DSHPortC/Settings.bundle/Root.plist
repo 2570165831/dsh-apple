@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>PreferenceSpecifiers</key>
+	<array>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>通知我什么</string>
+			<key>FooterText</key>
+			<string>四种通知各自独立开关，默认全开，改完立即生效，重启后保留。只在 App 不在前台时发。</string>
+		</dict>
+		<!--
+		  The four rows below own the SAME `UserDefaults` keys the in-app sheet
+		  edits (`NotifyKind.defaultsKey` = `DSHPortENotify.<kind>`). The Settings
+		  app writes them into this app's defaults domain, so both places edit one
+		  value rather than two copies of it: toggling here and opening the in-app
+		  sheet shows the same state, and the notification bridge reads whatever the
+		  last change was regardless of where it was made.
+
+		  `DefaultValue` is true because absent means on. A row without it would
+		  still be read correctly by `NotifySettings.isEnabled` (absence is checked
+		  explicitly), but the Settings app would draw it off, which is the one way
+		  this page can lie about the state.
+		-->
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>一轮做完</string>
+			<key>Key</key>
+			<string>DSHPortENotify.done</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>出错</string>
+			<key>Key</key>
+			<string>DSHPortENotify.error</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>等批准</string>
+			<key>Key</key>
+			<string>DSHPortENotify.approval</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>AI 提问</string>
+			<key>Key</key>
+			<string>DSHPortENotify.question</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>系统通知</string>
+			<key>FooterText</key>
+			<string>这一页只管「哪几种要通知」。系统的通知权限在「设置 › 通知 › DSH」里；iOS 关掉它就四个都不发。App 内也有同一个开关页：双指长按界面 › 通知设置。</string>
+		</dict>
+	</array>
+</dict>
+</plist>

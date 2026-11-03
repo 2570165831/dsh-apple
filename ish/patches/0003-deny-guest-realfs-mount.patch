@@ -1,0 +1,19 @@
+diff --git a/fs/mount.c b/fs/mount.c
+index 2e4b7515..5c5f3d2f 100644
+--- a/fs/mount.c
++++ b/fs/mount.c
+@@ -208,6 +208,14 @@ dword_t sys_mount(addr_t source_addr, addr_t point_addr, addr_t type_addr, dword
+     }
+     if (fs == NULL)
+         return _EINVAL;
++    /* dsh-apple: a guest process may not mount a host directory. realfs takes a
++     * host path as its source, so `mount -t real <app container path> /mnt` from
++     * a guest shell would expose every file the app itself can read, the API key file
++     * included. The host's own mounts (the root, /proc, /dev/pts and the
++     * workspace bind) go through do_mount() and fakefs_bind_mount() directly and
++     * never reach this syscall. */
++    if (fs == &realfs)
++        return _EPERM;
+ 
+     struct statbuf stat;
+     int err = generic_statat(AT_PWD, point_raw, &stat, true);

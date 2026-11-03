@@ -1,0 +1,5 @@
+# dsh profile root — an empty entry list. The tree is composed as patches:
+# each bundle in package.json's dsh.profile.bundles, then cordis.patch.yml, then any
+# --patch overlays. The app renders its own cordis.patch.yml as the dsh-ios-profile
+# bundle; the profile's cordis.patch.yml is the user's and starts empty.
+[]

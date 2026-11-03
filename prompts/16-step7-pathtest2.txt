@@ -1,0 +1,2 @@
+BASHTEST
+STEP mkdir -p /workspace/deepseek-harness/default-workspace && cd /workspace/deepseek-harness/default-workspace && printf 'needle alpha\nbeta\n' > seed-a.txt && printf 'gamma\nneedle here\n' > seed-b.txt && ls -la

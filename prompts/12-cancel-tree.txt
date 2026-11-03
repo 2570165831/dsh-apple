@@ -1,0 +1,4 @@
+BASHTEST
+STEP sh -c 'sleep 100 & echo $! > /workspace/c.pid; wait' &
++ echo started; sleep 60
+TIMEOUTMS 2500

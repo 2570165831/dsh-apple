@@ -1,0 +1,3 @@
+BASHTEST
+STEP mkdir -p /workspace/src && printf 'foo line one\nbar\nfoo line two\n' > /workspace/src/a.txt && printf 'nope\nfoo in b\n' > /workspace/src/b.txt
+STEP grep -r foo /workspace/src | head -20 > /workspace/out.txt; echo "grep-exit=$?"; cat /workspace/out.txt

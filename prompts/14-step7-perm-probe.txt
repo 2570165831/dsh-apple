@@ -1,0 +1,3 @@
+BASHTEST
+STEP ls -ln /workspace/step7-acceptance/ 2>&1; echo "=== cat host-written ==="; cat /workspace/step7-acceptance/rg-seed.txt 2>&1; echo "cat-exit=$?"
+STEP printf 'guest-made needle\n' > /workspace/step7-acceptance/guest-made.txt; chmod 644 /workspace/step7-acceptance/guest-made.txt; ls -ln /workspace/step7-acceptance/guest-made.txt; cd /workspace/step7-acceptance && rg --no-config --json --regexp=needle 2>&1 | head -4; echo "rg-exit=$?"

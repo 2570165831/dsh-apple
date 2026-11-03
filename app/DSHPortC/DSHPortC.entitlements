@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!--
+	  Intentionally empty. Step 4A reviewed every entitlement the previous
+	  version of this file mentioned (REPORT-4A.md section 3):
+
+	  - com.apple.security.app-sandbox is a macOS entitlement; every iOS app is
+	    sandboxed by the OS and does not declare it.
+	  - get-task-allow, application-identifier and the team identifier are added
+	    by Xcode at signing time from the provisioning profile (Debug only for
+	    get-task-allow), so they do not belong in this file.
+	  - increased-memory-limit: not requested until a device run shows a jetsam
+	    kill that the headroom would have prevented.
+	  - extended-virtual-addressing: not requested; see REPORT-4A.md section 3 for
+	    the evidence and what would make it necessary.
+	  - allow-jit: nodejs-mobile runs jitless; enabling JIT is a separate project.
+
+	  A key added here that the provisioning profile does not carry makes the
+	  device install fail, so add one only together with the matching capability
+	  on the App ID.
+	-->
+</dict>
+</plist>

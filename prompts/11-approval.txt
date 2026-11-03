@@ -1,0 +1,2 @@
+BASHTEST
+STEP rm -rf /workspace/nonexistent-dir-for-approval-test && echo after

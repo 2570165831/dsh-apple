@@ -1,0 +1,4 @@
+BASHTEST 通知验收：一轮足够长的工作，切到后台之后才结束。
+STEP sh -c 'echo step16-bg-start; for i in 1 2 3 4 5 6 7 8; do echo "step16-bg-$i"; sleep 5; done; echo step16-bg-done'
+DESCRIPTION 约四十秒的一条命令：在前台开始，切到后台之后才结束，好让结束的瞬间 App 不在前台
+TIMEOUTMS 120000

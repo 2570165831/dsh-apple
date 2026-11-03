@@ -1,0 +1,16 @@
+RMTEST
+DIR /workspace
+
+This prompt makes the mock model walk the exact cycle the phone reported, so
+every step's model-visible answer is a fact in the session log:
+
+  1. write       create /workspace/rmtest-target.md  (policy records present@v1)
+  2. bash        rm -f it                            (through the GUEST namespace)
+  3. write       again  -> the reported refusal, if the record is stale
+  4. editor      create -> the same refusal through the other tool
+  5. read        the deleted path -> "not found", and (invisibly) an absent record
+  6. write       again  -> the recovery, if the absent record unlocked it
+  7-9.           the same three steps for str_replace_editor create
+
+Step 6 and step 9 are the whole question: whether the remedy the error message
+names is the remedy that works.

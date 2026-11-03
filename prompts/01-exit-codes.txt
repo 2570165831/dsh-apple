@@ -1,0 +1,3 @@
+BASHTEST
+STEP echo hi
+STEP exit 3

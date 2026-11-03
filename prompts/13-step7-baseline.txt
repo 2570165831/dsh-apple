@@ -1,0 +1,3 @@
+BASHTEST
+STEP echo "pwd=$(pwd)"; echo "ws=$DSH_GUEST_WORKSPACE"; ls -a | head -5; command -v rg || echo "NO-RG"
+STEP printf 'alpha needle\nbeta\n' > /workspace/step7-a.txt; printf 'gamma\nneedle here\n' > /workspace/step7-b.txt; rg --no-config -n needle /workspace; echo "rg-exit=$?"

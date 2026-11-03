@@ -1,0 +1,2 @@
+BASHTEST
+STEP cd /workspace/deepseek-harness/default-workspace && printf 'two\n' >> f.txt && printf 'new\n' > g.txt && git status --porcelain

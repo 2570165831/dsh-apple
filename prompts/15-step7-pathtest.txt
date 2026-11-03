@@ -1,0 +1,7 @@
+PATHTEST
+DIR /workspace
+
+This prompt asks the mock model to drive five ordinary tools in one turn:
+glob, grep, write, edit-without-read, read, edit-again. It exists so the
+model-visible answer to each call is a fact in the session log, rather than an
+assertion about the harness.

@@ -1,0 +1,2 @@
+BASHTEST
+STEP cd /workspace && git init -q repo-test 2>&1; cd repo-test && git config user.email test@example.invalid && git config user.name Test && printf 'one\n' > f.txt && git add f.txt && git commit -qm initial && printf 'two\n' >> f.txt && printf 'new\n' > g.txt && git status --porcelain

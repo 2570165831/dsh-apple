@@ -1,0 +1,756 @@
+# ios-sim profile for the DSHPortC app — mounts only what an iOS-embedded Node
+# can run, and points the model route at a local mock server.
+#
+# This is the app-owned copy. It started from the A-stage profile
+# (ios-port-A, 2026-10-25), which validated the same restriction set on macOS
+# under --jitless. Three things changed for the app:
+#
+#   1. `__SIM__` / `__PAYLOAD__` / `__WORKSPACE__` are placeholders the Swift
+#      host substitutes at launch, because bundle and container paths differ per
+#      install and per device. Do not paste absolute paths back in.
+#   2. The model route points at the local mock (`mock/`), not a real provider.
+#      No credential is stored, copied or read anywhere in this app: the mock
+#      accepts any non-empty bearer token and the value is a literal placeholder.
+#   3. telemetry and usage-report rows are off. A phone has no business sending
+#      anything anywhere in this prototype.
+#
+# Rules behind every row here, from the scout report's B7 table:
+#   * drop anything that spawns a child process (bash, pty, terminal, office,
+#     speech, native directory picker, plugin manager, open-in-app, git snapshots)
+#   * drop anything that needs an iOS-unavailable native addon at boot
+#     (office-to-pdf -> libreoffice-kit, product analytics -> sw_vers/sysctl)
+#   * keep everything the web surface, chat, fs tools, presets and session
+#     persistence need
+#   * the sandbox is set to danger-full-access: iOS has neither Landlock nor
+#     bubblewrap, so the per-command sandbox fails closed; the App sandbox is
+#     already the boundary (the same conclusion dsh-ios reached)
+
+# ------------------------------------------------------------------ sandbox
+# `dsh-sandbox-local` spawns `sandbox-exec` / bwrap / the landlock launcher to
+# probe itself. On iOS none of those exist and the commands this build runs are
+# emulated guest processes that no host runner can wrap, so the provider goes.
+#
+# It is replaced by `plugins/dsh-sandbox-ios`, which supplies `ctx.sandbox`
+# without pretending to confine anything: every genuinely confined request
+# raises `SandboxUnavailableError` — fail closed, never a silent unconfined
+# passthrough. The reason a provider has to exist at all is the permission
+# preset table below; see the note under `permission`.
+# A patch row whose `name` differs from the row it targets is SKIPPED with a
+# warning, not applied. Both providers below are therefore inserted as their own
+# rows, and the stock rows they replace are disabled by id alone (a patch that
+# names an id and no `name` applies its other keys). This was not obvious and
+# cost a diagnosis: the first version of this file named the plugin on the
+# `subprocess`/`sandbox` rows themselves, which left the stock
+# `dsh-subprocess-local` in place and reported "name mismatch ... skipping" into
+# a log nobody was reading, while the profile looked correct.
+- id: sandbox
+  disabled: true
+
+- insert:
+    - id: sandbox-ios
+      name: __PLUGINS__/dsh-sandbox-ios/index.mjs
+
+- id: sandbox-policy
+  config:
+    # The only mode this device can honestly deliver. `workspace-write` and
+    # `read-only` are then real, explained refusals rather than fake
+    # confinement.
+    mode: danger-full-access
+    workspaceRoot: !!js process.env.DSH_IOS_WORKSPACE ?? process.cwd()
+
+# Approvals and the permission-preset table are RESTORED in this step.
+#
+# In the previous profile both rows were `disabled: true`. The reason was
+# `dsh-permission-presets`'s `inject = ["shell", "approval", "sessions",
+# "sessionProjections"]`: with no `shell` (no bash executor) the row sat pending
+# forever, and `dsh-api-session-controller` mounts *behind* that gate, so the
+# whole host session RPC surface never came up and the web UI could not create a
+# session.
+#
+# There is now a shell (`dsh-bash-sandbox` over the guest provider) and an
+# approval seam, so the gate is satisfied and the UI's permission switcher and
+# approval composer come alive. `dsh-bash-sandbox` also needs `ctx.sandbox`; the
+# iOS provider above supplies it and is honest about what it can enforce.
+#
+# `dsh-user-approval`'s policy is `ask` so a dialog is possible at all. The
+# `ish-approval-policy` plugin is what produces an `ask` decision for a command
+# whose text matches a destructive rule: without a contributor to
+# `tools/pre-execute` nothing ever asks, and the dialog would be mounted but
+# unreachable — an acceptance criterion about it would be untestable rather than
+# merely unmet.
+- id: approval
+  config:
+    policy: ask
+
+- id: permission
+  config:
+    presets:
+      read-only:
+        sandbox: read-only
+        approval: ask
+      workspace-write:
+        sandbox: workspace-write
+        approval: ask
+      danger-full-access:
+        sandbox: danger-full-access
+        approval: ask
+    defaultPreset: danger-full-access
+
+- insert:
+    - id: ish-approval-policy
+      name: __PLUGINS__/ish-approval-policy/index.mjs
+
+# ------------------------------------------------------------------ filesystem
+# The stock `fs-sandbox` is `LocalFileSystem` plus the per-call policy fence. On
+# this platform the model has TWO names for the same workspace: the host path the
+# app container happens to have (a UUID that changes on every reinstall) and
+# `/workspace`, where the guest sees it. Bash runs in the guest, so it prints and
+# accepts `/workspace/...`; the file tools run in Node, so they took only host
+# paths. `read /workspace/x.md` therefore answered "not found" about a file that
+# was right there — measured on the phone.
+#
+# `dsh-fs-ios` subclasses the stock provider, so the policy fence, the atomic
+# write, the edit critical section and the realpath identity are unchanged; it
+# adds one translation at the two methods that take a raw model path (`resolve`,
+# `lstat`) and one prompt sentence saying both spellings work. See PATCHES.md
+# P-15.
+#
+# Disabled-by-id plus a separate insert, not a `name:` on this row: a patch row
+# whose `name` differs from the row it targets is SKIPPED with a warning (P-7),
+# and two rows providing `ctx.fs` would be a cordis conflict rather than a
+# composition.
+- id: fs-sandbox
+  disabled: true
+
+- insert:
+    - id: fs-ios
+      name: __PLUGINS__/dsh-fs-ios/index.mjs
+
+# ----------------------------------------------------- guest runtimes (step 24)
+# Step 24 put `nodejs`, `npm` and `python3` into the image and measured them. The
+# short answer: `python3` works and is useful; `node` and `npm` are present but
+# ABORT inside libuv on their first thread creation and then spin instead of
+# exiting. A model that does not know that writes a Node script and waits out the
+# command timeout — which is exactly what this step's own harness did before the
+# cause was found.
+#
+# So the prompt carries the measured answer, and only the measured answer: what
+# `python3` can do, that it is far slower than a Mac, that there is no pip and no
+# compiler, and that Node is not a usable path. `REPORT-24.md` §3 lists the
+# criteria and the numbers behind every sentence.
+#
+# A separate row rather than more text inside `dsh-fs-ios`, because the two change
+# for different reasons: a package added to `ish/scripts/build-rootfs.sh` changes
+# this sentence and leaves the path rule alone.
+- insert:
+    - id: guest-runtimes
+      name: __PLUGINS__/dsh-guest-runtimes/index.mjs
+
+# --------------------------------------------------------- subprocess / shell
+# `subprocess` is the capability seam every bash executor runs through:
+# `dsh-bash-local` declares `static inject = ["subprocess"]` and calls
+# `ctx.subprocess.spawn(...)`. Pointing this ONE row at the guest provider swaps
+# the execution world with no change to `dsh-bash-local`, `dsh-tool-bash`, or
+# anything above them. That is the "zero source changes" criterion, satisfied
+# structurally rather than by editing them.
+#
+# The provider is a plugin, not a patch to DSH internals. See PATCHES.md P-6 for
+# why, and for what to re-check after a DSH upgrade.
+- id: subprocess
+  disabled: true
+
+- insert:
+    - id: subprocess-ish
+      name: __PLUGINS__/dsh-subprocess-ish/index.mjs
+
+# `bash-sandbox` is the executor that advertises a sandbox mode — which is what
+# the permission preset table requires — while delegating the spawn to
+# `ctx.subprocess`. Plain `bash-local` does not confine, and composing the
+# preset table over it is the misconfiguration `dsh-permission-presets` refuses
+# at load time.
+- id: bash-sandbox
+  name: '@deepseek-ai/dsh-bash-sandbox'
+  config:
+    timeoutMs: 60000
+
+# `pwsh-sandbox` and the PowerShell tool have no counterpart in the guest image
+# (Alpine has no pwsh), so they stay off on every non-Windows platform.
+- id: pwsh-sandbox
+  disabled: true
+
+- id: tool-bash
+  name: '@deepseek-ai/dsh-tool-bash'
+
+- id: tool-pwsh
+  disabled: true
+
+# `shell-env` STAYS mounted: it is a pure registry (`inject = []`) that presets
+# declare a `tool-bash` row against. Keeping it costs nothing and avoids the
+# documented dsh-ios trap where removing it makes preset mounting fail silently
+# while the startup audit still reports success.
+
+# ------------------------------------------------------------------- office
+# libreoffice-kit imports `node:child_process` at module top level and needs a
+# native LibreOffice binary; neither exists on iOS.
+- id: office-to-pdf
+  disabled: true
+
+# ---------------------------------------------------------------- telemetry
+# dsh-client-product-analytics execFile()s /usr/bin/sw_vers and /usr/sbin/sysctl.
+- id: product-analytics
+  disabled: true
+
+- id: desktop-product-telemetry
+  disabled: true
+
+- id: session-telemetry-otel
+  disabled: true
+
+- id: otel
+  disabled: true
+
+# ------------------------------------------------------- workspace / git / ui
+# dsh-workspace-changes injects `subprocess` and runs `git status` to render the
+# changed-files card under each closing assistant message. Both are available
+# now: `subprocess` is the guest provider, and the guest image ships git 2.47.3
+# (RootfsPackages.md). Its `resolveExecutable("git")` reaches the guest, so this
+# row mounts only because git genuinely exists *there* — a host-side guess would
+# have been wrong in both directions.
+#
+# `ui-deliverables` renders that card. It was disabled together with the
+# provider; with the recorder live it has something to show.
+- id: workspace-changes
+  name: '@deepseek-ai/dsh-workspace-changes'
+
+- id: ui-deliverables
+  name: '@deepseek-ai/dsh-client-ui-deliverables'
+
+# The terminal surface is dead weight without a pty service.
+- id: ui-sidebar-terminal
+  disabled: true
+
+- id: terminal-controller
+  disabled: true
+
+# The native directory picker uses koffi + a native NSOpenPanel bridge. Pin the
+# browser-based picker instead, which is pure JS over the workspace API. The
+# host side is plugins/dsh-directory-picker-ios (the stock browse backend
+# confined to the app's workspace folder); the client surface stays stock.
+- id: directory-picker
+  disabled: true
+
+- insert:
+    - id: directory-picker-browse
+      name: __PLUGINS__/dsh-directory-picker-ios/index.mjs
+    - id: ui-directory-picker-browse
+      name: '@deepseek-ai/dsh-client-ui-directory-picker-browse'
+
+# "Open In..." launches the OS handler via spawn.
+- id: open-in-app
+  disabled: true
+
+- id: ui-open-in-app
+  disabled: true
+
+# The plugin manager forwards to pnpm (a child process) and the market fetches
+# from the network through workers.
+- id: plugin-manager
+  disabled: true
+
+- id: tool-plugin-manager
+  disabled: true
+
+- id: ui-plugin-manager
+  disabled: true
+
+# HMR only matters while developing DSH itself; its service refuses to start
+# without --expose-internals and it watches the whole tree.
+- id: hmr
+  disabled: true
+
+# PTC spawns worker threads per tool call; iOS kills backgrounded workers and
+# the worker bootstrap re-enters the module loader.
+- id: ptc-runtime
+  disabled: true
+
+- id: workflow-ptc
+  disabled: true
+
+- id: tool-workflow
+  disabled: true
+
+- id: subagent
+  disabled: true
+
+- id: subagent-spawn-in-process
+  disabled: true
+
+- id: subagent-fork-in-process
+  disabled: true
+
+- id: tool-subagent-control
+  disabled: true
+
+- id: tool-subagent-list-agents
+  disabled: true
+
+- id: tool-subagent
+  disabled: true
+
+- id: tool-subagent-fork
+  disabled: true
+
+- id: ui-subagent
+  disabled: true
+
+- id: ui-workflow-run
+  disabled: true
+
+# ---------------------------------------------------------------- model route
+# Two model-route plugins, and only one of them is ever the default.
+#
+# WHAT WENT WRONG WITHOUT THE SWITCH BELOW, measured in step 21. This file used
+# to set `agent-default-model` to `local-mock` unconditionally, so EVERY launch —
+# including the one a person gets by tapping the app on the home screen — opened
+# a conversation on "脚本化 Mock（流式 + 工具调用）". The mock is a host-side test
+# double that listens on 127.0.0.1:19700 and exists only while `mock/` runs; a
+# normal launch has no such server, so the composer looked ready and then every
+# turn failed. The evidence that this was unconditional rather than a leftover
+# selection: on a launch with no `-DSHPortCMockPort` at all, and with nothing
+# listening on 19700 (`lsof -iTCP:19700` returned nothing), the composer's model
+# button still read `选择模型，当前 脚本化 Mock（流式 + 工具调用）`.
+#
+# WHY THE SWITCH LIVES IN THE PROFILE AND NOT IN THE APP
+# ------------------------------------------------------
+# The route table is the profile's business: which providers exist, and which
+# model a fresh agent starts on. `agent-default-model` is REQUIRED to name a
+# provider and a model (its schema rejects an entry without them), so "no model
+# configured" cannot be written by deleting the entry — it has to be a different
+# entry. The `!!js` expression is the loader's own escape hatch for exactly this
+# (this file already uses it for `workspaceRoot` and the mock's base URL), and it
+# reads the launch environment the app sets, so the decision is made once per
+# launch.
+#
+# THE THREE STATES
+#   * test launch (`DSHPORTC_MOCK_PORT` set, which only a launch argument can do)
+#       -> `local-mock` is the default. Every acceptance script and every
+#          XCUITest passes that argument, so all of them are unchanged.
+#   * normal launch (no mock port, no DSH_PORTE_*)
+#       -> upstream's own default, `deepseek-official` / `deepseek-flash`, and no
+#          mock route. With no key DSH shows its own "add an API key" prompt; with
+#          one, the model is simply there.
+#   * a real deployment sets `DSH_PORTE_DEFAULT_PROVIDER` / `..._MODEL` and gets
+#     whatever it names. Nothing else in this repository has to change.
+#
+# `apiKeyEnv` names an environment variable the app sets to a literal placeholder
+# string. The mock ignores its value; it exists because the openai-completions
+# client sends an Authorization header and DSH refuses to build a provider route
+# with no credential reference at all. That is not a secret and there is no real
+# key in this repo, in the app bundle, or in DSH_HOME.
+- id: agent-default-model
+  config:
+    provider: !!js >-
+      process.env.DSH_PORTE_DEFAULT_PROVIDER
+        ?? (process.env.DSHPORTC_MOCK_PORT ? "local-mock" : "deepseek-official")
+    model: !!js >-
+      process.env.DSH_PORTE_DEFAULT_MODEL
+        ?? (process.env.DSHPORTC_MOCK_PORT ? "mock-scripted" : "deepseek-flash")
+    reasoningEffort: !!js >-
+      process.env.DSH_PORTE_DEFAULT_EFFORT
+        ?? "high"
+
+# Settings keeps third-party and custom providers in the `llm-pi-ai` namespace, so
+# a normal launch runs that row as upstream has it. Measured three ways of removing
+# the mock from it, all wrong: disabling the row on a normal launch takes those
+# providers away, a `!!js` value for `providers` makes every save fail with
+# `$.providers.__jsExpr expected object`, and running a second instance beside it
+# fails on `configurable provider "amazon-bedrock" is already declared`, because
+# every instance declares the whole catalog. So exactly one of the two rows runs:
+# a test launch swaps in the row that also carries the mock.
+- id: llm-pi-ai
+  disabled: !!js >-
+    !!process.env.DSHPORTC_MOCK_PORT
+
+- insert:
+    - id: llm-pi-ai-mock
+      name: '@deepseek-ai/dsh-llm-pi-ai'
+      disabled: !!js >-
+        !process.env.DSHPORTC_MOCK_PORT
+      config:
+        providers:
+          local-mock:
+            displayName: 本地 Mock 模型（离线测试）
+            api: openai-completions
+            # The port is a launch-time value, not a constant, because two checkouts
+            # run their own mock at the same time (step 11 on 19700, step 13 on its
+            # own). The app always sets `DSHPORTC_MOCK_PORT` — defaulting to 19700 —
+            # so a single-checkout run behaves exactly as before and a parallel one
+            # cannot silently talk to the other task's mock. `readEnv` needs no
+            # `process` access inside the YAML expression beyond what the loader
+            # already evaluates.
+            # A YAML block scalar, not a template literal: a plain scalar may not
+            # begin with a backtick (YAML reserves it), and a quoted scalar would end
+            # at the first inner quote and leave the rest as syntax. `>-` folds this
+            # to one line, which `!!js` then evaluates.
+            baseURL: !!js >-
+              "http://127.0.0.1:" + (process.env.DSHPORTC_MOCK_PORT ?? "19700") + "/v1"
+            apiKeyEnv: DSHPORTC_MOCK_API_KEY
+            timeoutMs: 120000
+            streamIdleTimeoutMs: 60000
+            models:
+              - id: mock-scripted
+                name: 脚本化 Mock（流式 + 工具调用）
+                contextWindow: 128000
+                # `image` is declared because the mock now receives image parts, and
+                # DSH refuses an image prompt on a route whose model does not declare
+                # image input (`session/attachment-invalid`, reason
+                # `MODEL_DOES_NOT_SUPPORT_IMAGES`). It also gates `read_image`:
+                # `assertImageCapableRoute` refuses to read a picture for a model
+                # that cannot see one.
+                #
+                # The mock does not look at the pixels — it echoes what it received
+                # into its request log, which is exactly the evidence the step-5
+                # acceptance needs. A real deployment would point this route at a
+                # vision model instead.
+                input: [ text, image ]
+                reasoningEfforts:
+                  high: high
+                  max: max
+                compat:
+                  supportsDeveloperRole: false
+                  # The mock emits reasoning_content-free deltas, so DSH must not
+                  # require a thinking block back on assistant messages.
+                  supportsReasoningEffort: true
+                  thinkingFormat: deepseek
+                  maxTokensField: max_tokens
+                  requiresReasoningContentOnAssistantMessages: false
+
+# Telemetry, usage reporting and the anonymous id: all off. This is a
+# prototype that must not talk to anything except the local mock.
+- id: usage-report
+  disabled: true
+
+- id: anonymous-user-id
+  disabled: true
+
+# ------------------------------------------------------------- time context
+# Two separate iOS problems meet in this row.
+#
+# 1. No ICU. nodejs-mobile's iOS build has `v8_enable_i18n_support: 0`, so
+#    `Intl` is undefined. `dsh-time-context` builds an `Intl.DateTimeFormat` in
+#    its `apply()`, so without a shim the plugin throws
+#      time-context: failed to resolve the system time zone
+#    and session creation fails with agent-preset/invalid. sim/intl-shim.cjs
+#    provides a minimal `Intl.DateTimeFormat`; see its header for exactly what
+#    it does and does not do.
+#
+# 2. No system zone lookup *in Node*. What the shim CANNOT find, the platform
+#    can: `app/DSHPortC/DeviceTimeZone.swift` publishes the current zone id, its
+#    offset, and every DST transition from a year back to two years ahead as
+#    `DSHPORTE_DEVICE_TZ`, and the shim answers "offset at instant t" from that
+#    table. The zone is therefore left UNSET here, so the plugin resolves the
+#    process zone — which the shim now reports as the device's own identifier.
+#
+# Step 6 removed the previous `timeZone: UTC` pin. That pin was why the interface
+# showed UTC, and therefore the wrong wall clock, to a device in
+# Australia/Sydney. `timeZone` is omitted rather than set to a placeholder:
+# `apply()` calls `createTimestampFormatter(undefined)`, which leaves the
+# `timeZone` option off entirely and lets Intl answer with the process zone. An
+# empty string would fail the IANA validation instead.
+#
+# The model-visible stamp follows the same route: `dsh-time-context` prefers the
+# browser's zone when the open turn carries exactly one, and uses this configured
+# value only when it does not. Both paths now land on the device zone.
+- id: time-context
+  config:
+    refreshIntervalMs: 600000
+
+# ------------------------------------------------------- workspace registration
+# DSH's WorkspaceController discovers a default workspace by asking the OS for
+# the user's Documents folder: on darwin it shells out to
+#   osascript -e 'POSIX path of (path to documents folder from user domain…)'
+# (dsh-api-workspace-controller/lib/index.js:616). iOS has no `osascript` and no
+# subprocess at all, so that lookup fails, no workspace is ever registered, and
+# the web UI shows "选择一个工作区开始" with an empty composer: the app boots and
+# renders, but no session can be created.
+#
+# `documentsDirectory` is the documented deployment override for exactly this
+# case. Pointing it at the app's own Documents folder gives the UI a real
+# workspace on first run.
+#
+# NOTE: this must be a concrete absolute path, because the config value is
+# validated as fully qualified (index.js:611-615) and there is no
+# `!!js process.env…` fallback worth relying on for a path the app already knows.
+- id: workspace-controller
+  config:
+    documentsDirectory: __WORKSPACE__
+
+# --------------------------------------------------------------- attachments
+# `ctx.attachments` is the durable image/file store. `dsh-attachment-local`
+# implements it by calling the `sharp` native addon for every raster operation,
+# and iOS cannot load a third-party addon at all: `dlopen` of a valid arm64 dylib
+# is refused even when it is ad-hoc signed (REPORT-4B measured both cases), and
+# sharp ships no iOS prebuild.
+#
+# `plugins/dsh-attachment-ios` replaces the whole row. It SUBCLASSES
+# `LocalAttachmentStore`, so content addressing, staging, fsync discipline, the
+# immutable object layout, verbatim file storage and the request-image cache are
+# inherited untouched; only the five sharp-dependent behaviours are overridden,
+# and they call ImageIO through this app's own authenticated channel
+# (`POST /v1/image/probe`, `POST /v1/image/encode`). `sharp` is therefore never
+# required on any path.
+#
+# Why a provider and not a patch: `ctx.attachments` is a cordis service, and
+# every consumer — prompt admission, `read_image`, `fileUploads`, the projection
+# that advertises `imageLimits` to the browser — talks to the service, never to
+# the package. Same structural argument as `subprocess` below; see PATCHES.md
+# P-10.
+#
+# `image/heic` and `image/heif` are added to the accepted SOURCE types. Nothing
+# downstream sees them: normalisation re-encodes to JPEG or PNG, so a stored
+# reference is always one of DSH's four types.
+#
+# The provider refuses to mount when the channel is absent rather than mounting
+# and failing every image later, so a misconfiguration is a boot error that names
+# its cause.
+- id: attachment-local
+  disabled: true
+
+- insert:
+    - id: attachment-ios
+      name: __PLUGINS__/dsh-attachment-ios/index.mjs
+      config:
+        # The storage root is PINNED, not inherited.
+        #
+        # `LocalAttachmentStore` resolves `config.dshHome` → `$DSH_HOME` →
+        # `~/.dsh`, and this row otherwise carries no `dshHome` at all. On the
+        # desktop that fallback is correct; inside an iOS app it is a live hazard:
+        # if `DSH_HOME` ever failed to reach Node, the store would quietly create
+        # `~/.dsh/attachments` — the USER'S OWN desktop harness home — and write
+        # their photos there. `__DSH_HOME__` is the app's container path,
+        # substituted by the Swift host every launch, so the store can only ever
+        # write inside the app.
+        #
+        # The plugin also logs `objects=<path>` at mount (see its constructor), so
+        # the boot log states where it is writing instead of leaving it implied.
+        dshHome: __DSH_HOME__
+
+# ------------------------------------------------------- session persistence
+# flock lives in @deepseek-ai/node-addon-system's koffi-backed addon. dsh-ios
+# stubs it out (single instance owns the log). The shim is installed by
+# sim/flock-shim.cjs through --import, so nothing here changes.
+- id: session-persistence-jsonl
+  config:
+    root: !!js dshHomePath('sessions')
+
+# ------------------------------------------------------------------- presets
+# One iOS preset: the standard preset minus the pty/office/subagent rows, with
+# the shell tools present but running in the guest.
+# `agent-preset-registry.default` selects it for new sessions.
+- id: agent-preset-registry
+  config:
+    default: ios-safe
+
+- id: preset-standard
+  disabled: true
+
+- id: preset-ptc
+  disabled: true
+
+- id: preset-minimal
+  disabled: true
+
+- id: preset-cordis
+  disabled: true
+
+- insert:
+    - id: preset-ios-safe
+      name: '@deepseek-ai/dsh-agent-preset'
+      config:
+        id: ios-safe
+        name: iOS 预设（bash 走内嵌 iSH guest）
+        description: 与 standard 预设等价，但 bash 在 App 内的 iSH guest 里执行；去掉 pty、office、子代理与工作流，保留文件工具、网页工具、计划模式与压缩。
+        order: 1
+        plugins:
+          - id: persona
+            name: '@deepseek-ai/dsh-persona'
+            config:
+              prefix: You are a coding agent powered by the {{model}} model.
+          - id: agent-instructions
+            name: '@deepseek-ai/dsh-agent-instructions'
+            config:
+              maxBytes: 65536
+          - id: time-context
+            name: '@deepseek-ai/dsh-time-context'
+          - id: tool-fs
+            name: '@deepseek-ai/dsh-tool-fs'
+          - id: tool-str-replace-editor
+            name: '@deepseek-ai/dsh-tool-str-replace-editor'
+            config:
+              maxOutputChars: 16000
+          # The real search tool is used again. It injects `subprocess` and
+          # spawns `@vscode/ripgrep` (lib/index.js:171, :526, :869); that spawn
+          # now goes to the guest, which has no `rg` — so `resolveExecutable`
+          # reports the truth and the tool degrades to its documented
+          # no-ripgrep answer instead of the whole row staying pending.
+          #
+          # The previous profile mounted `sim/tool-fs-search-js.mjs` here, a
+          # node:fs-only reimplementation, because *nothing* could spawn. That
+          # shim stays in the tree (REPORT-1 cites it) but is no longer mounted:
+          # keeping it would mean two tools answering `grep`/`glob` with
+          # different semantics depending on which composition ran.
+          #
+          # `sampleOverCapGlobResults` is NOT decoration: this preset row
+          # REPLACES the base preset's row, and a replaced row loses the base's
+          # config. The option is required by the plugin's own schema, so
+          # omitting it makes every session creation fail with
+          # `agent-preset/invalid: tool-fs-search: ... missing required value`.
+          # That failure arrives as a toast and a composer that stays disabled,
+          # which looks exactly like "the workspace was never chosen". Measured
+          # once, the hard way; the value below is the base preset's own.
+          - id: tool-fs-search
+            name: '@deepseek-ai/dsh-tool-fs-search'
+            config:
+              sampleOverCapGlobResults: false
+          # Bash, in the guest. `tool-bash` needs `shell` (the executor) and this
+          # preset is the composition that declares it, so both rows live here.
+          # `promoteOnTimeout` is off, and that is a decision rather than a
+          # default. With it on (the tool's default) a command that reaches its
+          # timeout is MOVED TO A BACKGROUND JOB instead of being killed, and the
+          # model sees "[still running after Nms; moved to background job ...]".
+          # The behaviour it needs is the opposite on a phone: a runaway command
+          # has to be terminated, not kept alive next to the one the user is
+          # waiting for. `enableRunInBackground` stays on so an explicit
+          # `run_in_background` still works; only the automatic promotion is off.
+          #
+          # This is also what makes the timeout observable at all: the killed
+          # command's own exit facts reach the model as "[timed out after Nms]".
+          - id: tool-bash
+            name: '@deepseek-ai/dsh-tool-bash'
+            config:
+              promoteOnTimeout: false
+          - id: skill-filesystem
+            name: '@deepseek-ai/dsh-skill-filesystem'
+          - id: tool-skill
+            name: '@deepseek-ai/dsh-tool-skill'
+          - id: command-goal
+            name: '@deepseek-ai/dsh-command-goal'
+          - id: tool-goal
+            name: '@deepseek-ai/dsh-tool-goal'
+          - id: planning
+            name: cordis:group
+            group: true
+            isolate:
+              planMode: true
+            config:
+              - id: plan-mode
+                name: '@deepseek-ai/dsh-plan-mode'
+                config:
+                  section: |
+                    You are in plan mode. Stay in plan mode until the user approves your plan through exit_plan_mode or switches the session mode. Imperative language to implement changes means plan the implementation, not execute it. A user's conversational agreement — including an answer confirming something you asked — approves nothing and does not end plan mode; fold the confirmed decision into the plan and submit it through exit_plan_mode.
+
+                    Explore first. Use non-mutating reads, searches, static analysis, and checks to ground the plan in the actual repository. Do not edit or write files, change configuration, run formatters or code generation that rewrites tracked files, commit, or otherwise carry out the plan. Prefer existing functions and patterns over new machinery.
+
+                    The tool catalog stays the same across modes for request-cache stability. These plan-mode rules override any later tool description or guidance that suggests using mutation tools; those tools remain listed to keep the tool catalog unchanged. Do not use todo_write to track this planning phase: it tracks implementation after an approved plan, while the plan itself belongs in exit_plan_mode.
+
+                    Resolve discoverable facts by inspection. Use ask_user_question only for user-owned choices or material ambiguity that inspection cannot answer. Do not ask the user where code lives or how current behavior works when you can find out.
+
+                    Make the plan decision-complete: state the goal and success criteria; group implementation changes by subsystem; identify public API, schema, and data-flow changes; cover edge cases, failure modes, tests, acceptance criteria, and explicit assumptions. Keep it concise enough to review but detailed enough that another engineer can implement it without making design decisions.
+
+                    When ready, call exit_plan_mode with the complete plan markdown, starting with a # title. Make exit_plan_mode the only and final tool call in that assistant response: it presents the plan for approval, and implementation begins only in a later step after approval. Do not paste the final plan as a plain reply or ask "should I proceed?" through prose or ask_user_question. If review rejects it, incorporate the feedback and present again. If the review channel is unavailable or aborted, stay in plan mode and ask the user to switch modes manually; do not proceed with implementation.
+          - id: compaction
+            name: cordis:group
+            group: true
+            isolate:
+              compaction: true
+              toolResultPruner: true
+            config:
+              - id: compaction-basic
+                name: '@deepseek-ai/dsh-compaction-basic'
+              - id: command-compact
+                name: '@deepseek-ai/dsh-command-compact'
+              - id: tool-result-pruner
+                name: '@deepseek-ai/dsh-compaction-tool-result-pruner'
+                config:
+                  thresholdChars: 8192
+                  headChars: 4096
+                  tailChars: 1024
+          - id: tool-ask-user
+            name: '@deepseek-ai/dsh-tool-ask-user'
+          - id: tool-todo
+            name: '@deepseek-ai/dsh-tool-todo'
+            config:
+              allowParallelInProgress: true
+          - id: tool-web
+            name: '@deepseek-ai/dsh-tool-web'
+            config:
+              fetch: true
+              searchTimeoutMs: 60000
+          - id: present
+            name: '@deepseek-ai/dsh-tool-present'
+
+# The host-plane search row also injects `subprocess`, so it can never activate;
+# the preset above mounts the pure-JS replacement instead.
+- id: tool-fs-search
+  disabled: true
+- id: ui-settings-general
+  name: "@deepseek-ai/dsh-client-ui-settings-general"
+  config:
+    welcomeNoticeVersion: 2026-09-28.1
+
+# Diagnostic (step 4B follow-up): logs the REAL reason behind `session/agent-busy
+# "prompt rejected"` to the node log. Error text only, never the request.
+- insert:
+    - id: diag-prompt
+      name: __PLUGINS__/dsh-diag-prompt/index.mjs
+
+# ------------------------------------------------------------------ busy state
+# Step 13's shell-side question: "is a turn running right now, and how far in?"
+# It has to be answerable at the instant the app is backgrounded, because that is
+# when the continued-processing request is submitted — and only if there is work.
+#
+# The plugin subscribes to `session/event`, which is a PUBLISHED cordis event
+# (dsh-agent-loop, dsh-agent-instructions and dsh-compaction-basic all observe it
+# from their own packages), and writes one line per state change to stdout:
+#
+#     DSHPORTC_BUSY {"busy":true,"sessions":[{"id":"…","turn":1,"step":2,"tools":1}]}
+#
+# The app already owns fd 1 — it dup2s a pipe over it to read the launch URL — and
+# `NodeRunner.handleLine` already dispatches unrecognised lines, so one prefixed
+# line is the whole transport. No polling, no second socket, no DSH source change.
+#
+# Granularity is turn/step/tool boundaries rather than token deltas: those are the
+# only points at which the durable log changes, and they are also what the system
+# progress indicator can meaningfully show. See PATCHES.md P-24.
+- insert:
+    - id: busy-ios
+      name: __PLUGINS__/dsh-busy-ios/index.mjs
+
+
+# ------------------------------------------------------------- notification
+# Step 16's event source. The app shell can only post a local notification while
+# the process is alive, so the four moments worth telling the user about have to be
+# observed where they are published rather than asked for later: at the moment the
+# notification is needed, the app is backgrounded and the only reliable description
+# of "what just happened" is the durable session event stream.
+#
+# The plugin subscribes to `session/event` — the same published cordis event
+# `busy-ios` above and three of DSH's own packages observe — and writes one line per
+# event to stdout.
+#
+#     DSHPORTC_NOTIFY {"kind":"done","sessionId":"…","title":"…","body":"…","key":"…"}
+#
+# Two details that are load-bearing rather than decorative:
+#
+#   * The payload carries NO prompt text, NO tool arguments, NO command output and
+#     NO paths. A notification is drawn on top of another app, which is the last
+#     place a token or a path should appear by accident. The body is one of a few
+#     fixed Chinese sentences, plus a truncated question.
+#   * Only session-tree ROOTS are reported. A subagent's turn is not something the
+#     person holding the phone can act on, and notifying about it would be an
+#     interruption with nothing behind it.
+#
+# See PATCHES.md P-26 and REPORT-16.
+- insert:
+    - id: notify-ios
+      name: __PLUGINS__/dsh-notify-ios/index.mjs

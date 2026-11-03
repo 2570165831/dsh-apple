@@ -1,0 +1,36 @@
+diff --git a/kernel/uname.c b/kernel/uname.c
+index 4e86c155..a1f68c53 100644
+--- a/kernel/uname.c
++++ b/kernel/uname.c
+@@ -12,6 +12,22 @@
+ #define SYSINFO_DEBUG 0
+ 
+ const char *uname_version = "SUPER AWESOME";
++
++// The tail of the guest's `uname -v`. Upstream interpolates __DATE__ and
++// __TIME__ here, which makes this object (kernel_uname.c.o) the one file that
++// differs between two builds of the same commit — and it takes every static
++// library containing it with it. The build defines ISH_BUILD_VERSION from the
++// pinned source revision instead: deterministic, and a more useful answer to
++// "what am I running?" than the moment a compiler happened to run.
++//
++// The value is a bare token, not a quoted string: a quoted -D on the command
++// line has to survive meson's cross-file parsing, then the compiler driver, and
++// the quotes end up inside the macro. Stringize it here instead.
++#define ISH_STRINGIZE_(x) #x
++#define ISH_STRINGIZE(x) ISH_STRINGIZE_(x)
++#ifndef ISH_BUILD_VERSION
++#define ISH_BUILD_VERSION unknown
++#endif
+ const char *uname_hostname_override = NULL;
+ 
+ void do_uname(struct uname *uts) {
+@@ -25,7 +41,7 @@ void do_uname(struct uname *uts) {
+     strcpy(uts->system, "Linux");
+     strcpy(uts->hostname, hostname);
+     strcpy(uts->release, "4.20.69-ish");
+-    snprintf(uts->version, sizeof(uts->version), "%s %s %s", uname_version, __DATE__, __TIME__);
++    snprintf(uts->version, sizeof(uts->version), "%s %s", uname_version, ISH_STRINGIZE(ISH_BUILD_VERSION));
+ #if defined(GUEST_ARM64)
+     strcpy(uts->arch, "aarch64");
+ #else

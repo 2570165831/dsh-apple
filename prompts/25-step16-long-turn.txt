@@ -1,0 +1,4 @@
+BASHTEST 通知验收：一轮比较长的工作，用来在中间取消或让系统收回。
+STEP sh -c 'for i in 1 2 3 4 5 6 7 8 9 10 11 12; do echo "step16-long-$i"; sleep 5; done; echo step16-long-done'
+DESCRIPTION 每 5 秒打印一行的长命令，留有足够时间做取消或收回
+TIMEOUTMS 180000

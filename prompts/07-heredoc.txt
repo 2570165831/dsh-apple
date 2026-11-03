@@ -1,0 +1,7 @@
+BASHTEST
+STEP cat > /workspace/a.sh <<'DSH_EOF'
++ #!/bin/sh
++ echo "heredoc script ran"
++ echo "arg count: $#"
++ DSH_EOF
+STEP chmod +x /workspace/a.sh && sh /workspace/a.sh one two; echo "---"; cat /workspace/a.sh

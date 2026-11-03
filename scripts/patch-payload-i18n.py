@@ -1,0 +1,184 @@
+#!/usr/bin/env python3
+r"""Make the bundled DSH payload loadable on a Node built without ICU.
+
+WHY THIS EXISTS
+---------------
+nodejs-mobile v24.5.0 ships its iOS slices with `v8_enable_i18n_support: 0`
+(visible in the framework's own build-configuration string, and measured:
+`Intl` is `undefined`, `/\p{...}/` is rejected at parse time, and
+`String.prototype.normalize` is a no-op). DSH 0.2.1-rc.2 has four files that use
+Unicode property escapes in regular-expression LITERALS, so on this runtime they
+fail while the module is being PARSED, not when the code runs:
+
+    @deepseek-ai/dsh-tools/lib/index.js
+    @deepseek-ai/dsh-tools/lib/types/py-types.js
+    @deepseek-ai/dsh-llm-deepseek/lib/index.js
+    @js-temporal/polyfill/dist/index.esm.js
+
+That is fatal: `dsh-tools` provides the `tools` service, and nine packages sat
+waiting on it, so the profile never reached "server listening".
+
+WHAT THIS DOES
+--------------
+Rewrites each literal into an explicit character-class range that needs no
+Unicode property tables. It is an APPROXIMATION, and the report says so:
+
+  * `XID_Start` / `XID_Continue` become a broad identifier range covering Latin-1
+    letters, Greek, Cyrillic, Hebrew, Arabic, Devanagari, CJK, Kana, Hangul and
+    the fullwidth/CJK-compatibility planes, plus `_` and combining marks. It is
+    not the exact Unicode XID table; a script that is not in the list (say,
+    Georgian or Ethiopic) would be classified as a non-identifier character.
+  * `\p{L}` becomes the same letter range; `\p{N}` becomes ASCII plus the common
+    non-ASCII decimal-digit blocks.
+
+The affected code paths are: Python-identifier naming for the PTC tool runtime
+(disabled in this profile), a file-id word-boundary check in the DeepSeek
+provider, and era-name sanitisation inside js-temporal. None of them touches the
+chat or file-tool path this task exercises.
+
+The originals are copied to work/i18n-patch-backup/<mangled path> before the
+first rewrite, and every change is recorded in logs/i18n-patch.json.
+"""
+
+from __future__ import annotations
+
+import json
+import shutil
+import sys
+from pathlib import Path
+
+# Resolved from this file, not hardcoded: a copied script that still
+# points at the original task directory reads and writes the wrong tree.
+ROOT = Path(__file__).resolve().parent.parent
+PAYLOAD = ROOT / "payload"
+BACKUP = ROOT / "work/i18n-patch-backup"
+REPORT = ROOT / "logs/i18n-patch.json"
+
+# A broad identifier-start range. See the docstring for what this omits.
+XID_START = (
+    r"A-Za-z_"
+    r"\u00AA\u00B5\u00BA"
+    r"\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02FF"
+    r"\u0370-\u037D\u037F-\u1FFF"
+    r"\u2070-\u218F"
+    r"\u2C00-\u2FEF"
+    r"\u3001-\uD7FF"
+    r"\uF900-\uFDCF\uFDF0-\uFFFD"
+)
+XID_CONTINUE = XID_START + r"0-9\u00B7\u0300-\u036F\u203F-\u2040"
+LETTER = (
+    r"A-Za-z"
+    r"\u00AA\u00B5\u00BA"
+    r"\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02FF"
+    r"\u0370-\u03FF\u0400-\u04FF"
+    r"\u0530-\u058F\u0590-\u05FF"
+    r"\u0600-\u06FF\u0750-\u077F"
+    r"\u0900-\u097F\u0980-\u09FF\u0A00-\u0A7F\u0A80-\u0AFF\u0B00-\u0B7F"
+    r"\u0B80-\u0BFF\u0C00-\u0C7F\u0C80-\u0CFF\u0D00-\u0D7F"
+    r"\u0E00-\u0E7F\u0E80-\u0EFF"
+    r"\u10A0-\u10FF\u1100-\u11FF"
+    r"\u1E00-\u1FFF\u2000-\u206F"
+    r"\u3040-\u30FF\u3400-\u4DBF\u4E00-\u9FFF"
+    r"\uAC00-\uD7AF"
+    r"\uF900-\uFDCF\uFDF0-\uFFFD"
+)
+NUMBER = r"0-9\u0660-\u0669\u06F0-\u06F9\u0966-\u096F\u09E6-\u09EF\uFF10-\uFF19"
+
+# (path relative to payload, old literal, new literal)
+PATCHES: list[tuple[str, str, str]] = []
+
+for path in (
+    "node_modules/@deepseek-ai/dsh-tools/lib/index.js",
+    "node_modules/@deepseek-ai/dsh-tools/lib/types/py-types.js",
+):
+    PATCHES.append((path, r"/^[\p{XID_Start}_]\p{XID_Continue}*$/u", f"/^[{XID_START}][{XID_CONTINUE}]*$/"))
+    PATCHES.append((path, r"/^\p{XID_Start}/u", f"/^[{XID_START}]/"))
+    PATCHES.append((path, r"/[^\p{XID_Continue}]+|_+/u", f"/[^{XID_CONTINUE}]+|_+/"))
+
+PATCHES.append((
+    "node_modules/@deepseek-ai/dsh-llm-deepseek/lib/index.js",
+    r"/[\p{L}\p{N}_-]/u",
+    f"/[{LETTER}{NUMBER}_-]/",
+))
+PATCHES.append((
+    "node_modules/@js-temporal/polyfill/dist/index.esm.js",
+    r"/[^-0-9 \p{L}]/gu",
+    f"/[^-0-9 {LETTER}]/gu",
+))
+
+
+def backup(target: Path) -> Path:
+    BACKUP.mkdir(parents=True, exist_ok=True)
+    mangled = str(target.relative_to(PAYLOAD)).replace("/", "_")
+    destination = BACKUP / mangled
+    if not destination.exists():
+        shutil.copy2(target, destination)
+    return destination
+
+
+def main() -> int:
+    if not PAYLOAD.is_dir():
+        print(f"no payload at {PAYLOAD}", file=sys.stderr)
+        return 1
+
+    records: list[dict] = []
+    changed_files: dict[str, int] = {}
+
+    for relative, old, new in PATCHES:
+        target = PAYLOAD / relative
+        if not target.is_file():
+            records.append({"file": relative, "status": "missing", "pattern": old})
+            continue
+        text = target.read_text(encoding="utf-8")
+        if old not in text:
+            # Either already patched, or the upstream file changed. Distinguish so
+            # a silently-skipped patch cannot masquerade as success.
+            already = new in text
+            records.append({
+                "file": relative,
+                "status": "already_patched" if already else "pattern_not_found",
+                "pattern": old,
+            })
+            continue
+        saved = backup(target)
+        count = text.count(old)
+        target.write_text(text.replace(old, new), encoding="utf-8")
+        changed_files[relative] = changed_files.get(relative, 0) + count
+        records.append({
+            "file": relative,
+            "status": "patched",
+            "occurrences": count,
+            "pattern": old,
+            "replacement": new,
+            "backup": str(saved.relative_to(ROOT)),
+        })
+
+    summary = {
+        "method": (
+            "Replace Unicode property-escape regex LITERALS with explicit "
+            "character-class ranges, because this Node build has no ICU "
+            "(v8_enable_i18n_support=0) and rejects \\p{...} at parse time."
+        ),
+        "approximation_note": (
+            "The ranges are an approximation of XID_Start/XID_Continue/L/N, not "
+            "the exact Unicode tables. Scripts outside the listed blocks are "
+            "classified as non-identifier characters."
+        ),
+        "patched_file_count": len(changed_files),
+        "patched_occurrences": sum(changed_files.values()),
+        "records": records,
+    }
+    REPORT.parent.mkdir(parents=True, exist_ok=True)
+    REPORT.write_text(json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8")
+
+    print(f"patched {len(changed_files)} file(s), {sum(changed_files.values())} occurrence(s)")
+    for record in records:
+        print(f"  {record['status']:<18} {record['file']}")
+    failures = [r for r in records if r["status"] == "pattern_not_found"]
+    if failures:
+        print(f"WARNING: {len(failures)} pattern(s) not found; upstream may have changed", file=sys.stderr)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

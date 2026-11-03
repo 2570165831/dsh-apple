@@ -1,0 +1,2 @@
+BASHTEST
+STEP printf 'a%.0s' $(seq 1 4095) > /workspace/utf8.txt; printf '\344\270\255' >> /workspace/utf8.txt; printf 'b%.0s' $(seq 1 100) >> /workspace/utf8.txt; printf '\360\237\230\200' >> /workspace/utf8.txt; printf '\n' >> /workspace/utf8.txt; wc -c < /workspace/utf8.txt; cat /workspace/utf8.txt
