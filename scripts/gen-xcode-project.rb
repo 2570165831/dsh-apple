@@ -159,6 +159,16 @@ end
   target.add_resources([ref])
 end
 
+# The licence texts the About sheet shows. GPL-3.0 wants them to travel with every
+# copy of the app, and bundling the repository's own files keeps the two identical.
+%w[LICENSE THIRD_PARTY_NOTICES.md RootfsPackages.md].each do |name|
+  abs = File.join(ROOT, name)
+  abort "missing #{abs}" unless File.exist?(abs)
+  ref = project.main_group.new_reference(abs, :group)
+  ref.name = name
+  target.add_resources([ref])
+end
+
 add_folder_reference(project, target, PAYLOAD_DIR, 'payload')
 add_folder_reference(project, target, SIM_DIR, 'sim')
 add_folder_reference(project, target, PLUGINS_DIR, 'plugins')

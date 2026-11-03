@@ -24,6 +24,7 @@ struct ContentView: View {
     /// iOS appearance, which is right for the launch and boot screens.
     @State private var pageScheme: String?
     @State private var showingNotificationSettings = false
+    @State private var showingAbout = false
     @State private var showingReset = false
     /// The one-line result of the last diagnostics export, shown on the failure
     /// screen. A share sheet that the user dismissed is not an error, so this is
@@ -187,6 +188,9 @@ struct ContentView: View {
             .sheet(isPresented: $showingNotificationSettings) {
                 NotificationSettingsView()
             }
+            .sheet(isPresented: $showingAbout) {
+                AboutView()
+            }
             // A launch-argument way to open the same menu, for the UI test that
             // proves the entries are still reachable. Without it the only way in
             // is a real two-finger long press, which XCUITest cannot perform.
@@ -207,6 +211,10 @@ struct ContentView: View {
                 // passes it.
                 if UserDefaults.standard.integer(forKey: "DSHPortEShowNotifySettings") == 1 {
                     showingNotificationSettings = true
+                }
+                // Same idea for the About sheet's screenshot.
+                if UserDefaults.standard.integer(forKey: "DSHPortEShowAbout") == 1 {
+                    showingAbout = true
                 }
             }
             // The debug menu the long press opens, and the same three entries the
@@ -235,6 +243,8 @@ struct ContentView: View {
                     .accessibilityIdentifier("diagnosticsButton")
                 Button("重置运行环境") { showingReset = true }
                     .accessibilityIdentifier("resetButton")
+                Button("关于与许可") { showingAbout = true }
+                    .accessibilityIdentifier("aboutButton")
                 Button("取消", role: .cancel) { }
             } message: {
                 Text(model.statusBadge.isEmpty ? "DSH" : model.statusBadge)
