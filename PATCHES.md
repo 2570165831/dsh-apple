@@ -852,7 +852,7 @@ App 外壳（Swift）、`sim/` 下的启动层与 shim、`plugins/`、以及 pro
 | 表达式 | AND/OR/WITH 不区分大小写；`custom:` 明确报告需人工核对的映射，不猜许可证，默认仍保留草稿表 |
 | 旧产物 | Xcode 复查 npm 和客户机材料、镜像与数据库哈希、展示清单；默认 Debug（含模拟器）只警告 |
 | 分发 | 必须以 `DSH_REQUIRE_NOTICES=1` 获取 payload、生成镜像，并作为构建设置传给 `xcodebuild`；Release 配置、install/archive 动作也自动严格检查 |
-| 源码 | 关于页只承诺仓库含 App 和构建脚本；客户机逐构建对应源码归档仍未提供 |
+| 源码 | 关于页只承诺仓库含 App 和构建脚本；镜像 `alpine-3.21.0-2e1ec684ab529225`（0.2.1 build 21、22 所带）的客户机对应源码归档已于 2026-11-13 发布在公开仓库 Releases（标签 `guest-sources-alpine-3.21.0-2e1ec684ab529225`），重建镜像后需另出一份 |
 | 待补 | 两份 LICENSES 子目录说明只列收集要求，没有伪造上游正文；旧镜像须在分发前重建，默认开发不受此限制 |
 | 应用后验证 | `python3 -B -m unittest discover -s tests/licenses -p 'test_*.py'`；补齐材料并重建后，在关于页核对各许可正文 |
 

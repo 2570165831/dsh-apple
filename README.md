@@ -196,7 +196,7 @@ node --test tests/distribution/*.test.mjs
 
 Copyright (C) 2026 dsh-apple contributors。采用 GPL-3.0：App 链接了 iSH 模拟器内核，所以整个 App 都是 GPL-3.0。各组件的条款见 [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md)，客户机镜像里的软件包见 [`RootfsPackages.md`](RootfsPackages.md)。
 
-给自己的设备签名安装不算分发。把安装包给任何别人都算分发，包括通过 TestFlight 或 App Store：对方必须能拿到那个构建对应的完整源码，包括客户机软件包的对应源码和镜像构建脚本。仓库提供 App 本体和构建脚本；Alpine 的逐构建对应源码归档尚未提供，分发前须按 `THIRD_PARTY_NOTICES.md` 第 4 节补齐。
+给自己的设备签名安装不算分发。把安装包给任何别人都算分发，包括通过 TestFlight 或 App Store：对方必须能拿到那个构建对应的完整源码，包括客户机软件包的对应源码和镜像构建脚本。仓库提供 App 本体和构建脚本；镜像 `alpine-3.21.0-2e1ec684ab529225`（0.2.1 的 build 21、22 所带）的 Alpine 对应源码归档在 [Releases](https://github.com/2570165831/dsh-apple/releases/tag/guest-sources-alpine-3.21.0-2e1ec684ab529225)。重建镜像后须按 `THIRD_PARTY_NOTICES.md` 第 4 节另出一份再分发。
 
 构建会内置 `LICENSE`、`THIRD_PARTY_NOTICES.md`、`RootfsPackages.md` 和整个 `LICENSES/`，入口是双指长按打开的调试菜单中的“关于与许可”。页面包含 iSH 两份许可说明，并列出补入的 npm 和客户机许可正文。这个隐藏入口的存在不代表已确认满足 GPL §5(d) 对法律声明展示的要求，分发前仍须核对。`LICENSES/ISH-LICENSE.IOS` 只处理 GPL 和 App Store 条款之间的冲突。
 
@@ -373,9 +373,11 @@ Signing it for your own device is not distribution. Giving a copy to anyone else
 including through TestFlight or the App Store, is: the recipient must be able to get
 the complete corresponding source for that exact build, including the guest
 packages' source and the image build scripts. This repository provides the app
-source and build scripts; per-build Alpine corresponding-source archives are
-still missing and must be supplied as described in section 4 of
-`THIRD_PARTY_NOTICES.md` before distribution.
+source and build scripts. The Alpine corresponding-source archive for image
+`alpine-3.21.0-2e1ec684ab529225` (the image in 0.2.1 builds 21 and 22) is under
+[Releases](https://github.com/2570165831/dsh-apple/releases/tag/guest-sources-alpine-3.21.0-2e1ec684ab529225).
+A rebuilt image needs its own archive, as described in section 4 of
+`THIRD_PARTY_NOTICES.md`, before it is distributed.
 
 The build bundles `LICENSE`, `THIRD_PARTY_NOTICES.md`, `RootfsPackages.md` and the
 whole `LICENSES/` tree. Open About and Licences (关于与许可) from the debug menu

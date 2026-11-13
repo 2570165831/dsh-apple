@@ -51,11 +51,12 @@ Alpine release data/public-key packaging provides no separate upstream
 copyright/grant file in aports. The exact recipes and their original contributor
 and license declarations are preserved, without inventing a copyright holder.
 
-License texts are not corresponding source. The downloaded recipes, patches and
-distfiles remain in the local work directory for review. They have not been
-published as a source archive. Before distribution, prepare and supply the exact
-corresponding source required for the relevant packages; the presence checks
-cannot establish completion of that obligation.
+License texts are not corresponding source. For image `alpine-3.21.0-2e1ec684ab529225` the exact
+recipes, patches and distfiles are published as one archive at
+<https://github.com/2570165831/dsh-apple/releases/tag/guest-sources-alpine-3.21.0-2e1ec684ab529225>;
+every file in it was checked against the SHA-512 checksums in its recipe. A
+rebuilt image is a different build and needs its own archive before it is
+distributed; the presence checks cannot establish completion of that obligation.
 
 ## Image binding and generation
 

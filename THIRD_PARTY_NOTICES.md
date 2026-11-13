@@ -173,7 +173,9 @@ and upstream distfiles with checksums for the packages in that image, and supply
 the corresponding-source archive with the matching build. The moving branch
 links above are lookup starting points; they are not such an archive. Recording
 an origin or a package version does not identify its repository or aports commit.
-No per-build Alpine source archive is currently provided by this repository.
+The archive for image `alpine-3.21.0-2e1ec684ab529225` (the image in 0.2.1 builds 21 and 22) is published at
+<https://github.com/2570165831/dsh-apple/releases/tag/guest-sources-alpine-3.21.0-2e1ec684ab529225>.
+A rebuilt image needs its own archive.
 
 ## 5. Reference and derived code
 
@@ -257,8 +259,9 @@ notices and any supplied npm or guest `.txt` notices.
 
 The About screen and three root files were added in `ec86b85`; they are not
 pending work. That debug-menu entry alone is not a claim that the legal notices
-meet GPL §5(d). The four missing payload grants, the guest npm coverage limits and the per-build
-guest corresponding-source archive described above remain outstanding. The
+meet GPL §5(d). The four missing payload grants and the guest npm coverage limits remain
+outstanding. The guest corresponding-source archive exists for image
+`alpine-3.21.0-2e1ec684ab529225` only (see section 4). The
 recovered files and passing presence checks do not establish distribution readiness.
 
 Each app build rechecks npm notices, guest texts, the image/database hashes and
