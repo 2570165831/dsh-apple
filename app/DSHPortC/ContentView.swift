@@ -23,6 +23,9 @@ struct ContentView: View {
     /// service. `nil` until the page has said; the native bands then follow the
     /// iOS appearance, which is right for the launch and boot screens.
     @State private var pageScheme: String?
+    /// The page's horizontal colour runs, so the iPad sidebar continues through
+    /// the status bar and home indicator instead of meeting a white strip.
+    @State private var pageEdgeBands: MobileWebTuning.EdgeBands?
     @State private var showingNotificationSettings = false
     @State private var showingAbout = false
     @State private var showingReset = false
@@ -118,11 +121,12 @@ struct ContentView: View {
                             FilesProbe.shared.runIfConfigured()
                         },
                         onFailure: { message in model.noteWebViewFailure(message) },
-                        onPageScheme: { scheme in pageScheme = scheme }
+                        onPageScheme: { scheme in pageScheme = scheme },
+                        onPageEdgeBands: { bands in pageEdgeBands = bands }
                     )
                     // NO `ignoresSafeArea`. The web view stays inside the safe area
-                    // on every edge, and the page colour fills what is around it
-                    // (`.background` below).
+                    // on every edge. Its sampled edge colours fill the top and
+                    // bottom bands; the outer background is the theme fallback.
                     //
                     // Top: DSH's CSS has no `env(safe-area-inset-*)` anywhere, so a
                     // page under the status bar draws the conversation title on top
@@ -139,12 +143,14 @@ struct ContentView: View {
                     // status line clear of the home indicator.
                     //
                     // Split View stand-in. `nil` (the normal case) leaves the
-                    // layout untouched; a fraction narrows the web view and lets
-                    // SwiftUI centre it, which is the part of Split View that
+                    // layout untouched; a fraction narrows the web view and pins
+                    // it to the leading edge, which is the part of Split View that
                     // DSH's own layout store reacts to. PadProbe's comment says
                     // what this does NOT reproduce. Observed, not read once: the
                     // staged sweep changes it while the app runs, and the change
                     // has to reach the web view or the sweep measures nothing.
+                    // Attach before narrowing, so viewport fractions refer to
+                    // the web view's actual width rather than the whole window.
                     .padLayoutFraction(padProbe.fraction ?? PadProbe.commandLineFraction)
                     // The page fades IN over the splash. `opacity` on the page
                     // rather than a `.transition` on the branch, because a
@@ -159,15 +165,21 @@ struct ContentView: View {
                 .accessibilityHidden(model.pageVisible)
             }
             .animation(.easeInOut(duration: 0.34), value: model.pageVisible)
-            // What shows around the web view: the status bar band, the home
-            // indicator band and the sensor-side margin in landscape.
+            // The fallback around the web view, and the sensor-side margin in
+            // landscape. Sampled page edges paint over the top and bottom bands.
             //
             // The colour follows the PAGE, not just the system appearance. DSH
             // has its own theme preference and can disagree with iOS — a page
             // fixed to light on a phone in dark mode is the case that made the
             // dark bands obvious. `pageScheme` is what the page reported through
             // DSH's own `data-ds-theme-source`, so the two cannot drift.
-            .background(Color(MobileWebTuning.Palette.pageBackground(forPageScheme: pageScheme)).ignoresSafeArea())
+            .background {
+                ZStack {
+                    Color(MobileWebTuning.Palette.pageBackground(forPageScheme: pageScheme))
+                    PageEdgeBandsBackground(bands: pageEdgeBands)
+                }
+                .ignoresSafeArea()
+            }
             // STEP 19: the safe-mode banner. An overlay at the top rather than a
             // band that shrinks the page: the page is the product, and a launch in
             // safe mode is the launch where its layout must not also change. The
@@ -475,6 +487,59 @@ final class ShareAnchor {
     weak var view: UIView?
 }
 
+/// Paint the sampled page-edge colours into the top and bottom safe-area bands.
+///
+/// This lives in the full-screen fallback background, not on the web view. As a
+/// background (or overlay) of the web view, drawn past its bounds, it painted on
+/// an iPad but never appeared on an iPhone: the bands stayed the fallback colour
+/// while the page reported the right one (measured on the iPhone 17 Pro
+/// simulator, iOS 27). The fallback background does reach both bands on every
+/// device, so the segments are drawn there, mapped onto the web view's width
+/// (the screen minus the side insets a landscape iPhone has).
+private struct PageEdgeBandsBackground: View {
+    let bands: MobileWebTuning.EdgeBands?
+
+    /// The window's own insets, for when the reader reports none because it
+    /// already ignores the safe area. The keyboard is not part of these.
+    private static func windowInsets() -> UIEdgeInsets {
+        let windows = UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap { $0.windows }
+        return (windows.first { $0.isKeyWindow } ?? windows.first)?.safeAreaInsets ?? .zero
+    }
+
+    var body: some View {
+        GeometryReader { proxy in
+            let reported = proxy.safeAreaInsets
+            let window = Self.windowInsets()
+            let top = max(reported.top, window.top)
+            let bottom = max(reported.bottom, window.bottom)
+            let leading = max(reported.leading, window.left)
+            let trailing = max(reported.trailing, window.right)
+            Canvas { context, size in
+                let width = max(0, size.width - leading - trailing)
+                func paint(_ segments: [MobileWebTuning.EdgeBands.Segment], y: CGFloat, height: CGFloat) {
+                    guard height > 0, width > 0 else { return }
+                    for segment in segments {
+                        let rect = CGRect(x: leading + CGFloat(segment.start) * width, y: y,
+                                          width: CGFloat(segment.end - segment.start) * width, height: height)
+                        let rgb = segment.rgb
+                        let color = Color(.sRGB, red: Double((rgb >> 16) & 255) / 255,
+                                          green: Double((rgb >> 8) & 255) / 255,
+                                          blue: Double(rgb & 255) / 255, opacity: 1)
+                        context.fill(Path(rect), with: .color(color), style: FillStyle(antialiased: false))
+                    }
+                }
+                paint(bands?.top ?? [], y: 0, height: top)
+                paint(bands?.bottom ?? [], y: size.height - bottom, height: bottom)
+            }
+        }
+        .ignoresSafeArea()
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
+    }
+}
+
 /// Thin wrapper so SwiftUI can recreate the configuration cleanly on reload.
 struct DSHWebView: UIViewRepresentable {
     let url: URL
@@ -494,6 +559,8 @@ struct DSHWebView: UIViewRepresentable {
     /// appearance. `MobileWebTuning` polls for it and this carries the answer out
     /// to the SwiftUI colour.
     let onPageScheme: (String?) -> Void
+    /// Validated top and bottom edge samples; nil on a fresh navigation.
+    let onPageEdgeBands: (MobileWebTuning.EdgeBands?) -> Void
 
     func makeCoordinator() -> Coordinator {
         Coordinator(
@@ -504,7 +571,8 @@ struct DSHWebView: UIViewRepresentable {
             onLoadStart: onLoadStart,
             onReady: onReady,
             onFailure: onFailure,
-            onPageScheme: onPageScheme
+            onPageScheme: onPageScheme,
+            onPageEdgeBands: onPageEdgeBands
         )
     }
 
@@ -555,6 +623,12 @@ struct DSHWebView: UIViewRepresentable {
         // What a phone needs the page to do differently. At document start,
         // because the viewport meta has to exist before the first layout.
         if MobileWebTuning.isEnabled {
+            configuration.userContentController.add(context.coordinator, name: MobileWebTuning.edgeBandsMessageName)
+            configuration.userContentController.addUserScript(WKUserScript(
+                source: MobileWebTuning.edgeBandsBootstrapScript,
+                injectionTime: .atDocumentEnd,
+                forMainFrameOnly: true
+            ))
             configuration.userContentController.addUserScript(
                 WKUserScript(
                     source: MobileWebTuning.bootstrapScript(),
@@ -653,7 +727,11 @@ struct DSHWebView: UIViewRepresentable {
         }
     }
 
-    final class Coordinator: NSObject, WKNavigationDelegate, WKUIDelegate, UIGestureRecognizerDelegate {
+    static func dismantleUIView(_ webView: WKWebView, coordinator: Coordinator) {
+        webView.configuration.userContentController.removeScriptMessageHandler(forName: MobileWebTuning.edgeBandsMessageName)
+    }
+
+    final class Coordinator: NSObject, WKNavigationDelegate, WKUIDelegate, UIGestureRecognizerDelegate, WKScriptMessageHandler {
         var currentURL: URL
         var reloadGeneration: Int
         private let onDebugGesture: () -> Void
@@ -662,6 +740,7 @@ struct DSHWebView: UIViewRepresentable {
         private let onReady: () -> Void
         private let onFailure: (String) -> Void
         private let onPageScheme: (String?) -> Void
+        private let onPageEdgeBands: (MobileWebTuning.EdgeBands?) -> Void
         private weak var webView: WKWebView?
         private var readyReported = false
         private var readinessFailed = false
@@ -670,6 +749,7 @@ struct DSHWebView: UIViewRepresentable {
         /// The last scheme the page reported, so a poll that finds nothing new
         /// does not redraw the whole view tree every second.
         private var reportedScheme: String?
+        private var reportedEdgeBands: MobileWebTuning.EdgeBands?
 
         init(
             url: URL,
@@ -679,7 +759,8 @@ struct DSHWebView: UIViewRepresentable {
             onLoadStart: @escaping () -> Void,
             onReady: @escaping () -> Void,
             onFailure: @escaping (String) -> Void,
-            onPageScheme: @escaping (String?) -> Void
+            onPageScheme: @escaping (String?) -> Void,
+            onPageEdgeBands: @escaping (MobileWebTuning.EdgeBands?) -> Void
         ) {
             currentURL = url
             self.reloadGeneration = reloadGeneration
@@ -689,6 +770,7 @@ struct DSHWebView: UIViewRepresentable {
             self.onReady = onReady
             self.onFailure = onFailure
             self.onPageScheme = onPageScheme
+            self.onPageEdgeBands = onPageEdgeBands
         }
 
         func attach(_ webView: WKWebView) {
@@ -704,6 +786,18 @@ struct DSHWebView: UIViewRepresentable {
             guard scheme != reportedScheme else { return }
             reportedScheme = scheme
             onPageScheme(scheme)
+        }
+
+        /// A subframe or another server must never repaint the native chrome.
+        func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+            guard message.name == MobileWebTuning.edgeBandsMessageName,
+                  message.frameInfo.isMainFrame, let webView, message.webView === webView,
+                  isTrustedPage(webView), let frameURL = message.frameInfo.request.url,
+                  isTrustedPageURL(frameURL),
+                  let bands = MobileWebTuning.EdgeBands(message: message.body),
+                  bands != reportedEdgeBands else { return }
+            reportedEdgeBands = bands
+            onPageEdgeBands(bands)
         }
 
         func load() {
@@ -869,11 +963,20 @@ struct DSHWebView: UIViewRepresentable {
             readyReported = false
             readinessFailed = false
             readinessErrorReported = false
+            if reportedEdgeBands != nil {
+                reportedEdgeBands = nil
+                onPageEdgeBands(nil)
+            }
         }
 
         /// Evaluation is in the main frame, only on this launch's loopback server.
         private func isTrustedPage(_ webView: WKWebView) -> Bool {
-            guard let url = webView.url, let host = url.host else { return false }
+            guard let url = webView.url else { return false }
+            return isTrustedPageURL(url)
+        }
+
+        private func isTrustedPageURL(_ url: URL) -> Bool {
+            guard let host = url.host else { return false }
             return url.scheme == "http" && url.scheme == currentURL.scheme
                 && ["127.0.0.1", "localhost", "[::1]", "::1"].contains(host)
                 && host == currentURL.host && url.port == currentURL.port

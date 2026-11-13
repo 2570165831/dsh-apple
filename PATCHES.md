@@ -1040,3 +1040,17 @@ Python 许可单元测试 21 项通过。详细命令、同类依赖、证据和
 | 开关 | `DSHPORTE_UNDICI_HOOK=0` 关 hook（回到原行为） |
 | 已验证 | Mac 上 `node --jitless`：`tests/fetch` 15/15；用 payload 里真实的 `HttpFetchProvider` 端到端，关 hook 复现真机症状（6 个网址只有网易成功），开 hook 后 6 个全部 200 且正文正确。真机（iPhone 15 Pro Max，0.2.1 build 21 开发签名，2026-11-13）：同一会话重抓 20 次，无一次 `fetch failed`，18 次 HTTP 200，另 2 次是站点自身 403 与 PDF 类型不支持。模拟器 App 内未单独跑 |
 | 升级后检查 | `grep -n 'import("undici")' payload/node_modules/@deepseek-ai/dsh-web-fetch-http/lib/index.js`（还在 = hook 仍必要；若它改用了 `Agent`/`fetch` 之外的导出，替身要补）。Node 换成带 WebAssembly 的版本（如 24.22.1 的 polywasm）后可评估撤掉 |
+
+## 十八、上下安全区边条跟随页面颜色（build 23）
+
+### P-41 边条取色：读伪元素遮罩，并改在全屏底色层绘制（**不改 DSH 内部代码**）
+
+| 项 | 内容 |
+|---|---|
+| 文件 | `app/DSHPortC/MobileWebTuning.swift`（取色脚本）、`app/DSHPortC/ContentView.swift`（`PageEdgeBandsBackground`）、`tests/mobile-web/edge-bands.test.mjs` |
+| 背景 | 分支 `ipad-foreground-fixes`（前台通知静默、上下边条按页面边缘取色）在 rc.5 升级之前拉出，build 21、22 都不含；本次合入主线 |
+| 合入后发现的两处 | ①rc.5 的弹窗遮罩把颜色画在 `._mask_*::after` 伪元素上，`elementsFromPoint` 不返回伪元素，弹窗出现时边条不变暗；②iPhone 上网页上报的颜色正确，但画在网页视图 `.background`/`.overlay` 里、伸出其边界的 Canvas 不显示（iPad 上显示），原因未查明 |
+| 做法 | ①元素自身背景透明时，再读它的 `::after`/`::before`，只认 `content` 非空、`position` 为 absolute/fixed、四边 inset 都是 `0px` 的；遮罩靠自身 opacity 淡入，淡入期间每 120 ms 复取一次，最多 12 次。②边条改到全屏底色那层（`.ignoresSafeArea()`）里画，横向按“屏宽减两侧 inset”映射到网页视图宽度 |
+| 已验证 | 模拟器（iOS 27.0）：iPad Air 11 寸竖屏、横屏，iPhone 17 Pro 竖屏、横屏，弹窗与平常状态、浅色（iPad 另看了深色）下边条与页面同色；`tests/mobile-web` 104 项通过。真机未测 |
+| 已知未做 | iPhone 横屏两侧的传感器留白仍是主题底色，弹窗变暗时不跟随 |
+| 升级后检查 | DSH 换遮罩画法（伪元素、`backdrop-filter`、`<dialog>::backdrop`）时重看弹窗状态的边条 |

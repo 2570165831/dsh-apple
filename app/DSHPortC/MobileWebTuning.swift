@@ -983,7 +983,264 @@ enum MobileWebTuning {
         return found
     }
 
-    /// The document background pair DSH paints, so the native layer agrees.
+    /// Opaque horizontal runs at the page's top and bottom, in viewport fractions.
+    /// Empty rows keep the theme fallback; malformed messages are ignored whole.
+    struct EdgeBands: Equatable {
+        static let maximumSegments = 16
+
+        struct Segment: Equatable {
+            let start: Double
+            let end: Double
+            let rgb: UInt32
+        }
+
+        let top: [Segment]
+        let bottom: [Segment]
+
+        init?(message: Any) {
+            guard let body = message as? [String: Any],
+                  let top = Self.decodeRow(body["top"]),
+                  let bottom = Self.decodeRow(body["bottom"]) else { return nil }
+            self.top = top
+            self.bottom = bottom
+        }
+
+        private struct WireSegment: Decodable {
+            let start: Double
+            let end: Double
+            let color: String
+        }
+
+        private static func decodeRow(_ value: Any?) -> [Segment]? {
+            guard let row = value as? [Any], row.count <= maximumSegments,
+                  JSONSerialization.isValidJSONObject(row),
+                  let data = try? JSONSerialization.data(withJSONObject: row),
+                  let wire = try? JSONDecoder().decode([WireSegment].self, from: data) else { return nil }
+            var result: [Segment] = []
+            var end = 0.0
+            for segment in wire {
+                let hex = Array(segment.color.utf8)
+                guard segment.start.isFinite, segment.end.isFinite,
+                      segment.start == end, segment.end > segment.start, segment.end <= 1,
+                      hex.count == 7, hex.first == 35,
+                      hex.dropFirst().allSatisfy({ (48...57).contains($0) || (65...70).contains($0) || (97...102).contains($0) }),
+                      let rgb = UInt32(segment.color.dropFirst(), radix: 16) else { return nil }
+                result.append(Segment(start: segment.start, end: segment.end, rgb: rgb))
+                end = segment.end
+            }
+            guard result.isEmpty || end == 1 else { return nil }
+            return result
+        }
+    }
+
+    static let edgeBandsMessageName = "dshPageEdgeBands"
+
+    /// Read the page edges without changing layout, scrolling or focus. The
+    /// native receiver checks the exact launch origin as well as the main frame.
+    static let edgeBandsBootstrapScript = """
+    (function () {
+      if (window.top !== window || location.protocol !== 'http:' ||
+          !['127.0.0.1', 'localhost', '[::1]', '::1'].includes(location.hostname)) return;
+      const bridge = window.webkit?.messageHandlers?.["\(edgeBandsMessageName)"];
+      if (!bridge || window.__dshEdgeBandsInstalled) return;
+      window.__dshEdgeBandsInstalled = true;
+      const MAX_SEGMENTS = \(EdgeBands.maximumSegments);
+      let last = '';
+      let timer = null;
+      let deadline = null;
+      let resizeObserver;
+      let observed = new Set();
+      let fadeChecks = 0;
+
+      // WebKit serializes these backgrounds as rgb/rgba. Keep alpha until the
+      // hit stack is composited; only the final opaque colour goes to UIKit.
+      const backgroundColor = (css) => {
+        const match = /^rgba?\\(([^)]+)\\)$/i.exec(css.trim());
+        if (!match) return null;
+        const parts = match[1].trim().split(/[\\s,/]+/);
+        if (parts.length !== 3 && parts.length !== 4) return null;
+        const component = (part, scale) => part.endsWith('%')
+          ? Number(part.slice(0, -1)) * scale / 100 : Number(part);
+        const alpha = parts.length === 4 ? component(parts[3], 1) : 1;
+        if (!Number.isFinite(alpha) || alpha < 0 || alpha > 1) return null;
+        const rgb = parts.slice(0, 3).map(part => component(part, 255));
+        if (rgb.some(value => !Number.isFinite(value) || value < 0 || value > 255)) return null;
+        return { rgb, alpha };
+      };
+
+      const sample = () => {
+        clearTimeout(timer);
+        clearTimeout(deadline);
+        timer = deadline = null;
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        if (!Number.isFinite(width) || !Number.isFinite(height) || width < 1 || height < 1) return;
+        const targets = new Set([document.documentElement, document.body].filter(Boolean));
+        const styles = new Map();
+        const opacities = new Map();
+        const styleFor = (node) => {
+          if (targets.size < 256) targets.add(node);
+          if (!styles.has(node)) {
+            const style = getComputedStyle(node);
+            styles.set(node, { color: backgroundColor(style.backgroundColor), opacity: Number(style.opacity) });
+          }
+          return styles.get(node);
+        };
+        // A scrim can be painted by a pseudo-element instead of the element:
+        // DSH's modal mask is a transparent box whose `::after` carries the
+        // colour, and `elementsFromPoint` never returns pseudo-elements. Only a
+        // generated box pinned to all four edges counts, so a decorative
+        // marker inside a button is not mistaken for a cover. Read lazily and
+        // only under a transparent element, which keeps the style budget.
+        const pseudos = new Map();
+        let fading = false;
+        const pseudoLayers = (node) => {
+          if (pseudos.has(node)) return pseudos.get(node);
+          const found = [];
+          for (const which of ['::after', '::before']) {
+            const style = getComputedStyle(node, which);
+            if (!style || typeof style.content !== 'string' || style.content === 'none' ||
+                style.content === 'normal') continue;
+            if (style.position !== 'absolute' && style.position !== 'fixed') continue;
+            if (![style.top, style.right, style.bottom, style.left].every(edge => edge === '0px')) continue;
+            const color = backgroundColor(style.backgroundColor);
+            const opacity = Number(style.opacity);
+            if (color === null || !Number.isFinite(opacity) || opacity < 0 || opacity > 1) continue;
+            if (opacity < 1) fading = true;
+            found.push({ rgb: color.rgb, alpha: color.alpha * opacity });
+          }
+          pseudos.set(node, found);
+          return found;
+        };
+        // Approximate group opacity by multiplying the element's own opacity
+        // and its ancestors'. Cache both styles and products for this sample.
+        const opacityFor = (node, depth = 0) => {
+          if (!node) return 1;
+          if (opacities.has(node)) return opacities.get(node);
+          if (depth >= 64) return null;
+          const own = styleFor(node).opacity;
+          const parent = opacityFor(node.parentElement, depth + 1);
+          const value = parent !== null && Number.isFinite(own) && own >= 0 && own <= 1 ? own * parent : null;
+          opacities.set(node, value);
+          return value;
+        };
+        const colorAt = (x, y) => {
+          const layers = [];
+          // A modal scrim can be a sibling of the page. Collect the whole hit
+          // stack down to an opaque base, then paint source-over bottom to top.
+          for (const node of document.elementsFromPoint(x, y)) {
+            const color = styleFor(node).color;
+            if (color === null || color.alpha === 0) {
+              const group = opacityFor(node);
+              if (group === null) return null;
+              let opaque = false;
+              for (const layer of pseudoLayers(node)) {
+                const alpha = layer.alpha * group;
+                if (alpha === 0) continue;
+                layers.push({ rgb: layer.rgb, alpha });
+                if (alpha === 1) { opaque = true; break; }
+              }
+              if (opaque) break;
+              continue;
+            }
+            const opacity = opacityFor(node);
+            if (opacity === null) return null;
+            const alpha = color.alpha * opacity;
+            if (alpha === 0) continue;
+            layers.push({ rgb: color.rgb, alpha });
+            if (alpha === 1) break;
+          }
+          // No known opaque backdrop: keep the native theme fallback rather
+          // than inventing a colour. Images, gradients and filters stay unread.
+          if (layers.length === 0 || layers[layers.length - 1].alpha !== 1) return null;
+          let rgb = [0, 0, 0];
+          for (let i = layers.length - 1; i >= 0; i--) {
+            const layer = layers[i];
+            rgb = layer.rgb.map((value, channel) => value * layer.alpha + rgb[channel] * (1 - layer.alpha));
+          }
+          return '#' + rgb.map(value => Math.round(value).toString(16).padStart(2, '0')).join('');
+        };
+        const row = (y) => {
+          // Bounded coarse sampling, then refine each colour boundary to within
+          // half a CSS pixel so the native seam follows the sidebar's edge.
+          const steps = Math.min(128, Math.max(1, Math.ceil(width / 16)));
+          const segments = [];
+          let color = colorAt(0, y);
+          let start = 0;
+          let previousX = 0;
+          if (color === null) return [];
+          for (let i = 1; i <= steps; i++) {
+            const x = (width - 1) * i / steps;
+            const next = colorAt(x, y);
+            if (next === null) return [];
+            if (next !== color) {
+              let low = previousX;
+              let high = x;
+              for (let n = 0; n < 12 && high - low > 0.5; n++) {
+                const middle = (low + high) / 2;
+                if (colorAt(middle, y) === color) low = middle;
+                else high = middle;
+              }
+              const end = (low + high) / 2 / width;
+              segments.push({ start, end, color });
+              if (segments.length >= MAX_SEGMENTS) return [];
+              start = end;
+              color = next;
+            }
+            previousX = x;
+          }
+          segments.push({ start, end: 1, color });
+          return segments;
+        };
+        const bands = { top: row(0), bottom: row(height - 1) };
+        // Watch the sampled ancestors too: a grid column can resize without
+        // changing the document's width, including during sidebar animation.
+        if (resizeObserver) {
+          for (const node of observed) if (!targets.has(node)) resizeObserver.unobserve(node);
+          for (const node of targets) if (!observed.has(node)) resizeObserver.observe(node);
+          observed = targets;
+        }
+        // A generated scrim fades in by animating its own opacity, and the end
+        // of that animation is not a reliable wake-up: on an iPhone the bands
+        // stayed at the colour sampled while the scrim was still invisible.
+        // While one is mid-fade, look again shortly; bounded, so a scrim that
+        // rests below full opacity cannot keep the sampler awake.
+        if (fading && fadeChecks < 12) {
+          fadeChecks++;
+          timer = setTimeout(sample, 120);
+        } else if (!fading) {
+          fadeChecks = 0;
+        }
+        const value = JSON.stringify(bands);
+        if (value === last) return;
+        bridge.postMessage(bands);
+        last = value;
+      };
+      // Trailing debounce, capped so streaming DOM updates cannot starve it.
+      const schedule = () => {
+        clearTimeout(timer);
+        timer = setTimeout(sample, 80);
+        if (deadline === null) deadline = setTimeout(sample, 240);
+      };
+      if (typeof ResizeObserver !== 'undefined') resizeObserver = new ResizeObserver(schedule);
+      const mutations = new MutationObserver(schedule);
+      mutations.observe(document.documentElement, {
+        subtree: true, childList: true, attributes: true,
+        attributeFilter: ['class', 'style', 'hidden', 'open', 'data-ds-theme-source',
+          'data-ds-dark-theme', 'data-sidebar-collapsed', 'data-rightbar-collapsed',
+          'data-rightbar-fullscreen', 'data-fullscreen'],
+      });
+      for (const event of ['resize', 'orientationchange', 'pageshow']) window.addEventListener(event, schedule);
+      for (const event of ['transitionend', 'animationend', 'load', 'scroll', 'visibilitychange']) {
+        document.addEventListener(event, schedule, true);
+      }
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', schedule);
+      schedule();
+    })();
+    """
+
+    /// The document background pair DSH paints, also used when no edge sample
+    /// exists and for the sensor-side margins in landscape.
     ///
     /// TWO SOURCES, ONE COLOUR. `Palette` used to be a pure iOS-appearance pair,
     /// which is right only while the page and the system agree. DSH has its own

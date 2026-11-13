@@ -30,9 +30,10 @@
 //
 //  WHEN NOT TO POST
 //  ----------------
-//  Foreground: the user is looking at the app, so a banner over it would be noise —
-//  the request is recorded as suppressed instead. Cancelled turns: the plugin does
-//  not report them at all (`plugins/dsh-notify-ios`). Subagent turns: only a
+//  Foreground: if any scene is active, skip posting and silently suppress
+//  presentation of requests already in flight. Both decisions are recorded as
+//  suppressed. Cancelled turns: the plugin does not report them at all
+//  (`plugins/dsh-notify-ios`). Subagent turns: only a
 //  session-tree root is reported. Repeats: each approval and question carries a
 //  stable dedupe key, and the key is withdrawn when the thing is settled, so a
 //  banner cannot be posted twice for one decision while a genuinely new ask still
@@ -124,10 +125,10 @@ enum NotifySettings {
 
 /// Notification metadata written into the app's status file.
 ///
-/// Two kinds of entry on purpose. `delivered` is the positive evidence a banner
-/// exists; `suppressed` is the counter-evidence, with the reason — without it "no
-/// notification appeared" cannot be told apart from "the feature is dead", which is
-/// the measurement mistake REPORT-13 §4 was written about.
+/// `delivered` records accepted requests; `suppressed` records a delivery or
+/// presentation decision that stayed silent, with the reason. A request accepted
+/// in the background can also be suppressed when the app returns before it is
+/// presented. The system's delivered list is checked separately by the dump hook.
 struct NotificationReport: Codable {
     var switches: [String: Bool] = [:]
     /// `notDetermined`, `denied`, `authorized`, `provisional`, `ephemeral`.
@@ -144,7 +145,7 @@ struct NotificationReport: Codable {
     var pendingOpenSessionId: String?
     /// What the last navigation attempt reported, in words.
     var lastNavigation = ""
-    /// Whether the scene was active at the moment of the last delivery decision.
+    /// Whether any scene was active at the last delivery or presentation decision.
     var lastSceneActive: Bool?
 }
 
@@ -195,16 +196,16 @@ final class NotificationTapRelay: NSObject, UNUserNotificationCenterDelegate {
         Task { @MainActor in callback(sessionId, kind) }
     }
 
-    /// Present the banner even if the app came forward between the decision and the
-    /// delivery. The bridge does not post in the foreground, so this only ever
-    /// covers that race — and presenting it is the honest answer, because the
-    /// request was made while the user was elsewhere.
+    /// Re-check on the main actor: the app may have come forward since posting.
+    /// The bridge records foreground suppression before completing silently.
     func userNotificationCenter(
         _ center: UNUserNotificationCenter,
         willPresent notification: UNNotification,
         withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
     ) {
-        completionHandler([.banner, .sound])
+        Task { @MainActor in
+            completionHandler(NotificationBridge.shared.presentationOptions(for: notification))
+        }
     }
 
     func userNotificationCenter(
@@ -240,8 +241,15 @@ final class NotificationBridge {
     private var deliveredForDump: [[String: String]] = []
     /// A tap whose navigation has not been completed.
     private var pendingOpen: String?
-    /// The scene's activation state as last observed.
-    private var sceneIsActive = true
+    /// Read every scene at decision time; another iPad window may still be active.
+    /// Fall back to the app state only when no scene is connected.
+    private var sceneIsActive: Bool {
+        let app = UIApplication.shared
+        let scenes = app.connectedScenes
+        return scenes.isEmpty
+            ? app.applicationState == .active
+            : scenes.contains { $0.activationState == .foregroundActive }
+    }
     /// The system's answer about authorization, cached.
     ///
     /// WHY CACHED RATHER THAN ASKED AT DELIVERY TIME. `notificationSettings()` is an
@@ -260,7 +268,7 @@ final class NotificationBridge {
 
     // MARK: - Wiring
 
-    /// Install the delegate handler and subscribe to the scene's transitions.
+    /// Install the delegate handler and subscribe to app and scene transitions.
     /// Called once from the app's `onAppear`: one line, no state of its own in that
     /// view, so this file stays mergeable while other steps rewrite it.
     func start() {
@@ -270,26 +278,18 @@ final class NotificationBridge {
         NotificationTapRelay.shared.adopt { [weak self] sessionId, kind in
             self?.handleTap(sessionId: sessionId, kind: kind)
         }
-        // The seed value, read rather than assumed: an app launched by a
-        // notification tap starts in the background, and believing it is in the
-        // foreground would suppress the first notification of the new process.
-        sceneIsActive = UIApplication.shared.applicationState == .active
         report.lastSceneActive = sceneIsActive
 
         let notifications = NotificationCenter.default
-        notifications.addObserver(
-            forName: UIApplication.didBecomeActiveNotification,
-            object: nil,
-            queue: .main
-        ) { [weak self] _ in
-            Task { @MainActor in self?.noteScene(active: true) }
-        }
-        notifications.addObserver(
-            forName: UIApplication.willResignActiveNotification,
-            object: nil,
-            queue: .main
-        ) { [weak self] _ in
-            Task { @MainActor in self?.noteScene(active: false) }
+        for name in [
+            UIApplication.didBecomeActiveNotification,
+            UIApplication.willResignActiveNotification,
+            UIScene.didActivateNotification,
+            UIScene.willDeactivateNotification,
+        ] {
+            notifications.addObserver(forName: name, object: nil, queue: .main) { [weak self] _ in
+                Task { @MainActor in self?.noteScene() }
+            }
         }
 
         applyDebugSwitchOverrides()
@@ -612,6 +612,22 @@ final class NotificationBridge {
 
     // MARK: - Delivering
 
+    /// A request posted in the background must stay silent if any scene is now active.
+    func presentationOptions(for notification: UNNotification) -> UNNotificationPresentationOptions {
+        report.lastSceneActive = sceneIsActive
+        guard !sceneIsActive else {
+            let info = notification.request.content.userInfo
+            suppress(
+                kind: info["kind"] as? String ?? "",
+                sessionId: info["sessionId"] as? String ?? "",
+                key: info["key"] as? String ?? "",
+                reason: "App 在前台，不发"
+            )
+            return []
+        }
+        return [.banner, .sound]
+    }
+
     /// The three gates, in the order a person would state them.
     ///
     /// Synchronous ones first — the switch and the scene — so the negative cases the
@@ -711,13 +727,13 @@ final class NotificationBridge {
 
     // MARK: - Foreground state
 
-    private func noteScene(active: Bool) {
-        sceneIsActive = active
+    private func noteScene() {
+        let active = sceneIsActive
         report.lastSceneActive = active
         if active {
-            // Coming back is when a still-delivered banner about this app stops
-            // being useful. The settled cases are withdrawn by the plugin's
-            // `dismiss` lines; this is the third case — the user simply came back.
+            // Record the current state across all windows, not just the scene
+            // that triggered this callback. Settled banners are withdrawn by
+            // the plugin's `dismiss` lines.
             emit("dshportc: notify scene active")
             if dumpEnabled { dumpDelivered(reason: "foreground") }
         }
