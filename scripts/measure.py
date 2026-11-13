@@ -4,8 +4,8 @@
 Cold start is defined as: `simctl launch` returns ->
 `Library/Application Support/DSHPortC/DSHPortC-status.json` reports
 `phase == "webViewReady"`, i.e. the embedded Node has printed its URL, the web view
-has navigated, and the first paint has finished. That is the moment the interface
-becomes usable, which is the number the task asks for.
+has navigated, and the DSH client has rendered an interface after plugin loading.
+Earlier measurements ended at didFinish and are not directly comparable.
 
 Memory is `ps -o rss=` against the app process once per second, averaged, in the
 same way the B-stage report measured dsh-ios so the two are comparable.
@@ -152,6 +152,7 @@ def main() -> int:
         count = int(sys.argv[2]) if len(sys.argv) > 2 else 3
         times = [cold_start(device, index + 1) for index in range(count)]
         summary = {
+            "metric": "simctl launch -> DSH client ready (webViewReady, not didFinish)",
             "runs": times,
             "median": round(statistics.median(times), 2),
             "min": min(times),

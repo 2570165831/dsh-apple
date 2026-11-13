@@ -99,8 +99,10 @@ final class GuestSelfTest {
         case "cptest":
             await runSimple(GuestSelfTest.cpOverwriteScript)
             await runSimple(GuestSelfTest.cpArchiveScript)
+        #if DEBUG
         case "die":
             await runDieTest()
+        #endif
         case "firstCommand":
             // Already past boot; the caller times the whole launch separately.
             await runSimple("true")
@@ -186,6 +188,7 @@ final class GuestSelfTest {
         write()
     }
 
+    #if DEBUG
     private func runDieTest() async {
         let guest = ISHGuest.shared
 
@@ -206,6 +209,7 @@ final class GuestSelfTest {
         report["dieLog"] = ISHGuestLog.shared.lines().filter { $0.contains("die()") }
         write()
     }
+    #endif
 
     private func write() {
         guard let data = try? JSONSerialization.data(withJSONObject: report,

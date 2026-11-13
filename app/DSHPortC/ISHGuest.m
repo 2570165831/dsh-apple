@@ -30,7 +30,7 @@
 //
 
 #import "ISHGuest.h"
-#import "ISHTarGzExtractor.h"
+#import "ISHRootfsInstaller.h"
 
 #include <TargetConditionals.h>
 #include <dispatch/dispatch.h>
@@ -133,19 +133,23 @@ static const NSUInteger kMaxLogLines = 4000;
 
 #pragma mark - die handler
 
+#if DEBUG
 // Observed by the die-test helper (ISHGuestDieTest.m), so a test can confirm the
 // handler actually ran rather than merely noticing the app survived.
 volatile int dsh_die_handler_call_count = 0;
 char dsh_die_handler_last_message[1024];
+#endif
 
 // MUST NOT RETURN. kernel/log.c's die() calls this and then abort()s; returning
 // here is the exact bug the plan warns about. Parking the thread is safe because
 // the thread belongs to the guest task that faulted — it is expendable, and the
 // rest of the app (including the console reporting what happened) keeps running.
 static void dsh_die_handler(const char *msg) {
+#if DEBUG
     __atomic_add_fetch(&dsh_die_handler_call_count, 1, __ATOMIC_SEQ_CST);
     strlcpy(dsh_die_handler_last_message, msg ?: "(null)",
             sizeof(dsh_die_handler_last_message));
+#endif
 
     char buf[1200];
     int len = snprintf(buf, sizeof(buf), "=== guest kernel die(): %s ===\n", msg ?: "(null)");
@@ -291,8 +295,8 @@ DEFINE_TTY_DRIVER(dsh_console_driver, &dsh_tty_ops, TTY_CONSOLE_MAJOR, 64);
 #pragma mark - rootfs install
 
 // The bundled image is a tar of the fakefs (data/ + meta.db), produced by
-// ish/scripts/build-rootfs.sh with unfakefsify. It is imported once, into
-// Application Support, and never re-imported unless the version file says so.
+// ish/scripts/build-rootfs.sh with unfakefsify. It is imported into
+// Application Support. Replacements keep previous trees in a sibling directory.
 static NSString *const kRootfsVersionKey = @"ish.rootfs.version";
 
 #pragma mark - ISHGuestExecRequest
@@ -390,7 +394,7 @@ static int dsh_collect_process_tree(int root, int *out, int cap) {
 @property (nonatomic) NSTimeInterval started;
 @property (nonatomic) NSTimeInterval timeout;
 @property (nonatomic) NSUInteger maxBytes;
-@property (nonatomic) BOOL cancelled;
+@property (atomic) BOOL cancelled;
 @property (nonatomic) BOOL timedOut;
 /// Whether this side keeps a copy of the output. NO for the Node channel: it
 /// counts bytes and lets them stream past, because the Node-side collector owns
@@ -440,6 +444,17 @@ static int dsh_collect_process_tree(int root, int *out, int cap) {
     return self;
 }
 @end
+
+// The in-flight streaming exec, for cancel.
+//
+// A lock rather than an atomic pointer: Objective-C object pointers are not
+// valid operands for the GCC `__atomic_*` builtins under ARC (the compiler
+// rejects `&someAtomicObjectPointer`), and the contention here is nil — writes
+// happen at registration, start and cleanup. Kernel calls never hold this lock.
+static DSHGuestRun *g_runningRun = nil;
+static BOOL g_execRunning = NO;
+static NSMutableDictionary<NSString *, DSHGuestRun *> *g_pendingRuns;
+static pthread_mutex_t g_runLock = PTHREAD_MUTEX_INITIALIZER;
 
 #pragma mark - ISHGuest
 
@@ -519,71 +534,35 @@ static int dsh_collect_process_tree(int root, int *out, int cap) {
     return [[self applicationSupport] URLByAppendingPathComponent:@"ish-root" isDirectory:YES];
 }
 
-/// Import the bundled rootfs if there is not a current one already.
+/// Reuse a current rootfs, or preserve it while importing a validated replacement.
 - (NSError *)ensureRootfsInstalled {
-    NSString *bundledVersion = [self bundledRootfsVersion];
-    if (bundledVersion == nil) {
-        return [NSError errorWithDomain:@"dshportc.guest" code:1
-                               userInfo:@{NSLocalizedDescriptionKey:
-                                              @"the app bundle has no ish-rootfs.tar.gz; build it with ish/scripts/build-rootfs.sh"}];
-    }
-
+    NSString *bundledVersion = [self bundledRootfsVersion] ?: @"";
     NSURL *root = [self rootURL];
-    NSString *versionPath = [[root URLByAppendingPathComponent:@".installed-version"] path];
-    // Trimmed like the bundled version: the file is written with a newline, and an
-    // untrimmed compare re-imported the rootfs on every launch, wiping the guest.
-    NSString *installed = [[NSString stringWithContentsOfFile:versionPath
-                                                    encoding:NSUTF8StringEncoding
-                                                       error:nil]
-        stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-    BOOL complete = [[NSFileManager defaultManager] fileExistsAtPath:
-                        [[root URLByAppendingPathComponent:@"data"] path]]
-                 && [[NSFileManager defaultManager] fileExistsAtPath:
-                        [[root URLByAppendingPathComponent:@"meta.db"] path]];
-
-    if (complete && [installed isEqualToString:bundledVersion]) {
-        [self setState:ISHGuestStateMounting detail:@"rootfs already installed"];
-        _rootPath = [root path];
-        return nil;
-    }
-
-    [self setState:ISHGuestStateInstallingRoot
-            detail:[NSString stringWithFormat:@"importing rootfs %@", bundledVersion]];
-    NSTimeInterval started = [NSDate timeIntervalSinceReferenceDate];
-
-    [[NSFileManager defaultManager] removeItemAtURL:root error:nil];
-    NSError *error = nil;
-    [[NSFileManager defaultManager] createDirectoryAtURL:root
-                             withIntermediateDirectories:YES
-                                              attributes:nil
-                                                   error:&error];
-    if (error) return error;
-
     NSURL *archive = [[NSBundle mainBundle] URLForResource:@"ish-rootfs" withExtension:@"tar.gz"];
-    if (archive == nil) {
-        return [NSError errorWithDomain:@"dshportc.guest" code:2
-                               userInfo:@{NSLocalizedDescriptionKey:
-                                              @"ish-rootfs.tar.gz is not in the app bundle"}];
+    NSTimeInterval started = [NSDate timeIntervalSinceReferenceDate];
+    BOOL imported = NO;
+    NSURL *previousRoot = nil;
+    NSError *error = [ISHRootfsInstaller installArchiveAtURL:archive
+                                                   version:bundledVersion
+                                                   rootURL:root
+                                                willImport:^{
+        [self setState:ISHGuestStateInstallingRoot
+                detail:[NSString stringWithFormat:@"importing rootfs %@", bundledVersion]];
+    } imported:&imported previousRoot:&previousRoot];
+    if (error != nil) return error;
+
+    if (previousRoot != nil) {
+        NSString *notice = @"Linux 客户机镜像已更新或修复。旧客户机已在 App 数据中保留，不进入设备备份。原 /root、/home 和自行安装的软件没有迁入新镜像；/workspace 中的文件仍由宿主保存。清理时，双指长按界面，打开“重置运行环境”，勾选“移走旧客户机副本”；重启后在同一面板确认清除暂存数据。";
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[NSUserDefaults standardUserDefaults] setObject:notice forKey:@"ish.rootfs.notice"];
+        });
+        [[ISHGuestLog shared] append:notice];
     }
-
-    // Extracted in process. An iOS app cannot spawn tar (no fork/exec), and the
-    // archive is the fakefs tree rather than the guest's own filesystem, so it
-    // is only regular files and directories -- exactly what NSFileManager can
-    // create. See ish/scripts/build-rootfs.sh for why the image is shaped this
-    // way: the alternative, a tar of the guest view, contains symlinks and
-    // character devices the sandbox will not let anyone create.
-    NSError *extractError = nil;
-    [ISHTarGzExtractor extractArchiveAtURL:archive intoDirectory:root.path error:&extractError];
-    if (extractError) return extractError;
-
-    NSString *versionContents = [NSString stringWithFormat:@"%@\n", bundledVersion];
-    [versionContents writeToFile:versionPath atomically:YES encoding:NSUTF8StringEncoding error:nil];
-
-    _rootfsImportSeconds = [NSDate timeIntervalSinceReferenceDate] - started;
+    _rootfsImportSeconds = imported ? [NSDate timeIntervalSinceReferenceDate] - started : 0;
     [self setState:ISHGuestStateMounting
-            detail:[NSString stringWithFormat:@"rootfs imported in %.2f s",
-                                              _rootfsImportSeconds]];
-    _rootPath = [root path];
+            detail:imported ? [NSString stringWithFormat:@"rootfs imported in %.2f s", _rootfsImportSeconds]
+                            : @"rootfs already installed"];
+    _rootPath = root.path;
     return nil;
 }
 
@@ -1009,33 +988,57 @@ static void ISHMemoryGovernorStart(void) {
           lineBlock:(ISHGuestLineBlock)lineBlock
          completion:(void (^)(ISHGuestExecResult *))completion {
     NSString *execID = request.execID.length > 0
-        ? request.execID
+        ? [request.execID copy]
         : [[NSUUID UUID] UUIDString];
+    DSHGuestRun *run = [[DSHGuestRun alloc] init];
+    run.execID = execID;
 
-    // Boot first, then start. Everything that touches `current` stays on the
-    // guest queue until the pipes exist; the drain afterwards runs on its own
-    // thread so the queue is free for cancel and for the next exec.
+    // Register before dispatch: cancel must not wait behind boot or a console command.
+    pthread_mutex_lock(&g_runLock);
+    BOOL duplicate = g_pendingRuns[execID] != nil || [g_runningRun.execID isEqualToString:execID];
+    if (!duplicate) {
+        if (g_pendingRuns == nil) g_pendingRuns = [NSMutableDictionary dictionary];
+        g_pendingRuns[execID] = run;
+    }
+    pthread_mutex_unlock(&g_runLock);
+    if (duplicate) {
+        ISHGuestExecResult *result = [[ISHGuestExecResult alloc] init];
+        result.execID = execID;
+        result.exitCode = -1;
+        result.pid = -1;
+        result.launchError = @"an exec with this id is already pending or running";
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (completion) completion(result);
+        });
+        return;
+    }
+
     dispatch_async(_guestQueue, ^{
-        NSError *bootError = [self bootOnQueue];
-        if (bootError != nil) {
-            ISHGuestExecResult *result = [[ISHGuestExecResult alloc] init];
-            result.execID = execID;
-            result.exitCode = -1;
-            result.pid = -1;
-            result.launchError = bootError.localizedDescription;
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if (completion) completion(result);
-            });
-            return;
-        }
-
+        NSError *bootError = run.cancelled ? nil : [self bootOnQueue];
         ISHGuestExecResult *startFailure = nil;
-        DSHGuestRun *run = [self startExecOnQueue:request
-                                           execID:execID
-                                       chunkBlock:chunkBlock
-                                        lineBlock:lineBlock
-                                          failure:&startFailure];
-        if (run == nil) {
+        DSHGuestRun *startedRun = nil;
+        // Serialize cancellation with preparation and task_start, without holding
+        // g_runLock or blocking cancellation for the duration of boot.
+        @synchronized (run) {
+            if (run.cancelled || bootError != nil) {
+                startFailure = [[ISHGuestExecResult alloc] init];
+                startFailure.execID = execID;
+                startFailure.exitCode = -1;
+                startFailure.pid = -1;
+                startFailure.launchError = run.cancelled
+                    ? @"cancelled before start" : bootError.localizedDescription;
+            } else {
+                startedRun = [self startExecOnQueue:request
+                                               run:run
+                                        chunkBlock:chunkBlock
+                                         lineBlock:lineBlock
+                                           failure:&startFailure];
+            }
+            pthread_mutex_lock(&g_runLock);
+            [g_pendingRuns removeObjectForKey:execID];
+            pthread_mutex_unlock(&g_runLock);
+        }
+        if (startedRun == nil) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (completion) completion(startFailure);
             });
@@ -1046,7 +1049,7 @@ static void ISHMemoryGovernorStart(void) {
         // other kernel state — the guest queue owns that — it only reads the
         // two host pipes and waits for the exit slot.
         NSThread *thread = [[NSThread alloc] initWithBlock:^{
-            [self drainExec:run chunkBlock:chunkBlock lineBlock:lineBlock completion:completion];
+            [self drainExec:startedRun chunkBlock:chunkBlock lineBlock:lineBlock completion:completion];
         }];
         thread.name = @"guest-exec";
         thread.stackSize = 1 << 20;
@@ -1054,16 +1057,6 @@ static void ISHMemoryGovernorStart(void) {
     });
 }
 
-
-// The in-flight streaming exec, for cancel.
-//
-// A lock rather than an atomic pointer: Objective-C object pointers are not
-// valid operands for the GCC `__atomic_*` builtins under ARC (the compiler
-// rejects `&someAtomicObjectPointer`), and the contention here is nil — writes
-// happen twice per exec. The lock is held only to swap a pointer.
-static DSHGuestRun *g_runningRun = nil;
-static BOOL g_execRunning = NO;
-static pthread_mutex_t g_runLock = PTHREAD_MUTEX_INITIALIZER;
 
 static DSHGuestRun *dsh_running_run(void) {
     pthread_mutex_lock(&g_runLock);
@@ -1088,12 +1081,12 @@ static BOOL dsh_exec_running(void) {
 
 /// Start the guest process. On _guestQueue. Returns nil with `failure` set.
 - (DSHGuestRun *)startExecOnQueue:(ISHGuestExecRequest *)request
-                           execID:(NSString *)execID
+                              run:(DSHGuestRun *)run
                        chunkBlock:(ISHGuestChunkBlock)chunkBlock
                         lineBlock:(ISHGuestLineBlock)lineBlock
                           failure:(ISHGuestExecResult **)failure {
     ISHGuestExecResult *failed = [[ISHGuestExecResult alloc] init];
-    failed.execID = execID;
+    failed.execID = run.execID;
     failed.exitCode = -1;
     failed.pid = -1;
 
@@ -1103,8 +1096,6 @@ static BOOL dsh_exec_running(void) {
         return nil;
     }
 
-    DSHGuestRun *run = [[DSHGuestRun alloc] init];
-    run.execID = execID;
     run.timeout = request.timeout;
     run.maxBytes = request.maxOutputBytes > 0 ? request.maxOutputBytes : kDefaultExecMaxOutputBytes;
     run.retainOutput = request.retainOutput;
@@ -1646,15 +1637,23 @@ int sys_chdir_guest(const char *path) {
     });
 }
 
-- (BOOL)cancelExecWithID:(NSString *)execID {
-    DSHGuestRun *run = dsh_running_run();
-    if (run == NULL || ![run.execID isEqualToString:execID]) return NO;
-    // Only request termination here. The drain thread owns the ladder
-    // (SIGTERM → grace → SIGKILL over the process tree) because it is the only
-    // place that also observes the pipes draining to EOF; signalling from this
-    // side as well would race the escalation and could kill a recycled PID.
-    run.cancelled = YES;
-    return YES;
+- (ISHGuestCancelState)cancelExecWithID:(NSString *)execID {
+    pthread_mutex_lock(&g_runLock);
+    DSHGuestRun *run = g_pendingRuns[execID];
+    if (run == nil && [g_runningRun.execID isEqualToString:execID]) run = g_runningRun;
+    pthread_mutex_unlock(&g_runLock);
+    if (run == nil) return ISHGuestCancelStateUnknown;
+
+    @synchronized (run) {
+        pthread_mutex_lock(&g_runLock);
+        ISHGuestCancelState state = ISHGuestCancelStateUnknown;
+        if (g_runningRun == run) state = ISHGuestCancelStateRunning;
+        else if (g_pendingRuns[execID] == run) state = ISHGuestCancelStatePending;
+        // The drain thread owns the SIGTERM -> SIGKILL ladder for a running exec.
+        if (state != ISHGuestCancelStateUnknown) run.cancelled = YES;
+        pthread_mutex_unlock(&g_runLock);
+        return state;
+    }
 }
 
 #pragma mark resolve and workspace binding
@@ -2050,6 +2049,7 @@ NSString *dsh_errno_name(int err) {
     return NO;
 }
 
+#if DEBUG
 #pragma mark test hooks
 
 - (BOOL)triggerKernelDieForTesting {
@@ -2072,4 +2072,5 @@ NSString *dsh_errno_name(int err) {
     // The dispatch above is async; the console reads the log for the verdict.
     return YES;
 }
+#endif
 @end

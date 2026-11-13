@@ -1,0 +1,123 @@
+diff --git a/kernel/fork.c b/kernel/fork.c
+--- a/kernel/fork.c
++++ b/kernel/fork.c
+@@ -288,6 +288,8 @@
+         FIXME("unimplemented clone flags 0x%x", flags & ~CSIGNAL_ & ~IMPLEMENTED_FLAGS);
+         return _EINVAL;
+     }
++    if ((flags & CSIGNAL_) >= NUM_SIGS)
++        return _EINVAL;
+     if (flags & CLONE_SIGHAND_ && !(flags & CLONE_VM_))
+         return _EINVAL;
+     if (flags & CLONE_THREAD_ && !(flags & CLONE_SIGHAND_))
+@@ -406,6 +408,9 @@
+     if (user_read(args_addr, &args, size))
+         return _EFAULT;
+ 
++    if (args.exit_signal >= NUM_SIGS || (args.flags & CSIGNAL_))
++        return _EINVAL;
++
+     // clone3 keeps exit_signal separate from flags; the legacy sys_clone
+     // expects it OR'd into the low byte. Fold it back in.
+     dword_t flags = (dword_t)args.flags | ((dword_t)args.exit_signal & CSIGNAL_);
+diff --git a/kernel/signal.c b/kernel/signal.c
+--- a/kernel/signal.c
++++ b/kernel/signal.c
+@@ -93,6 +93,8 @@
+ }
+ 
+ void deliver_signal(struct task *task, int sig, struct siginfo_ info) {
++    if (sig < 1 || sig >= NUM_SIGS)
++        return;
+     if (task->sighand == NULL)
+         return;
+     lock(&task->sighand->lock);
+@@ -103,7 +105,7 @@
+ 
+ void send_signal(struct task *task, int sig, struct siginfo_ info) {
+     // signal zero is for testing whether a process exists
+-    if (sig == 0)
++    if (sig < 1 || sig >= NUM_SIGS)
+         return;
+     if (task->zombie || task->exiting)
+         return;
+diff --git a/tests/regress/regress_clone_signal.c b/tests/regress/regress_clone_signal.c
+new file mode 100644
+--- /dev/null
++++ b/tests/regress/regress_clone_signal.c
+@@ -0,0 +1,75 @@
++// Raw syscalls keep libc from rejecting exit_signal before iSH sees it.
++#define _GNU_SOURCE
++#include <errno.h>
++#include <signal.h>
++#include <stdint.h>
++#include <stdio.h>
++#include <sys/syscall.h>
++#include <sys/wait.h>
++#include <unistd.h>
++
++#ifndef SYS_clone3
++#define SYS_clone3 435
++#endif
++
++struct clone_args {
++    uint64_t flags, pidfd, child_tid, parent_tid, exit_signal;
++    uint64_t stack, stack_size, tls, set_tid, set_tid_size, cgroup;
++};
++
++static int failures;
++#define CHECK(ok, what) do { if (!(ok)) { \
++    printf("FAIL %s (errno=%d)\n", what, errno); failures++; \
++} } while (0)
++
++static void result(long pid, int error) {
++    int saved_errno = errno;
++    if (pid == 0) {
++        syscall(SYS_exit, 0);
++        _exit(1);
++    }
++    if (error)
++        CHECK(pid == -1 && saved_errno == error, "invalid exit signal rejected");
++    else
++        CHECK(pid > 0, "valid exit signal accepted");
++    if (pid > 0) {
++        int status;
++        pid_t waited;
++        do {
++            waited = waitpid(pid, &status, __WALL);
++        } while (waited < 0 && errno == EINTR);
++        CHECK(waited == pid && WIFEXITED(status) && WEXITSTATUS(status) == 0,
++                "child exits and is reaped");
++    }
++}
++
++int main(void) {
++    signal(63, SIG_IGN);
++    unsigned invalid[] = {64, 200, 255};
++    for (size_t i = 0; i < sizeof(invalid) / sizeof(invalid[0]); i++) {
++        errno = 0;
++        result(syscall(SYS_clone, invalid[i], 0, 0, 0, 0), EINVAL);
++    }
++    uint64_t invalid3[] = {64, 200, 255, 256 + SIGCHLD,
++            (UINT64_C(1) << 32) | SIGCHLD, UINT64_MAX};
++    for (size_t i = 0; i < sizeof(invalid3) / sizeof(invalid3[0]); i++) {
++        struct clone_args args = {.exit_signal = invalid3[i]};
++        errno = 0;
++        result(syscall(SYS_clone3, &args, sizeof(args)), EINVAL);
++    }
++    struct clone_args args = {.flags = SIGUSR1};
++    errno = 0;
++    result(syscall(SYS_clone3, &args, sizeof(args)), EINVAL);
++
++    unsigned valid[] = {0, SIGCHLD, 63};
++    for (size_t i = 0; i < sizeof(valid) / sizeof(valid[0]); i++) {
++        errno = 0;
++        result(syscall(SYS_clone, valid[i], 0, 0, 0, 0), 0);
++        args = (struct clone_args) {.exit_signal = valid[i]};
++        errno = 0;
++        result(syscall(SYS_clone3, &args, sizeof(args)), 0);
++    }
++    CHECK(kill(getpid(), 0) == 0, "signal zero probe still works");
++    printf("%d failures\n", failures);
++    return failures != 0;
++}

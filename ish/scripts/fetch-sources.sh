@@ -42,7 +42,9 @@ tree_digest() {
     {
         git -C "$SRC" status --porcelain -uno | LC_ALL=C sort
         echo '--'
-        git -C "$SRC" diff --no-color HEAD
+        # Full blob ids: abbreviations grow with the object count, which a
+        # partial clone changes whenever blobs are fetched on demand.
+        git -C "$SRC" diff --no-color --full-index --no-ext-diff --no-textconv HEAD
     } | shasum -a 256 | awk '{print $1}'
 }
 
@@ -108,8 +110,9 @@ else
     git -C "$SRC" checkout --quiet "$COMMIT"
 fi
 # Untracked files from a previous run would confuse the digest below, but a
-# build directory is expensive to throw away, so those are left alone.
-git -C "$SRC" clean -qfd -e build -e 'build-*' -- kernel fs emu asbestos util platform vdso deps/*/ kernel/arch 2>/dev/null || true
+# build directory is expensive to throw away, so those are left alone. A patch
+# may add a guest regression test, so tests/regress is cleaned as well.
+git -C "$SRC" clean -qfd -e build -e 'build-*' -- kernel fs emu asbestos util platform vdso deps/*/ kernel/arch tests/regress 2>/dev/null || true
 
 locally_modified="$(git -C "$SRC" status --porcelain -uno)"
 [ -z "$locally_modified" ] || { printf '%s\n' "$locally_modified" >&2; die "source tree still has local changes after reset"; }
@@ -125,14 +128,16 @@ done
 
 # --- patches ---------------------------------------------------------------
 # Applied with `git apply --3way` so a patch whose base moved fails loudly on a
-# conflict instead of quietly landing in the wrong place.
+# conflict instead of quietly landing in the wrong place. `--index` records the
+# files a patch adds, so they count in the digest instead of showing up as
+# unexpected untracked files.
 echo "commit $COMMIT" > "$STATE"
 if [ ${#PATCHES[@]} -gt 0 ]; then
     log "applying ${#PATCHES[@]} local patch(es)"
     for p in ${PATCHES[@]+"${PATCHES[@]}"}; do
         name="$(basename "$p")"
-        if git -C "$SRC" apply --check "$p" 2>/dev/null; then
-            git -C "$SRC" apply "$p"
+        if git -C "$SRC" apply --check --index "$p" 2>/dev/null; then
+            git -C "$SRC" apply --index "$p"
             log "  applied $name"
         elif git -C "$SRC" apply --check --3way "$p" 2>/dev/null; then
             git -C "$SRC" apply --3way "$p"

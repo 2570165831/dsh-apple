@@ -1,0 +1,20 @@
+License identifier: ISC
+Source: https://distfiles.alpinelinux.org/distfiles/v3.21/skalibs-2.14.3.0.tar.gz
+Source archive SHA-256: a14aa558c9b09b062fa16acec623b2c8f93d69f5cba4d07f6d0c58913066c427
+Source archive SHA-512: f40222740494425477252e78c772edda3f6cb201723558c513acb6c87d55a0f3432c918acf112c9457ed3ff0ee71bf5192f61b1c9070e668f219fd6d3f6f3bfa
+Alpine aports revision: 75d88451d8c525124c5126a05c1a33d98b3940fe
+Archive member: skalibs-2.14.3.0/COPYING
+
+Copyright (c) 2011-2024 Laurent Bercot <ska-skaware@skarnet.org>
+
+Permission to use, copy, modify, and distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.

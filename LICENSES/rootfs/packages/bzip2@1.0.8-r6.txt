@@ -1,0 +1,168 @@
+Source package: bzip2@1.0.8-r6
+Alpine aports revision (installed database c: field): 33283848034c9885d984c8e8697c645c57324938
+Recipe: https://raw.githubusercontent.com/alpinelinux/aports/33283848034c9885d984c8e8697c645c57324938/main/bzip2/APKBUILD
+Recipe SHA-256: 7e046e9c4b1c265af9791a790049ed864c361c0949b9cd68564a48bc0f672de2
+Installed subpackages: libbz2
+
+Sources verified against the exact APKBUILD checksums:
+https://distfiles.alpinelinux.org/distfiles/v3.21/bzip2-1.0.8.tar.gz
+SHA-256: ab5a03176ee106d3f0fa90e381da478ddae405918153cca248e682cd0c4a2269
+SHA-512: 083f5e675d73f3233c7930ebe20425a533feedeaaa9d8cc86831312a6581cefbe6ed0d08d2fa89be81082f2a5abdabca8b3c080bf97218a1bd59dc118a30b9f3
+
+Alpine-local sources (immutable revision above):
+https://raw.githubusercontent.com/alpinelinux/aports/33283848034c9885d984c8e8697c645c57324938/main/bzip2/bzip2-1.0.4-makefile-CFLAGS.patch
+SHA-256: f8cc63dcebef734154cc36c3ef963158ff2be6fc2d183cff49b627d570336628
+https://raw.githubusercontent.com/alpinelinux/aports/33283848034c9885d984c8e8697c645c57324938/main/bzip2/bzip2-1.0.4-man-links.patch
+SHA-256: 1fc9d91f3f7bd3eecd86149b9c95b3162d9d7956f7de543aa8bc41cbcd04f88b
+https://raw.githubusercontent.com/alpinelinux/aports/33283848034c9885d984c8e8697c645c57324938/main/bzip2/bzip2-1.0.2-progress.patch
+SHA-256: a76f6d082a1a1fef2eff111177d7c7568e1d457fb2b98cde71bbbe6ea1c7c787
+https://raw.githubusercontent.com/alpinelinux/aports/33283848034c9885d984c8e8697c645c57324938/main/bzip2/bzip2-1.0.3-no-test.patch
+SHA-256: 3478e797662d85996c03d3b7612d548d2d377fe7efc3dc190332741a11082ef6
+https://raw.githubusercontent.com/alpinelinux/aports/33283848034c9885d984c8e8697c645c57324938/main/bzip2/saneso.patch
+SHA-256: 0d6e3221c3db90ccbaec2c3c44afdfdd055093f4650a4e2f1a9b97cf48b69671
+https://raw.githubusercontent.com/alpinelinux/aports/33283848034c9885d984c8e8697c645c57324938/main/bzip2/bzip2.pc.in
+SHA-256: eca9d8cd6376df1fb5442667c603032023fb21d8d183684550da0b96ade39654
+
+The following are verbatim license/copyright/author files and source comment
+notices from these sources. Identical notices are printed once with all paths.
+The source collection can include build/test material beyond the shipped subset.
+This notice collection does not supply corresponding source.
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: bzip2-1.0.8.tar.gz::bzip2-1.0.8/blocksort.c, bzip2-1.0.8.tar.gz::bzip2-1.0.8/huffman.c, bzip2-1.0.8.tar.gz::bzip2-1.0.8/crctable.c, bzip2-1.0.8.tar.gz::bzip2-1.0.8/randtable.c, bzip2-1.0.8.tar.gz::bzip2-1.0.8/compress.c, bzip2-1.0.8.tar.gz::bzip2-1.0.8/decompress.c, bzip2-1.0.8.tar.gz::bzip2-1.0.8/bzlib.c, bzip2-1.0.8.tar.gz::bzip2-1.0.8/bzip2.c, bzip2-1.0.8.tar.gz::bzip2-1.0.8/bzip2recover.c, bzip2-1.0.8.tar.gz::bzip2-1.0.8/bzlib.h, bzip2-1.0.8.tar.gz::bzip2-1.0.8/bzlib_private.h, bzip2-1.0.8.tar.gz::bzip2-1.0.8/unzcrash.c, bzip2-1.0.8.tar.gz::bzip2-1.0.8/mk251.c
+
+/* ------------------------------------------------------------------
+   This file is part of bzip2/libbzip2, a program and library for
+   lossless, block-sorting data compression.
+
+   bzip2/libbzip2 version 1.0.8 of 13 July 2019
+   Copyright (C) 1996-2019 Julian Seward <jseward@acm.org>
+
+   Please read the WARNING, DISCLAIMER and PATENTS sections in the 
+   README file.
+
+   This program is released under the terms of the license contained
+   in the file LICENSE.
+   ------------------------------------------------------------------ */
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: bzip2-1.0.8.tar.gz::bzip2-1.0.8/LICENSE
+
+
+--------------------------------------------------------------------------
+
+This program, "bzip2", the associated library "libbzip2", and all
+documentation, are copyright (C) 1996-2019 Julian R Seward.  All
+rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+
+2. The origin of this software must not be misrepresented; you must 
+   not claim that you wrote the original software.  If you use this 
+   software in a product, an acknowledgment in the product 
+   documentation would be appreciated but is not required.
+
+3. Altered source versions must be plainly marked as such, and must
+   not be misrepresented as being the original software.
+
+4. The name of the author may not be used to endorse or promote 
+   products derived from this software without specific prior written 
+   permission.
+
+THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS
+OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+Julian Seward, jseward@acm.org
+bzip2/libbzip2 version 1.0.8 of 13 July 2019
+
+--------------------------------------------------------------------------
+
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: bzip2-1.0.8.tar.gz::bzip2-1.0.8/dlltest.c
+
+/*
+   minibz2
+      libbz2.dll test program.
+      by Yoshioka Tsuneo (tsuneo@rr.iij4u.or.jp)
+      This file is Public Domain.  Welcome any email to me.
+
+   usage: minibz2 [-d] [-{1,2,..9}] [[srcfilename] destfilename]
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: bzip2-1.0.8.tar.gz::bzip2-1.0.8/spewG.c
+
+/* ------------------------------------------------------------------
+   This file is part of bzip2/libbzip2, a program and library for
+   lossless, block-sorting data compression.
+
+   bzip2/libbzip2 version 1.0.8 of 13 July 2019
+   Copyright (C) 1996-2019 Julian Seward <jseward@acm.org>
+
+   Please read the WARNING, DISCLAIMER and PATENTS sections in the 
+   README file.
+
+   This program is released under the terms of the license contained
+   in the file LICENSE.
+	 ------------------------------------------------------------------ */
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: bzip2-1.0.8.tar.gz::bzip2-1.0.8/format.pl
+
+#!/usr/bin/perl -w
+#
+# ------------------------------------------------------------------
+# This file is part of bzip2/libbzip2, a program and library for
+# lossless, block-sorting data compression.
+#
+# bzip2/libbzip2 version 1.0.8 of 13 July 2019
+# Copyright (C) 1996-2019 Julian Seward <jseward@acm.org>
+#
+# Please read the WARNING, DISCLAIMER and PATENTS sections in the 
+# README file.
+#
+# This program is released under the terms of the license contained
+# in the file LICENSE.
+# ------------------------------------------------------------------
+#
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: bzip2-1.0.8.tar.gz::bzip2-1.0.8/xmlproc.sh
+
+#!/bin/bash
+# see the README file for usage etc.
+#
+# ------------------------------------------------------------------
+#  This file is part of bzip2/libbzip2, a program and library for
+#  lossless, block-sorting data compression.
+#
+#  bzip2/libbzip2 version 1.0.8 of 13 July 2019
+#  Copyright (C) 1996-2019 Julian Seward <jseward@acm.org>
+#
+#  Please read the WARNING, DISCLAIMER and PATENTS sections in the 
+#  README file.
+#
+#  This program is released under the terms of the license contained
+#  in the file LICENSE.
+# ----------------------------------------------------------------
+===== END UPSTREAM NOTICE =====

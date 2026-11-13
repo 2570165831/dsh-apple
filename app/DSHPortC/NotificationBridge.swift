@@ -122,7 +122,7 @@ enum NotifySettings {
     }
 }
 
-/// Everything this class observed, written into the app's status file.
+/// Notification metadata written into the app's status file.
 ///
 /// Two kinds of entry on purpose. `delivered` is the positive evidence a banner
 /// exists; `suppressed` is the counter-evidence, with the reason — without it "no
@@ -236,6 +236,8 @@ final class NotificationBridge {
     private var requestedThisLaunch = false
     /// Delivered notifications not yet withdrawn, by the plugin's dedupe key.
     private var deliveredByKey: Set<String> = []
+    /// Content for the launch-gated UI-test copy only, never the boot status.
+    private var deliveredForDump: [[String: String]] = []
     /// A tap whose navigation has not been completed.
     private var pendingOpen: String?
     /// The scene's activation state as last observed.
@@ -657,15 +659,19 @@ final class NotificationBridge {
         do {
             try await center.add(request)
             if !key.isEmpty { deliveredByKey.insert(key) }
-            report.delivered.append([
+            var entry = [
                 "kind": kind,
-                "title": content.title,
-                "body": content.body,
                 "key": key,
                 "sessionId": sessionId,
                 "thread": content.threadIdentifier,
-            ])
-            emit("dshportc: notify delivered \(kind) title=\(content.title) body=\(content.body)")
+            ]
+            report.delivered.append(entry)
+            if dumpEnabled {
+                entry["title"] = content.title
+                entry["body"] = content.body
+                deliveredForDump.append(entry)
+            }
+            emit("dshportc: notify delivered \(kind) key=\(key)")
             if dumpEnabled { dumpDelivered(reason: "after-delivery") }
             refreshAuthorization()
         } catch {
@@ -854,8 +860,7 @@ final class NotificationBridge {
     /// navigation result is recorded, and an assertion about "did the tap route to the
     /// right session" would otherwise have to be inferred from what is on screen. The
     /// copy is written into the app's own temporary directory, which the test runner
-    /// shares, and it holds the notification section only — no session ids beyond the
-    /// ones already in the log, no tokens, no paths.
+    /// shares. Only this launch-gated copy includes notification titles and bodies.
     ///
     /// Gated on the dump flag, so a normal launch writes nothing extra.
     private func publishStatusCopy() {
@@ -864,7 +869,7 @@ final class NotificationBridge {
             "authorization": report.authorization,
             "authorizationRequests": report.authorizationRequests,
             "switches": report.switches,
-            "delivered": report.delivered,
+            "delivered": deliveredForDump,
             "suppressed": report.suppressed,
             "withdrawn": report.withdrawn,
             "taps": report.taps,

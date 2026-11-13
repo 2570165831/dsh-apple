@@ -1,0 +1,142 @@
+Source package: brotli@1.1.1-r0
+Alpine aports revision (installed database c: field): 2e2e1c66200dbbb50a717171d1df57829ff4c264
+Recipe: https://raw.githubusercontent.com/alpinelinux/aports/2e2e1c66200dbbb50a717171d1df57829ff4c264/main/brotli/APKBUILD
+Recipe SHA-256: f1088228cc78c34b9ba09f4fe0de0a25e356f668398539a12fe55c5a4baf13c0
+Installed subpackages: brotli-libs
+
+Sources verified against the exact APKBUILD checksums:
+https://distfiles.alpinelinux.org/distfiles/v3.21/brotli-1.1.1.tar.gz
+SHA-256: 1a84dfaa740994d19254bf78aa7d74a4a8040d1638f3d5f2cdecb188fd520da8
+SHA-512: f7f3a7e4620403aa26d69458e0bb886d322f7677685c55717fac824f0b789e0c25cf4ff7d8d455d70a8526d0150d7a09b9df292a11f9ef5d3bf625878cb51368
+
+Alpine-local sources (immutable revision above):
+https://raw.githubusercontent.com/alpinelinux/aports/2e2e1c66200dbbb50a717171d1df57829ff4c264/main/brotli/optimize-mips-s390x.patch
+SHA-256: 5ba5c2d204867ed8d4a53ce2920064ca05af3b6c7f0f386ebb7839eefa881032
+
+The following are verbatim license/copyright/author files and source comment
+notices from these sources. Identical notices are printed once with all paths.
+The source collection can include build/test material beyond the shipped subset.
+This notice collection does not supply corresponding source.
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: brotli-1.1.1.tar.gz::brotli-1.1.1/LICENSE
+
+Copyright (c) 2009, 2010, 2013-2016 by the Brotli Authors.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: brotli-1.1.1.tar.gz::brotli-1.1.1/c/common/constants.c, brotli-1.1.1.tar.gz::brotli-1.1.1/c/common/context.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/common/dictionary.c, brotli-1.1.1.tar.gz::brotli-1.1.1/c/common/dictionary.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/common/transform.c, brotli-1.1.1.tar.gz::brotli-1.1.1/c/dec/bit_reader.c, brotli-1.1.1.tar.gz::brotli-1.1.1/c/dec/bit_reader.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/dec/decode.c, brotli-1.1.1.tar.gz::brotli-1.1.1/c/dec/huffman.c, brotli-1.1.1.tar.gz::brotli-1.1.1/c/dec/huffman.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/dec/prefix.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/backward_references.c, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/backward_references.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/backward_references_hq.c, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/backward_references_hq.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/backward_references_inc.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/bit_cost.c, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/bit_cost.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/bit_cost_inc.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/block_splitter.c, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/block_splitter.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/block_splitter_inc.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/cluster.c, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/cluster.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/cluster_inc.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/command.c, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/command.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/encode.c, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/fast_log.c, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/fast_log.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/histogram.c, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/histogram.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/histogram_inc.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/literal_cost.c, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/literal_cost.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/prefix.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/ringbuffer.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/static_dict.c, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/static_dict.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/utf8_util.c, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/utf8_util.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/include/brotli/decode.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/include/brotli/encode.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/include/brotli/types.h
+
+/* Copyright 2013 Google Inc. All Rights Reserved.
+
+   Distributed under MIT license.
+   See file LICENSE for detail or copy at https://opensource.org/licenses/MIT
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: brotli-1.1.1.tar.gz::brotli-1.1.1/c/common/constants.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/common/platform.c, brotli-1.1.1.tar.gz::brotli-1.1.1/c/common/platform.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/common/version.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/hash_forgetful_chain_inc.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/hash_to_binary_tree_inc.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/memory.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/quality.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/include/brotli/port.h
+
+/* Copyright 2016 Google Inc. All Rights Reserved.
+
+   Distributed under MIT license.
+   See file LICENSE for detail or copy at https://opensource.org/licenses/MIT
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: brotli-1.1.1.tar.gz::brotli-1.1.1/c/common/shared_dictionary.c, brotli-1.1.1.tar.gz::brotli-1.1.1/c/common/shared_dictionary_internal.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/compound_dictionary.c, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/compound_dictionary.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/encoder_dict.c, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/encoder_dict.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/params.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/include/brotli/shared_dictionary.h
+
+/* Copyright 2017 Google Inc. All Rights Reserved.
+
+   Distributed under MIT license.
+   See file LICENSE for detail or copy at https://opensource.org/licenses/MIT
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: brotli-1.1.1.tar.gz::brotli-1.1.1/c/dec/state.c, brotli-1.1.1.tar.gz::brotli-1.1.1/c/dec/state.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/compress_fragment.c, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/compress_fragment.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/compress_fragment_two_pass.c, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/compress_fragment_two_pass.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/dictionary_hash.c, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/dictionary_hash.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/entropy_encode_static.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/memory.c, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/metablock.c, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/metablock.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/metablock_inc.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/static_dict_lut.h
+
+/* Copyright 2015 Google Inc. All Rights Reserved.
+
+   Distributed under MIT license.
+   See file LICENSE for detail or copy at https://opensource.org/licenses/MIT
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/block_encoder_inc.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/brotli_bit_stream.c, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/brotli_bit_stream.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/tools/brotli.c
+
+/* Copyright 2014 Google Inc. All Rights Reserved.
+
+   Distributed under MIT license.
+   See file LICENSE for detail or copy at https://opensource.org/licenses/MIT
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/entropy_encode.c, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/entropy_encode.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/find_match_length.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/hash.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/hash_longest_match64_inc.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/hash_longest_match_inc.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/hash_longest_match_quickly_inc.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/write_bits.h
+
+/* Copyright 2010 Google Inc. All Rights Reserved.
+
+   Distributed under MIT license.
+   See file LICENSE for detail or copy at https://opensource.org/licenses/MIT
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/hash_composite_inc.h, brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/hash_rolling_inc.h
+
+/* Copyright 2018 Google Inc. All Rights Reserved.
+
+   Distributed under MIT license.
+   See file LICENSE for detail or copy at https://opensource.org/licenses/MIT
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: brotli-1.1.1.tar.gz::brotli-1.1.1/c/enc/state.h
+
+/* Copyright 2022 Google Inc. All Rights Reserved.
+
+   Distributed under MIT license.
+   See file LICENSE for detail or copy at https://opensource.org/licenses/MIT
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: brotli-1.1.1.tar.gz::brotli-1.1.1/python/brotli.py, brotli-1.1.1.tar.gz::brotli-1.1.1/python/tests/bro_test.py, brotli-1.1.1.tar.gz::brotli-1.1.1/python/tests/compress_test.py, brotli-1.1.1.tar.gz::brotli-1.1.1/python/tests/compressor_test.py, brotli-1.1.1.tar.gz::brotli-1.1.1/python/tests/decompress_test.py, brotli-1.1.1.tar.gz::brotli-1.1.1/python/tests/decompressor_test.py
+
+# Copyright 2016 The Brotli Authors. All rights reserved.
+#
+# Distributed under MIT license.
+# See file LICENSE for detail or copy at https://opensource.org/licenses/MIT
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: brotli-1.1.1.tar.gz::brotli-1.1.1/setup.py
+
+# Copyright 2015 The Brotli Authors. All rights reserved.
+#
+# Distributed under MIT license.
+# See file LICENSE for detail or copy at https://opensource.org/licenses/MIT
+===== END UPSTREAM NOTICE =====

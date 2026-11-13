@@ -1,0 +1,96 @@
+Source package: utmps@0.1.2.3-r2
+Alpine aports revision (installed database c: field): ea7aa65df4a6d38d6f3386f712d8e1d518e934c9
+Recipe: https://raw.githubusercontent.com/alpinelinux/aports/ea7aa65df4a6d38d6f3386f712d8e1d518e934c9/main/utmps/APKBUILD
+Recipe SHA-256: c41cc10a3d0c6fdcb394b51ef4370dee01fe0dfc522ac84bc4fc0e8a3de8c254
+Installed subpackages: utmps-libs
+
+Sources verified against the exact APKBUILD checksums:
+https://distfiles.alpinelinux.org/distfiles/v3.21/utmps-0.1.2.3.tar.gz
+SHA-256: 318ac799ed17c3fbf4281085b4b071facbd35c29852a5c643c24fa2869fc0545
+SHA-512: 41822b5ef582c86cd2439f13c88871bef2d496e6c7ae5493d9e2be70c7cf2f25656dedf045b4dbe925b1c6b3bfbadc7430a898ccc56951f096e768990a9735df
+
+Alpine-local sources (immutable revision above):
+https://raw.githubusercontent.com/alpinelinux/aports/ea7aa65df4a6d38d6f3386f712d8e1d518e934c9/main/utmps/utmp-prepare.initd
+SHA-256: 810272fa8649a943fb873b7e2da2cb43d525dd6cc3caaca06663bf2049acb4f0
+https://raw.githubusercontent.com/alpinelinux/aports/ea7aa65df4a6d38d6f3386f712d8e1d518e934c9/main/utmps/utmpd.initd
+SHA-256: f71d782481a9ff677b927effb19c293484248357f2a3356f051cd6aa758fb34d
+https://raw.githubusercontent.com/alpinelinux/aports/ea7aa65df4a6d38d6f3386f712d8e1d518e934c9/main/utmps/wtmpd.initd
+SHA-256: 856eb9f7ea94a1e6d9b34ca3a65cd002ea9d53118feccdd94ce3749342c72062
+https://raw.githubusercontent.com/alpinelinux/aports/ea7aa65df4a6d38d6f3386f712d8e1d518e934c9/main/utmps/btmpd.initd
+SHA-256: 3b477a5d8e96f4412edd297c03a17f56dcf136ebd1b54a0a3af414a94e5a1155
+https://raw.githubusercontent.com/alpinelinux/aports/ea7aa65df4a6d38d6f3386f712d8e1d518e934c9/main/utmps/utmp-init.initd
+SHA-256: 137f25ee4bef1b45664ec85aabd2e500d69747d425f58b5b24d9565fca1da6fb
+https://raw.githubusercontent.com/alpinelinux/aports/ea7aa65df4a6d38d6f3386f712d8e1d518e934c9/main/utmps/setup-utmp
+SHA-256: fcc0cb6edf1ae6a121da1257a2a7ce764b995fbf7fa00dec1df12510312bb372
+https://raw.githubusercontent.com/alpinelinux/aports/ea7aa65df4a6d38d6f3386f712d8e1d518e934c9/main/utmps/utmps.pc.in
+SHA-256: 309cafc96563f09dad7cda79a04b8c9bacc6e37ddcd6e8613a95ced1ffd0371e
+https://raw.githubusercontent.com/alpinelinux/aports/ea7aa65df4a6d38d6f3386f712d8e1d518e934c9/main/utmps/wtmpd.logrotate
+SHA-256: 267f3f47ea67c069caf353e9e533d08347216ae666e71200acfb467168c60543
+https://raw.githubusercontent.com/alpinelinux/aports/ea7aa65df4a6d38d6f3386f712d8e1d518e934c9/main/utmps/btmpd.logrotate
+SHA-256: 63d3aa8a3ea6a37876466319a9120bd98deb30794151649287c65ba7db49e5da
+https://raw.githubusercontent.com/alpinelinux/aports/ea7aa65df4a6d38d6f3386f712d8e1d518e934c9/main/utmps/0001-add-stub-utmp.h.patch
+SHA-256: 4850ee8fa6d52d5f0dc7694fab575fa4ed8c26776bb482afb7fb61857ec833f0
+
+The following are verbatim license/copyright/author files and source comment
+notices from these sources. Identical notices are printed once with all paths.
+The source collection can include build/test material beyond the shipped subset.
+This notice collection does not supply corresponding source.
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: utmps-0.1.2.3.tar.gz::utmps-0.1.2.3/COPYING
+
+Copyright (c) 2018-2024 Laurent Bercot <ska-skaware@skarnet.org>
+
+Permission to use, copy, modify, and distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: utmps-0.1.2.3.tar.gz::utmps-0.1.2.3/src/include/utmps/utmpx.h, utmps-0.1.2.3.tar.gz::utmps-0.1.2.3/src/include/utmps/utmps.h, utmps-0.1.2.3.tar.gz::utmps-0.1.2.3/src/include/utmpx.h, utmps-0.1.2.3.tar.gz::utmps-0.1.2.3/src/utmps/logwtmp.c, utmps-0.1.2.3.tar.gz::utmps-0.1.2.3/src/utmps/getutxline.c, utmps-0.1.2.3.tar.gz::utmps-0.1.2.3/src/utmps/utmps_utmpx_unpack.c, utmps-0.1.2.3.tar.gz::utmps-0.1.2.3/src/utmps/pututxline.c, utmps-0.1.2.3.tar.gz::utmps-0.1.2.3/src/utmps/utmpxname.c, utmps-0.1.2.3.tar.gz::utmps-0.1.2.3/src/utmps/utmps_here_maybe_init.c, utmps-0.1.2.3.tar.gz::utmps-0.1.2.3/src/utmps/utmps_putline.c, utmps-0.1.2.3.tar.gz::utmps-0.1.2.3/src/utmps/utmps-utmpd.c, utmps-0.1.2.3.tar.gz::utmps-0.1.2.3/src/utmps/utmps_getid.c, utmps-0.1.2.3.tar.gz::utmps-0.1.2.3/src/utmps/utmps_start.c, utmps-0.1.2.3.tar.gz::utmps-0.1.2.3/src/utmps/utmps-write.c, utmps-0.1.2.3.tar.gz::utmps-0.1.2.3/src/utmps/utmps_utmpx_pack.c, utmps-0.1.2.3.tar.gz::utmps-0.1.2.3/src/utmps/getutxent.c, utmps-0.1.2.3.tar.gz::utmps-0.1.2.3/src/utmps/utmps_rewind.c, utmps-0.1.2.3.tar.gz::utmps-0.1.2.3/src/utmps/utmps_getline.c, utmps-0.1.2.3.tar.gz::utmps-0.1.2.3/src/utmps/utmps_end.c, utmps-0.1.2.3.tar.gz::utmps-0.1.2.3/src/utmps/utmps_updwtmpx.c, utmps-0.1.2.3.tar.gz::utmps-0.1.2.3/src/utmps/utmps-internal.h, utmps-0.1.2.3.tar.gz::utmps-0.1.2.3/src/utmps/utmps_here.c, utmps-0.1.2.3.tar.gz::utmps-0.1.2.3/src/utmps/utmps-wtmpd.c, utmps-0.1.2.3.tar.gz::utmps-0.1.2.3/src/utmps/setutxent.c, utmps-0.1.2.3.tar.gz::utmps-0.1.2.3/src/utmps/utmps_getent.c, utmps-0.1.2.3.tar.gz::utmps-0.1.2.3/src/utmps/getutxid.c, utmps-0.1.2.3.tar.gz::utmps-0.1.2.3/src/utmps/endutxent.c, utmps-0.1.2.3.tar.gz::utmps-0.1.2.3/src/utmps/updwtmpx.c, local/0001-add-stub-utmp.h.patch
+
+/* ISC license. */
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: utmps-0.1.2.3.tar.gz::utmps-0.1.2.3/AUTHORS
+
+Main author:
+  Laurent Bercot <ska-skaware@skarnet.org>
+
+Contributors:
+  Guillermo <gdiazhartusch@gmail.com>
+  Xavier Stonestreet <xstonestreet@gmail.com>
+
+Thanks to:
+  A. Wilcox <AWilcox@Wilcox-Tech.com>
+  Dermot Bradley <dermot_bradley@yahoo.com>
+
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: local/utmp-prepare.initd, local/utmp-init.initd
+
+#!/sbin/openrc-run
+# Copyright 2020-2022 Laurent Bercot for Alpine Linux
+# Distributed under the terms of the ISC License.
+#
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: local/utmpd.initd, local/wtmpd.initd, local/btmpd.initd
+
+#!/sbin/openrc-run
+# Copyright 2020-2021 Laurent Bercot for Alpine Linux
+# Distributed under the terms of the ISC License.
+#
+===== END UPSTREAM NOTICE =====

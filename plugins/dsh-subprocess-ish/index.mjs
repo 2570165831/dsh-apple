@@ -74,6 +74,7 @@ const {
 } = await importFromPayload('@deepseek-ai/dsh-subprocess-local/output');
 
 import {
+  CHANNEL_LAUNCH_FAILURE,
   exec as channelExec,
   cancel as channelCancel,
   resolveExecutable as channelResolveExecutable,
@@ -724,8 +725,6 @@ class IshSubprocessRuntime extends SubprocessRuntime {
     let rangeExited = false;
     /** True once the command has been handed to the guest channel. */
     let execStarted = false;
-    /** True once the channel call has settled, which an abort does at once. */
-    let execSettled = false;
     /** Resolvers for `waitForExit()`; the range is quiescent only once the guest has let go of the command. */
     let rangeSettled;
     const rangePromise = new Promise((resolve) => {
@@ -795,10 +794,12 @@ class IshSubprocessRuntime extends SubprocessRuntime {
       // so asking again is safe.
       const deadline = Date.now() + GUEST_BUSY_WAIT_MS;
       for (;;) {
+        throwIfCancelled();
         try {
           return await exec();
         } catch (error) {
-          if (!String(error?.message ?? error).includes('a guest command is already running')
+          const message = String(error?.message ?? error);
+          if ((!message.includes('a guest command is already running') && !message.includes('execId is already active'))
               || spec.signal?.aborted === true || terminationStarted || Date.now() >= deadline) throw error;
           await new Promise((resolve) => setTimeout(resolve, 50));
         }
@@ -809,8 +810,6 @@ class IshSubprocessRuntime extends SubprocessRuntime {
     // rejects, so one failed command cannot poison every later spawn.
     const queued = this._queue.then(run, run);
     this._queue = queued.then(() => {}, () => {});
-
-    queued.then(() => { execSettled = true; }, () => { execSettled = true; });
 
     const done = Promise.race([queued, cancelledInQueue.promise]).then((result) => {
       settled = true;
@@ -823,15 +822,15 @@ class IshSubprocessRuntime extends SubprocessRuntime {
       return { exitCode: result.exitCode, signal: null };
     }, (error) => {
       settled = true;
-      // A cancelled command's call settles before the guest has finished walking
-      // it down; `_terminate` reports the exit once it has seen one.
-      if (!(terminationStarted && execStarted)) {
+      // A launch failure carries an exit event; other failed HTTP calls do not
+      // prove that a command already handed to the guest has stopped.
+      if (execStarted && error?.code !== CHANNEL_LAUNCH_FAILURE) beginTermination();
+      else {
         rangeExited = true;
         rangeSettled();
       }
       stdoutCollector?.seal();
       stderrCollector?.seal();
-      this.live.delete(handle);
       throw error;
     });
     // The rejection is delivered through `done`; attaching a handler here keeps
@@ -868,7 +867,7 @@ class IshSubprocessRuntime extends SubprocessRuntime {
         cancelledInQueue.reject(spec.signal?.reason ?? new Error('terminated before the command started'));
         return;
       }
-      void this._terminate(execId, () => execSettled).then((exited) => {
+      void this._terminate(execId).then((exited) => {
         if (exited) rangeExited = true;
         rangeSettled();
       });
@@ -887,34 +886,32 @@ class IshSubprocessRuntime extends SubprocessRuntime {
     }
 
     this.live.add(handle);
+    rangePromise.then(() => this.live.delete(handle));
     return handle;
   }
 
   /**
    * Ask the guest to terminate one exec and watch for it to let go.
    *
-   * An acknowledged cancel only says the request arrived, so the cancel is
-   * repeated until the guest answers that this exec is no longer the running
-   * one. The wait is bounded and an unknown outcome is reported as such: holding
+   * Pending cancellation prevents a start; running cancellation needs a later
+   * acknowledgement that the guest has let go. An initially unknown id is retried.
+   * The wait is bounded and an unknown outcome is reported as such: holding
    * `waitForExit()` open forever would wedge any caller's teardown ladder on a
    * channel that may itself be gone.
    *
    * @param {string} execId - the exec to cancel.
-   * @param {() => boolean} execSettled - whether the channel call has settled.
    * @returns {Promise<boolean>} whether the exit was observed; never rejects.
    */
-  async _terminate(execId, execSettled) {
+  async _terminate(execId) {
     const deadline = Date.now() + CANCEL_EXIT_WAIT_MS;
     let wasRunning = false;
     try {
       while (Date.now() < deadline) {
         const answer = await channelCancel(execId, AbortSignal.timeout(CANCEL_ACK_TIMEOUT_MS));
-        if (answer?.cancelled === true) {
-          wasRunning = true;
-        } else if (wasRunning || execSettled()) {
-          // Not the running exec any more. A first "no" with the call still open
-          // means the request has not reached the guest yet, so that one retries.
-          return true;
+        if (answer?.execId === execId) {
+          if (answer.state === 'pending-cancelled' || answer.state === 'finished'
+              || (answer.state === 'unknown' && wasRunning)) return true;
+          if (answer.state === 'running') wasRunning = true;
         }
         await new Promise((resolve) => setTimeout(resolve, CANCEL_POLL_MS));
       }

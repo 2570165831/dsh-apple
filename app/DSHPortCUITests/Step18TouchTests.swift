@@ -33,6 +33,10 @@
 //  session row's actions work without a hover. Only the navigation to reach them
 //  is different, because the layout it navigates is.
 //
+//  The privacy check also opens the native About sheet from ordinary settings
+//  and reads the bundled policy. Its entry must stay inside the viewport on
+//  both phone and iPad layouts, without the debug gesture.
+//
 //  MEASURED ON THE MERGED BUILD (dsh-portE-xct-16, 402x874 pt, drawer open):
 //    收起侧边栏            240,84  28x28
 //    搜索会话              176,224 44x44
@@ -154,13 +158,14 @@ final class Step18TouchTests: XCTestCase {
         let deadline = Date().addingTimeInterval(timeout)
         while Date() < deadline {
             let composer = webView().textViews.firstMatch
-            let edge = webView().buttons["打开会话列表"].firstMatch
-            guard composer.exists, edge.exists else {
+            let rail = ["打开会话列表", "打开侧边栏", "收起侧边栏"]
+                .map { webView().buttons[$0].firstMatch }.first { $0.exists }
+            guard composer.exists, let rail else {
                 previous = ""
                 Thread.sleep(forTimeInterval: 1)
                 continue
             }
-            let now = "\(composer.frame)|\(edge.frame)"
+            let now = "\(composer.frame)|\(rail.frame)"
             if now == previous { return }
             previous = now
             Thread.sleep(forTimeInterval: 1)
@@ -207,18 +212,18 @@ final class Step18TouchTests: XCTestCase {
     /// sidebar has.
     private var drawerIsOpen: Bool { labels().contains("收起侧边栏") }
 
-    /// Open the drawer through the edge strip, exactly as a finger would.
+    /// Open the sidebar through the visible phone or iPad control.
     ///
     /// The strip's own reported frame is used, not a page coordinate: this file's
     /// navigation must not depend on a number that a layout change can move.
     @discardableResult
     private func openDrawer(_ note: String = "left-edge strip") -> Bool {
         if drawerIsOpen { return true }
-        guard let strip = edgeStrip else {
-            XCTFail("the collapsed rail has no 打开会话列表 button; have \(labels())")
+        guard let opener = edgeStrip ?? buttons().first(where: { $0.label == "打开侧边栏" }) else {
+            XCTFail("the collapsed rail has no sidebar opener; have \(labels())")
             return false
         }
-        tap(CGPoint(x: strip.frame.midX, y: strip.frame.midY), note: note, settle: 3)
+        tap(CGPoint(x: opener.frame.midX, y: opener.frame.midY), note: note, settle: 3)
         return drawerIsOpen
     }
 
@@ -423,6 +428,43 @@ final class Step18TouchTests: XCTestCase {
         )
     }
 
+    func testPrivacyPolicyIsReachableFromSettings() throws {
+        waitForShell()
+        XCTAssertTrue(openDrawer("to reach settings"), "the sidebar did not open")
+        guard let account = other("账号菜单") else {
+            XCTFail("no account menu in the sidebar")
+            return
+        }
+        tap(CGPoint(x: account.frame.midX, y: account.frame.midY), note: "account menu", settle: 2)
+        XCTAssertTrue(tapButton("设置", note: "settings entry", settle: 3), "no settings entry")
+
+        let about = webView().links["关于与隐私"].firstMatch
+        XCTAssertTrue(about.waitForExistence(timeout: 10), "no About link in ordinary settings")
+        XCTAssertEqual(webView().links.matching(identifier: "关于与隐私").count, 1)
+        let viewport = webView().frame
+        XCTAssertGreaterThanOrEqual(about.frame.height, 44)
+        XCTAssertGreaterThanOrEqual(about.frame.minX, viewport.minX - 0.5)
+        XCTAssertGreaterThanOrEqual(about.frame.minY, viewport.minY - 0.5)
+        XCTAssertLessThanOrEqual(about.frame.maxX, viewport.maxX + 0.5)
+        XCTAssertLessThanOrEqual(about.frame.maxY, viewport.maxY + 0.5)
+        capture("18-settings-privacy-entry")
+        about.tap()
+        XCTAssertTrue(app.navigationBars["关于与许可"].waitForExistence(timeout: 15),
+                      "the settings link did not open the native About sheet")
+        XCTAssertTrue(app.descendants(matching: .any)["aboutPrivacyLink"].firstMatch.exists,
+                      "no online privacy policy link")
+
+        let policy = app.buttons["aboutLicense-PRIVACY.md"].firstMatch
+        XCTAssertTrue(policy.waitForExistence(timeout: 10), "no bundled privacy policy entry")
+        policy.tap()
+        XCTAssertTrue(app.navigationBars["隐私政策"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["# 隐私政策 / Privacy Policy"].waitForExistence(timeout: 10),
+                      "the bundled policy was not loaded")
+        XCTAssertTrue(app.staticTexts.containing(
+            NSPredicate(format: "label CONTAINS %@", "我们不收集任何数据")
+        ).firstMatch.exists, "the policy body is missing")
+    }
+
     /// The settings dialog puts all four pages on screen at once, each at least
     /// 44 pt tall, and each one changes what is drawn.
     ///
@@ -458,7 +500,9 @@ final class Step18TouchTests: XCTestCase {
         // real round trip and the same assertion as the other three.
         let pages = ["模型", "内置插件", "Agent 预设", "通用设置"]
         var reached: [String: Bool] = [:]
-        var frames: [String: CGRect] = [:]
+        let about = webView().links["关于与隐私"].firstMatch
+        XCTAssertTrue(about.waitForExistence(timeout: 10), "no About link in ordinary settings")
+        var frames: [String: CGRect] = ["关于与隐私": about.frame]
         for page in pages {
             guard let entry = buttons().first(where: { $0.label == page }) else {
                 XCTFail("settings nav has no [\(page)] entry; have \(labels())")

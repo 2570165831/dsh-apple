@@ -429,13 +429,20 @@ reset_arm() {
     printf '{"version":1,"keepConversations":%s,"keepSettings":%s,"requestedAt":"2026-11-02T00:00:00Z"}\n' \
         "$keep_conv" "$keep_set" > "$(runtime)/reset-request.json"
     launch 24 -DSHPortCMockPort 19719
-    local staging; staging="$(ls -1d "$(runtime)/reset-staging/"*/ 2>/dev/null | tail -1)"
+    local staging; staging="$(runtime)/reset-staging"
     # Counted and reported by one python process: the shell pipeline form of this
     # (`find ... | wc -l`) is what ended criterion 7's loop silently on an earlier
     # run, and a criterion whose evidence is a count is not worth that risk twice.
     python3 - "$label" "$keep_conv" "$keep_set" "$staging" <<'PY'
-import os, sys
+import json, os, re, sys
 label, keep_conv, keep_set, staging = sys.argv[1:5]
+with open(os.path.join(staging, "complete.json")) as record:
+    stamp = json.load(record)["stamp"]
+if not isinstance(stamp, str) or not re.fullmatch(r"[0-9]{8}T[0-9]{6}Z", stamp):
+    raise SystemExit("invalid completed reset stamp")
+staging = os.path.join(staging, stamp)
+if not os.path.isdir(staging):
+    raise SystemExit("completed reset directory is missing")
 conversations = 0
 for base, _dirs, files in os.walk(staging):
     conversations += sum(1 for name in files if name == "session.v1.jsonl")

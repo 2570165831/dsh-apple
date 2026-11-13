@@ -1,0 +1,82 @@
+diff --git a/fs/fd.c b/fs/fd.c
+--- a/fs/fd.c
++++ b/fs/fd.c
+@@ -416,10 +416,14 @@
+     if (first > last)
+         return _EINVAL;
+     lock(&current->files->lock);
+-    fd_t lim = current->files->size;
+-    if ((fd_t)last >= lim) last = lim - 1;
++    uint32_t lim = current->files->size;
++    if (first >= lim) {
++        unlock(&current->files->lock);
++        return 0;
++    }
++    if (last >= lim) last = lim - 1;
+     int err = 0;
+-    for (fd_t f = (fd_t)first; f <= (fd_t)last; f++) {
++    for (uint32_t f = first; f <= last; f++) {
+         if (current->files->files[f] == NULL) continue;
+         if (flags & CLOSE_RANGE_CLOEXEC_) {
+             // Mark CLOEXEC instead of actually closing.
+diff --git a/tests/regress/regress_close_range.c b/tests/regress/regress_close_range.c
+new file mode 100644
+--- /dev/null
++++ b/tests/regress/regress_close_range.c
+@@ -0,0 +1,56 @@
++// close_range must clip unsigned bounds before indexing the fd table.
++// Build: aarch64-linux-musl-gcc -static -O0 -o regress_close_range regress_close_range.c
++#define _GNU_SOURCE
++#include <assert.h>
++#include <errno.h>
++#include <fcntl.h>
++#include <limits.h>
++#include <stdint.h>
++#include <stdio.h>
++#include <sys/syscall.h>
++#include <unistd.h>
++
++#ifndef SYS_close_range
++#define SYS_close_range 436
++#endif
++#define CLOSE_RANGE_CLOEXEC_ 4
++
++static void check_closed(int fd) {
++    errno = 0;
++    assert(fcntl(fd, F_GETFD) == -1 && errno == EBADF);
++}
++
++int main(void) {
++    int base = open("/dev/null", O_RDONLY);
++    assert(base >= 0);
++    int low = fcntl(base, F_DUPFD, 32);
++    int high = fcntl(base, F_DUPFD, 64);
++    assert(low >= 32 && high >= 64);
++    uint32_t firsts[] = {0x80000000U, 0xfffffffeU, UINT_MAX};
++    for (unsigned i = 0; i < sizeof(firsts) / sizeof(firsts[0]); i++) {
++        assert(syscall(SYS_close_range, firsts[i], UINT_MAX, 0) == 0);
++        assert(syscall(SYS_close_range, firsts[i], UINT_MAX, CLOSE_RANGE_CLOEXEC_) == 0);
++        assert(fcntl(low, F_GETFD) == 0);
++        assert(fcntl(high, F_GETFD) == 0);
++    }
++    errno = 0;
++    assert(syscall(SYS_close_range, 2U, 1U, 0) == -1 && errno == EINVAL);
++
++    assert(syscall(SYS_close_range, (unsigned)low, (unsigned)low, 0) == 0);
++    check_closed(low);
++    assert(fcntl(high, F_GETFD) == 0);
++    low = fcntl(base, F_DUPFD, 32);
++    assert(low >= 32 && low < high);
++    assert(syscall(SYS_close_range, (unsigned)low, UINT_MAX, CLOSE_RANGE_CLOEXEC_) == 0);
++    assert(fcntl(low, F_GETFD) == FD_CLOEXEC);
++    assert(fcntl(high, F_GETFD) == FD_CLOEXEC);
++    assert(fcntl(base, F_GETFD) == 0);
++
++    assert(syscall(SYS_close_range, (unsigned)low, UINT_MAX, 0) == 0);
++    check_closed(low);
++    check_closed(high);
++    assert(fcntl(base, F_GETFD) == 0);
++    assert(close(base) == 0);
++    puts("PASS close_range bounds");
++    return 0;
++}

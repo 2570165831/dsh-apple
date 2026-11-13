@@ -68,7 +68,7 @@ enum ResetRunner {
 
     /// Write the request the next launch executes, then quit.
     ///
-    /// The request names the two switches and nothing else: which paths that
+    /// The request names the switches and nothing else: which paths that
     /// means is decided in one place (`reset-plan.mjs`), and re-deriving it here
     /// is how the panel and the executor would come to disagree.
     ///
@@ -77,11 +77,12 @@ enum ResetRunner {
     /// directories out from under an open store is not something to try. iOS has
     /// no public "restart me" API, so the sequence is: write the request, exit,
     /// the user taps the icon.
-    static func requestReset(keepConversations: Bool, keepSettings: Bool) {
+    static func requestReset(keepConversations: Bool, keepSettings: Bool, discardGuestBackups: Bool = false) {
         let payload: [String: Any] = [
             "version": 1,
             "keepConversations": keepConversations,
             "keepSettings": keepSettings,
+            "discardGuestBackups": discardGuestBackups,
             "requestedAt": ISO8601DateFormatter().string(from: Date()),
         ]
         do {
@@ -143,8 +144,15 @@ enum ResetRunner {
         "Library/Caches",
     ]
 
-    /// Entries that may be moved as a whole: the guest image's own directory.
-    private static let allowedWhole = [ResetTable.guest]
+    /// Entries that may be moved as a whole: the guest image and its old copies.
+    private static let allowedWhole = [ResetTable.guest, ResetTable.guestBackups]
+
+    /// Only the app's own always-moved runtime entries may be regenerated.
+    /// Derive them from the table checked by reset-plan-parity.py.
+    private static let runtimeEntries = ResetTable.tiers
+        .filter { $0.tier == "always" }
+        .flatMap { $0.entries.map(\.relative) }
+        .filter { $0.hasPrefix("Library/Application Support/" + RuntimePaths.directoryName + "/") }
 
     /// Below an allowed parent, but never something a reset moves: the staging
     /// area is where things go, and the request is the reset's own input.
@@ -227,6 +235,11 @@ enum ResetRunner {
         if let link = symlinkOnPath(root: root, relative: stampRelative) {
             return "\(link) is a symbolic link"
         }
+        let journal = root.appendingPathComponent(ResetTable.guest + ".install-backup")
+        var info = stat()
+        if entries.contains(ResetTable.guestBackups), lstat(journal.path, &info) == 0 {
+            return "旧客户机仍用于未完成的镜像恢复；请重新打开 App 完成恢复后，再移走旧副本"
+        }
         for relative in entries {
             if let problem = pathProblem(relative) { return problem }
             if let link = symlinkOnPath(root: root, relative: relative) {
@@ -264,7 +277,9 @@ enum ResetRunner {
         let keepConversations = object["keepConversations"] as? Bool ?? true
         let keepSettings = object["keepSettings"] as? Bool ?? true
         let requestedAt = object["requestedAt"] as? String ?? ""
+        let discardGuestBackups = object["discardGuestBackups"] as? Bool ?? false
         return "\(requestedAt)|\(keepConversations)|\(keepSettings)"
+            + (discardGuestBackups ? "|discardGuestBackups" : "")
     }
 
     /// Take a refused request out of the way, without deleting it.
@@ -405,8 +420,21 @@ enum ResetRunner {
                 continue
             }
             if sourceThere && destinationThere {
-                // Cannot happen through `rename`, which is atomic. Left alone and
-                // reported: the alternative is choosing one to delete.
+                if runtimeEntries.contains(relative) {
+                    let extra = destination.appendingPathExtension(
+                        "relaunch-" + BootGuard.launchId + "-" + UUID().uuidString)
+                    do {
+                        try moveEntry(source, to: extra)
+                        moved += 1
+                        done.append(relative)
+                    } catch {
+                        failed.append(relative)
+                        NSLog("dshportc: reset resume could not preserve %@: %@", relative, "\(error)")
+                    }
+                    continue
+                }
+                // Leave both user-data copies in place; recovery cannot choose
+                // which one the user wants to keep.
                 both.append(relative)
                 continue
             }
@@ -479,6 +507,7 @@ enum ResetRunner {
               let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else { return nil }
         let keepConversations = object["keepConversations"] as? Bool ?? true
         let keepSettings = object["keepSettings"] as? Bool ?? true
+        let discardGuestBackups = object["discardGuestBackups"] as? Bool ?? false
         let inProgress = inProgressFile
 
         // An earlier reset that is not finished holds every new request back:
@@ -507,7 +536,7 @@ enum ResetRunner {
                 reason: "重置请求无法识别（\(key)），什么都没有移动，这次没有继续启动。重新打开 App 会照常启动。"
             )
         }
-        let entries = combo.move
+        let entries = ResetTable.outermost(combo.move + (discardGuestBackups ? [ResetTable.guestBackups] : []))
 
         let root = containerRoot
         let stamp = stamp()
@@ -528,6 +557,7 @@ enum ResetRunner {
             "entries": entries,
             "keepConversations": keepConversations,
             "keepSettings": keepSettings,
+            "discardGuestBackups": discardGuestBackups,
             "requestIdentity": requestIdentity(object),
             "startedAt": ISO8601DateFormatter().string(from: Date()),
             "moved": 0,
@@ -575,6 +605,7 @@ enum ResetRunner {
             "failed": failed,
             "keepConversations": keepConversations,
             "keepSettings": keepSettings,
+            "discardGuestBackups": discardGuestBackups,
         ]
 
         if !failed.isEmpty {
@@ -623,21 +654,31 @@ enum ResetRunner {
 
     // MARK: - The one delete
 
-    /// Total bytes held by everything under `reset-staging/`.
+    /// The staging entry a failed-reset launch writes its runtime files into.
+    private static var currentLaunchEntry: String { "launch-" + BootGuard.launchId }
+
+    /// Total bytes held by everything under `reset-staging/` except this
+    /// launch's own runtime directory. Hidden files count: an old guest's tree is
+    /// full of dot directories.
     ///
     /// Shown before the purge button is enabled, because "clear the leftover"
-    /// without a size is a button nobody can price. Walks the tree once; the
-    /// staged data is a few hundred megabytes at most and the panel is user-
-    /// initiated, so there is no need for a cached figure that could be stale.
+    /// without a size is a button nobody can price. Walks the tree once when
+    /// the panel opens, including any old guests the user moved there, rather
+    /// than showing a cached figure from an earlier reset.
     static func stagingSize() -> Int64 {
         let root = RuntimePaths.resetStagingDirectory
         guard let enumerator = FileManager.default.enumerator(
             at: root,
             includingPropertiesForKeys: [.totalFileAllocatedSizeKey, .fileAllocatedSizeKey, .isRegularFileKey],
-            options: [.skipsHiddenFiles]
+            options: []
         ) else { return 0 }
         var total: Int64 = 0
+        let current = root.appendingPathComponent(currentLaunchEntry, isDirectory: true).standardizedFileURL.path
         for case let url as URL in enumerator {
+            if url.standardizedFileURL.path.hasPrefix(current) {
+                enumerator.skipDescendants()
+                continue
+            }
             guard let values = try? url.resourceValues(
                 forKeys: [.totalFileAllocatedSizeKey, .fileAllocatedSizeKey, .isRegularFileKey]
             ), values.isRegularFile == true else { continue }
@@ -647,7 +688,9 @@ enum ResetRunner {
         return total
     }
 
-    /// Delete everything under `reset-staging/`, keeping the directory itself.
+    /// Delete everything under `reset-staging/`, keeping the directory itself
+    /// and this launch's `launch-<id>/`: after a failed reset that is where the
+    /// running app writes its log, status and diagnostics.
     ///
     /// Only ever called from the reset panel's confirmed button.
     ///
@@ -660,7 +703,7 @@ enum ResetRunner {
         }
         var removed = 0
         var failed: [String] = []
-        for name in names {
+        for name in names where name != currentLaunchEntry {
             do {
                 try fileManager.removeItem(at: root.appendingPathComponent(name))
                 removed += 1

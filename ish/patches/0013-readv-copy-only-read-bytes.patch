@@ -1,0 +1,160 @@
+diff --git a/kernel/fs.c b/kernel/fs.c
+--- a/kernel/fs.c
++++ b/kernel/fs.c
+@@ -378,6 +378,8 @@
+ // by the inefficiency of the emulator.
+ 
+ static struct iovec_ *read_iovec(addr_t iovec_addr, unsigned iovec_count) {
++    if (iovec_count > 1024)
++        return ERR_PTR(_EINVAL);
+ #ifdef GUEST_ARM64
+     // ARM64 uses 64-bit iovec structure (16 bytes per entry)
+     // We read the 64-bit version and convert to 32-bit for internal use
+@@ -438,18 +440,32 @@
+         goto error;
+ 
+     size_t offset = 0;
+-    for (unsigned i = 0; i < iovec_count; i++) {
+-        size_t print_size = iovec[i].len;
++    size_t remaining = res;
++    for (unsigned i = 0; i < iovec_count && remaining > 0; i++) {
++        size_t len = iovec[i].len < remaining ? iovec[i].len : remaining;
++        size_t print_size = len;
+         if (print_size > 100) print_size = 100;
+         STRACE(" {\"%.*s\", %u}", print_size, buf + offset, iovec[i].len);
+ 
+-        if (user_write(iovec[i].base, buf + offset, iovec[i].len)) {
+-            res = _EFAULT;
+-            goto error;
+-        }
+-        offset += iovec[i].len;
+-    }
+-
++        size_t copied = 0;
++        while (copied < len) {
++            addr_t addr;
++            if (__builtin_add_overflow(iovec[i].base, copied, &addr))
++                goto fault;
++            size_t chunk = PAGE_SIZE - PGOFFSET(addr);
++            if (chunk > len - copied)
++                chunk = len - copied;
++            if (user_write(addr, buf + offset, chunk))
++                goto fault;
++            copied += chunk;
++            offset += chunk;
++            remaining -= chunk;
++        }
++    }
++    goto error;
++
++fault:
++    res = offset ? (ssize_t) offset : _EFAULT;
+ error:
+     free(buf);
+     free(iovec);
+diff --git a/tests/regress/regress_readv.c b/tests/regress/regress_readv.c
+new file mode 100644
+--- /dev/null
++++ b/tests/regress/regress_readv.c
+@@ -0,0 +1,101 @@
++// Build: aarch64-linux-musl-gcc -static -O0 -Wall -o readvbounds regress_readv.c
++// Run inside iSH: /tmp/readvbounds
++#define _GNU_SOURCE
++#include <errno.h>
++#include <fcntl.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++#include <sys/mman.h>
++#include <sys/syscall.h>
++#include <sys/uio.h>
++#include <unistd.h>
++
++static int pass, fail;
++
++static void check(int ok, const char *what) {
++    if (ok) {
++        pass++;
++        printf("  PASS  %s\n", what);
++    } else {
++        fail++;
++        printf("  FAIL  %s (errno=%d)\n", what, errno);
++    }
++}
++
++static int filled(const unsigned char *buf, size_t size, unsigned char byte) {
++    for (size_t i = 0; i < size; i++)
++        if (buf[i] != byte)
++            return 0;
++    return 1;
++}
++
++int main(void) {
++    unsigned char out[27];
++    struct iovec iov[] = {{out, 3}, {out + 3, 8}, {out + 11, 16}};
++    int nullfd = open("/dev/null", O_RDONLY);
++    if (nullfd < 0) {
++        perror("/dev/null");
++        return 1;
++    }
++    memset(out, 0xa5, sizeof(out));
++    check(readv(nullfd, iov, 3) == 0, "readv(/dev/null) returns EOF");
++    check(filled(out, sizeof(out), 0xa5), "EOF leaves every iovec untouched");
++    close(nullfd);
++
++    char path[] = "/tmp/readvbounds-XXXXXX";
++    int fd = mkstemp(path);
++    if (fd < 0) {
++        perror("mkstemp");
++        return 1;
++    }
++    unlink(path);
++    check(write(fd, "abcde", 5) == 5, "seed short file");
++    check(lseek(fd, 0, SEEK_SET) == 0, "rewind short file");
++    memset(out, 0xa5, sizeof(out));
++    check(readv(fd, iov, 3) == 5, "short read spans two iovecs");
++    check(memcmp(out, "abcde", 5) == 0, "short read copies actual data");
++    check(filled(out + 5, sizeof(out) - 5, 0xa5), "short read leaves the tail untouched");
++
++    check(lseek(fd, 0, SEEK_SET) == 0, "rewind before zero-length iovec");
++    struct iovec zero[] = {{(void *) 1, 0}, {out, 5}};
++    check(readv(fd, zero, 2) == 5, "zero-length iovec ignores its address");
++
++    size_t page = sysconf(_SC_PAGESIZE);
++    unsigned char *map = mmap(NULL, page * 2, PROT_READ | PROT_WRITE,
++            MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
++    if (map == MAP_FAILED || mprotect(map + page, page, PROT_NONE) < 0) {
++        perror("guard page");
++        close(fd);
++        return 1;
++    }
++    struct iovec bad[] = {{out, 3}, {map + page, 2}};
++    check(lseek(fd, 0, SEEK_SET) == 0, "rewind before later fault");
++    check(readv(fd, bad, 2) == 3, "later fault returns the completed prefix");
++    check(lseek(fd, 0, SEEK_SET) == 0, "rewind before first fault");
++    errno = 0;
++    check(readv(fd, bad + 1, 1) == -1 && errno == EFAULT, "first fault -> EFAULT");
++
++    unsigned char *data = malloc(page * 2);
++    if (data == NULL)
++        return 1;
++    memset(data, 0x5a, page * 2);
++    check(lseek(fd, 0, SEEK_SET) == 0, "rewind before multi-page seed");
++    check(write(fd, data, page * 2) == (ssize_t) (page * 2), "seed multi-page file");
++    check(lseek(fd, 0, SEEK_SET) == 0, "rewind before in-iovec fault");
++    struct iovec crossing = {map, page * 2};
++    check(readv(fd, &crossing, 1) == (ssize_t) page, "in-iovec fault returns copied pages");
++    check(filled(map, page, 0x5a), "copied page contains file data");
++
++    errno = 0;
++    check(syscall(SYS_readv, fd, NULL, 1025) == -1 && errno == EINVAL,
++            "readv rejects too many iovecs");
++    errno = 0;
++    check(syscall(SYS_writev, fd, NULL, 1025) == -1 && errno == EINVAL,
++            "writev rejects too many iovecs");
++    free(data);
++    munmap(map, page * 2);
++    close(fd);
++    printf("%d passed, %d failed\n", pass, fail);
++    return fail != 0;
++}

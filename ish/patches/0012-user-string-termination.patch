@@ -1,0 +1,592 @@
+diff --git a/kernel/user.c b/kernel/user.c
+--- a/kernel/user.c
++++ b/kernel/user.c
+@@ -90,21 +90,26 @@
+ 
+ int user_read_string(addr_t addr, char *buf, size_t max) {
+     if (addr == 0)
+-        return 1;
+-    struct mem *mem = USER_MEM_OR_FAULT(current);
++        return _EFAULT;
++    struct mem *mem = __atomic_load_n(&current->mem, __ATOMIC_ACQUIRE);
++    if (mem == NULL)
++        return _EFAULT;
+     read_wrlock(&mem->lock);
+-    size_t i = 0;
+-    while (i < max) {
+-        if (__user_read_mem(mem, addr + i, &buf[i], sizeof(buf[i]))) {
+-            read_wrunlock(&mem->lock);
+-            return 1;
++    int res = _ENAMETOOLONG;
++    for (size_t i = 0; i < max; i++) {
++        addr_t p;
++        if (__builtin_add_overflow(addr, i, &p) ||
++                __user_read_mem(mem, p, &buf[i], sizeof(buf[i]))) {
++            res = _EFAULT;
++            break;
+         }
+-        if (buf[i] == '\0')
++        if (buf[i] == '\0') {
++            res = 0;
+             break;
+-        i++;
++        }
+     }
+     read_wrunlock(&mem->lock);
+-    return 0;
++    return res;
+ }
+ 
+ int user_write_string(addr_t addr, const char *buf) {
+diff --git a/kernel/calls.h b/kernel/calls.h
+--- a/kernel/calls.h
++++ b/kernel/calls.h
+@@ -21,6 +21,7 @@
+ int must_check user_read_task(struct task *task, addr_t addr, void *buf, size_t count);
+ int must_check user_write_task(struct task *task, addr_t addr, const void *buf, size_t count);
+ int must_check user_write_task_ptrace(struct task *task, addr_t addr, const void *buf, size_t count);
++// String reads return 0, _EFAULT, or _ENAMETOOLONG.
+ int must_check user_read_string(addr_t addr, char *buf, size_t max);
+ int must_check user_write_string(addr_t addr, const char *buf);
+ #define user_get(addr, var) user_read(addr, &(var), sizeof(var))
+diff --git a/kernel/misc.c b/kernel/misc.c
+--- a/kernel/misc.c
++++ b/kernel/misc.c
+@@ -24,8 +24,9 @@
+             return 0;
+         case PRCTL_SET_NAME_: {
+             char name[16];
+-            if (user_read_string(arg2, name, sizeof(name) - 1))
+-                return _EFAULT;
++            int err = user_read_string(arg2, name, sizeof(name) - 1);
++            if (err < 0 && err != _ENAMETOOLONG)
++                return err;
+             name[sizeof(name) - 1] = '\0';
+             STRACE("prctl(PRCTL_SET_NAME, \"%s\")", name);
+             strcpy(current->comm, name);
+diff --git a/kernel/fs.c b/kernel/fs.c
+--- a/kernel/fs.c
++++ b/kernel/fs.c
+@@ -38,16 +38,15 @@
+     return 0;
+ }
+ 
+-// TODO ENAMETOOLONG
+-
+ #define AT_EACCESS_ 0x200
+ dword_t sys_access(addr_t path_addr, dword_t mode) {
+     return sys_faccessat(AT_FDCWD_, path_addr, mode, 0);
+ }
+ dword_t sys_faccessat(fd_t at_f, addr_t path_addr, mode_t_ mode, dword_t flags) {
+     char path[MAX_PATH];
+-    if (user_read_string(path_addr, path, sizeof(path)))
+-        return _EFAULT;
++    int err = user_read_string(path_addr, path, sizeof(path));
++    if (err < 0)
++        return err;
+     struct fd *at = at_fd(at_f);
+     if (at == NULL)
+         return _EBADF;
+@@ -60,7 +59,7 @@
+     uid_t_ gid_tmp = current->egid;
+     current->euid = current->uid;
+     current->egid = current->gid;
+-    int err = generic_accessat(at, path, mode);
++    err = generic_accessat(at, path, mode);
+     current->euid = uid_tmp;
+     current->egid = gid_tmp;
+     return err;
+@@ -68,8 +67,9 @@
+ 
+ fd_t sys_openat(fd_t at_f, addr_t path_addr, dword_t flags, mode_t_ mode) {
+     char path[MAX_PATH];
+-    if (user_read_string(path_addr, path, sizeof(path)))
+-        return _EFAULT;
++    int err = user_read_string(path_addr, path, sizeof(path));
++    if (err < 0)
++        return err;
+     STRACE("openat(%d, \"%s\", 0x%x, 0x%x)", at_f, path, flags, mode);
+ 
+     if (flags & O_CREAT_)
+@@ -92,8 +92,9 @@
+ 
+ dword_t sys_readlinkat(fd_t at_f, addr_t path_addr, addr_t buf_addr, dword_t bufsize) {
+     char path[MAX_PATH];
+-    if (user_read_string(path_addr, path, sizeof(path)))
+-        return _EFAULT;
++    int err = user_read_string(path_addr, path, sizeof(path));
++    if (err < 0)
++        return err;
+     STRACE("readlinkat(%d, \"%s\", %#x, %#x)", at_f, path, buf_addr, bufsize);
+     struct fd *at = at_fd(at_f);
+     if (at == NULL)
+@@ -114,11 +115,13 @@
+ 
+ dword_t sys_linkat(fd_t src_at_f, addr_t src_addr, fd_t dst_at_f, addr_t dst_addr) {
+     char src[MAX_PATH];
+-    if (user_read_string(src_addr, src, sizeof(src)))
+-        return _EFAULT;
++    int err = user_read_string(src_addr, src, sizeof(src));
++    if (err < 0)
++        return err;
+     char dst[MAX_PATH];
+-    if (user_read_string(dst_addr, dst, sizeof(dst)))
+-        return _EFAULT;
++    err = user_read_string(dst_addr, dst, sizeof(dst));
++    if (err < 0)
++        return err;
+     STRACE("linkat(%d, \"%s\", %d, \"%s\")", src_at_f, src, dst_at_f, dst);
+     struct fd *src_at = at_fd(src_at_f);
+     if (src_at == NULL)
+@@ -136,8 +139,9 @@
+ #define AT_REMOVEDIR_ 0x200
+ dword_t sys_unlinkat(fd_t at_f, addr_t path_addr, int_t flags) {
+     char path[MAX_PATH];
+-    if (user_read_string(path_addr, path, sizeof(path)))
+-        return _EFAULT;
++    int err = user_read_string(path_addr, path, sizeof(path));
++    if (err < 0)
++        return err;
+     STRACE("unlinkat(%d, \"%s\", %d)", at_f, path, flags);
+     struct fd *at = at_fd(at_f);
+     if (at == NULL)
+@@ -156,11 +160,13 @@
+     if (flags != 0)
+         return _EINVAL;
+     char src[MAX_PATH];
+-    if (user_read_string(src_addr, src, sizeof(src)))
+-        return _EFAULT;
++    int err = user_read_string(src_addr, src, sizeof(src));
++    if (err < 0)
++        return err;
+     char dst[MAX_PATH];
+-    if (user_read_string(dst_addr, dst, sizeof(dst)))
+-        return _EFAULT;
++    err = user_read_string(dst_addr, dst, sizeof(dst));
++    if (err < 0)
++        return err;
+     STRACE("renameat(%d, \"%s\", %d, \"%s\")", src_at_f, src, dst_at_f, dst);
+     struct fd *src_at = at_fd(src_at_f);
+     if (src_at == NULL)
+@@ -181,11 +187,13 @@
+ 
+ dword_t sys_symlinkat(addr_t target_addr, fd_t at_f, addr_t link_addr) {
+     char target[MAX_PATH];
+-    if (user_read_string(target_addr, target, sizeof(target)))
+-        return _EFAULT;
++    int err = user_read_string(target_addr, target, sizeof(target));
++    if (err < 0)
++        return err;
+     char link[MAX_PATH];
+-    if (user_read_string(link_addr, link, sizeof(link)))
+-        return _EFAULT;
++    err = user_read_string(link_addr, link, sizeof(link));
++    if (err < 0)
++        return err;
+     STRACE("symlinkat(\"%s\", %d, \"%s\")", target, at_f, link);
+     struct fd *at = at_fd(at_f);
+     if (at == NULL)
+@@ -199,8 +207,9 @@
+ 
+ dword_t sys_mknodat(fd_t at_f, addr_t path_addr, mode_t_ mode, dev_t_ dev) {
+     char path[MAX_PATH];
+-    if (user_read_string(path_addr, path, sizeof(path)))
+-        return _EFAULT;
++    int err = user_read_string(path_addr, path, sizeof(path));
++    if (err < 0)
++        return err;
+     STRACE("mknodat(%d, \"%s\", %#x, %#x)", at_f, path, mode, dev);
+     apply_umask(&mode);
+     struct fd *at = at_fd(at_f);
+@@ -854,8 +863,9 @@
+ 
+ dword_t sys_chdir(addr_t path_addr) {
+     char path[MAX_PATH];
+-    if (user_read_string(path_addr, path, sizeof(path)))
+-        return _EFAULT;
++    int err = user_read_string(path_addr, path, sizeof(path));
++    if (err < 0)
++        return err;
+     STRACE("chdir(\"%s\")", path);
+ 
+     struct fd *dir = open_dir(path);
+@@ -877,8 +887,9 @@
+ 
+ dword_t sys_chroot(addr_t path_addr) {
+     char path[MAX_PATH];
+-    if (user_read_string(path_addr, path, sizeof(path)))
+-        return _EFAULT;
++    int err = user_read_string(path_addr, path, sizeof(path));
++    if (err < 0)
++        return err;
+     STRACE("chroot(\"%s\")", path);
+ 
+     struct fd *dir = open_dir(path);
+@@ -958,11 +969,12 @@
+ 
+ dword_t sys_statfs(addr_t path_addr, addr_t buf_addr) {
+     char path_raw[MAX_PATH];
+-    if (user_read_string(path_addr, path_raw, sizeof(path_raw)))
+-        return _EFAULT;
++    int err = user_read_string(path_addr, path_raw, sizeof(path_raw));
++    if (err < 0)
++        return err;
+     STRACE("statfs(\"%s\", %#x)", path_raw, buf_addr);
+     char path[MAX_PATH];
+-    int err = path_normalize(AT_PWD, path_raw, path, N_SYMLINK_NOFOLLOW);
++    err = path_normalize(AT_PWD, path_raw, path, N_SYMLINK_NOFOLLOW);
+     if (err < 0)
+         return err;
+     struct mount *mount = mount_find(path);
+@@ -973,13 +985,14 @@
+ 
+ dword_t sys_statfs64(addr_t path_addr, dword_t buf_size, addr_t buf_addr) {
+     char path_raw[MAX_PATH];
+-    if (user_read_string(path_addr, path_raw, sizeof(path_raw)))
+-        return _EFAULT;
++    int err = user_read_string(path_addr, path_raw, sizeof(path_raw));
++    if (err < 0)
++        return err;
+     STRACE("statfs64(\"%s\", %d, %#x)", path_raw, buf_size, buf_addr);
+     if (buf_size != sizeof(struct statfs64_))
+         return _EINVAL;
+     char path[MAX_PATH];
+-    int err = path_normalize(AT_PWD, path_raw, path, N_SYMLINK_NOFOLLOW);
++    err = path_normalize(AT_PWD, path_raw, path, N_SYMLINK_NOFOLLOW);
+     if (err < 0)
+         return err;
+     struct mount *mount = mount_find(path);
+@@ -1024,11 +1037,12 @@
+ 
+ dword_t sys_statfs_arm64(addr_t path_addr, addr_t buf_addr) {
+     char path_raw[MAX_PATH];
+-    if (user_read_string(path_addr, path_raw, sizeof(path_raw)))
+-        return _EFAULT;
++    int err = user_read_string(path_addr, path_raw, sizeof(path_raw));
++    if (err < 0)
++        return err;
+     STRACE("statfs(\"%s\", %#llx)", path_raw, (unsigned long long)buf_addr);
+     char path[MAX_PATH];
+-    int err = path_normalize(AT_PWD, path_raw, path, N_SYMLINK_NOFOLLOW);
++    err = path_normalize(AT_PWD, path_raw, path, N_SYMLINK_NOFOLLOW);
+     if (err < 0)
+         return err;
+     struct mount *mount = mount_find(path);
+@@ -1059,9 +1073,11 @@
+ 
+ static dword_t sys_utime_common(fd_t at_f, addr_t path_addr, struct timespec atime, struct timespec mtime, dword_t flags) {
+     char path[MAX_PATH];
+-    if (path_addr != 0)
+-        if (user_read_string(path_addr, path, sizeof(path)))
+-            return _EFAULT;
++    if (path_addr != 0) {
++        int err = user_read_string(path_addr, path, sizeof(path));
++        if (err < 0)
++            return err;
++    }
+     STRACE("utimensat(%d, %s, {{%lld, %lld}, {%lld, %lld}}, %d)", at_f, path,
+             (long long)atime.tv_sec, (long long)atime.tv_nsec,
+             (long long)mtime.tv_sec, (long long)mtime.tv_nsec, flags);
+@@ -1140,8 +1156,9 @@
+ 
+ dword_t sys_fchmodat(fd_t at_f, addr_t path_addr, dword_t mode) {
+     char path[MAX_PATH];
+-    if (user_read_string(path_addr, path, sizeof(path)))
+-        return _EFAULT;
++    int err = user_read_string(path_addr, path, sizeof(path));
++    if (err < 0)
++        return err;
+     STRACE("fchmodat(%d, \"%s\", %o)", at_f, path, mode);
+     struct fd *at = at_fd(at_f);
+     if (at == NULL)
+@@ -1178,8 +1195,9 @@
+ 
+ dword_t sys_fchownat(fd_t at_f, addr_t path_addr, dword_t owner, dword_t group, int flags) {
+     char path[MAX_PATH];
+-    if (user_read_string(path_addr, path, sizeof(path)))
+-        return _EFAULT;
++    int err = user_read_string(path_addr, path, sizeof(path));
++    if (err < 0)
++        return err;
+     STRACE("fchownat(%d, \"%s\", %d, %d, %d)", at_f, path, owner, group, flags);
+     struct fd *at = at_fd(at_f);
+     if (at == NULL)
+@@ -1187,7 +1205,6 @@
+     // realfs can't change ownership on host, silently succeed
+     if (at != AT_PWD && at->mount->fs == &realfs)
+         return 0;
+-    int err;
+     bool follow_links = flags & AT_SYMLINK_NOFOLLOW_ ? false : true;
+     if (owner != (uid_t) -1) {
+         err = generic_setattrat(at, path, make_attr(uid, owner), follow_links);
+@@ -1215,8 +1232,9 @@
+ dword_t sys_truncate64(addr_t path_addr, off_t_ size) {
+     STRACE("truncate64(%#x, %lld [0x%llx])", path_addr, (long long)size, (unsigned long long)size);
+     char path[MAX_PATH];
+-    if (user_read_string(path_addr, path, sizeof(path)))
+-        return _EFAULT;
++    int err = user_read_string(path_addr, path, sizeof(path));
++    if (err < 0)
++        return err;
+     return generic_setattrat(NULL, path, make_attr(size, size), true);
+ }
+ 
+@@ -1245,8 +1263,9 @@
+ dword_t sys_truncate64(addr_t path_addr, dword_t size_low, dword_t size_high) {
+     off_t_ size = ((qword_t) size_high << 32) | size_low;
+     char path[MAX_PATH];
+-    if (user_read_string(path_addr, path, sizeof(path)))
+-        return _EFAULT;
++    int err = user_read_string(path_addr, path, sizeof(path));
++    if (err < 0)
++        return err;
+     return generic_setattrat(NULL, path, make_attr(size, size), true);
+ }
+ 
+@@ -1276,8 +1295,9 @@
+ 
+ dword_t sys_mkdirat(fd_t at_f, addr_t path_addr, mode_t_ mode) {
+     char path[MAX_PATH];
+-    if (user_read_string(path_addr, path, sizeof(path)))
+-        return _EFAULT;
++    int err = user_read_string(path_addr, path, sizeof(path));
++    if (err < 0)
++        return err;
+     STRACE("mkdirat(%d, %s, 0%o)", at_f, path, mode);
+     struct fd *at = at_fd(at_f);
+     if (at == NULL)
+@@ -1293,8 +1313,9 @@
+ 
+ dword_t sys_rmdir(addr_t path_addr) {
+     char path[MAX_PATH];
+-    if (user_read_string(path_addr, path, sizeof(path)))
+-        return _EFAULT;
++    int err = user_read_string(path_addr, path, sizeof(path));
++    if (err < 0)
++        return err;
+     STRACE("rmdir(%s)", path);
+     return generic_rmdirat(AT_PWD, path);
+ }
+diff --git a/kernel/exec.c b/kernel/exec.c
+--- a/kernel/exec.c
++++ b/kernel/exec.c
+@@ -813,10 +813,11 @@
+ 
+ dword_t sys_execve(addr_t filename_addr, addr_t argv_addr, addr_t envp_addr) {
+     char filename[MAX_PATH];
+-    if (user_read_string(filename_addr, filename, sizeof(filename)))
+-        return _EFAULT;
+-
+-    int err = _ENOMEM;
++    int err = user_read_string(filename_addr, filename, sizeof(filename));
++    if (err < 0)
++        return err;
++
++    err = _ENOMEM;
+     char *argv = malloc(ARGV_MAX);
+     if (argv == NULL)
+         goto err_free_argv;
+diff --git a/fs/stat.c b/fs/stat.c
+--- a/fs/stat.c
++++ b/fs/stat.c
+@@ -78,8 +78,9 @@
+ static dword_t sys_stat_path(fd_t at_f, addr_t path_addr, addr_t statbuf_addr, bool follow_links) {
+     int err;
+     char path[MAX_PATH];
+-    if (user_read_string(path_addr, path, sizeof(path)))
+-        return _EFAULT;
++    err = user_read_string(path_addr, path, sizeof(path));
++    if (err < 0)
++        return err;
+     STRACE("stat(at=%d, path=\"%s\", statbuf=0x%x, follow_links=%d)", at_f, path, statbuf_addr, follow_links);
+     struct fd *at = at_fd(at_f);
+     if (at == NULL)
+@@ -134,8 +135,9 @@
+ 
+ dword_t sys_statx(fd_t at_f, addr_t path_addr, int_t flags, uint_t mask, addr_t statx_addr) {
+     char path[MAX_PATH];
+-    if (user_read_string(path_addr, path, sizeof(path)))
+-        return _EFAULT;
++    int err = user_read_string(path_addr, path, sizeof(path));
++    if (err < 0)
++        return err;
+     struct fd *at = at_fd(at_f);
+     if (at == NULL)
+         return _EBADF;
+diff --git a/fs/mount.c b/fs/mount.c
+--- a/fs/mount.c
++++ b/fs/mount.c
+@@ -179,19 +179,23 @@
+ 
+ dword_t sys_mount(addr_t source_addr, addr_t point_addr, addr_t type_addr, dword_t flags, addr_t data_addr) {
+     char source[MAX_PATH];
+-    if (user_read_string(source_addr, source, sizeof(source)))
+-        return _EFAULT;
++    int err = user_read_string(source_addr, source, sizeof(source));
++    if (err < 0)
++        return err;
+     char point_raw[MAX_PATH];
+-    if (user_read_string(point_addr, point_raw, sizeof(point_raw)))
+-        return _EFAULT;
++    err = user_read_string(point_addr, point_raw, sizeof(point_raw));
++    if (err < 0)
++        return err;
+     char data[MAX_PATH];
+     if (data_addr != 0) {
+-        if (user_read_string(data_addr, data, sizeof(data)))
+-            return _EFAULT;
++        err = user_read_string(data_addr, data, sizeof(data));
++        if (err < 0)
++            return err;
+     }
+     char type[100];
+-    if (user_read_string(type_addr, type, sizeof(type)))
+-        return _EFAULT;
++    err = user_read_string(type_addr, type, sizeof(type));
++    if (err < 0)
++        return err;
+     STRACE("mount(\"%s\", \"%s\", \"%s\", %#x, \"%s\")", source, point_raw, type, flags, data_addr != 0 ? data : NULL);
+ 
+     if (flags & ~MS_SUPPORTED) {
+@@ -218,7 +222,7 @@
+         return _EPERM;
+ 
+     struct statbuf stat;
+-    int err = generic_statat(AT_PWD, point_raw, &stat, true);
++    err = generic_statat(AT_PWD, point_raw, &stat, true);
+     if (err < 0)
+         return err;
+     if (!S_ISDIR(stat.mode))
+@@ -239,10 +243,11 @@
+ 
+ dword_t sys_umount2(addr_t target_addr, dword_t flags) {
+     char target_raw[MAX_PATH];
+-    if (user_read_string(target_addr, target_raw, sizeof(target_raw)))
+-        return _EFAULT;
++    int err = user_read_string(target_addr, target_raw, sizeof(target_raw));
++    if (err < 0)
++        return err;
+     char target[MAX_PATH];
+-    int err = path_normalize(AT_PWD, target_raw, target,
++    err = path_normalize(AT_PWD, target_raw, target,
+             flags & UMOUNT_NOFOLLOW_ ? N_SYMLINK_NOFOLLOW : N_SYMLINK_FOLLOW);
+     if (err < 0)
+         return err;
+diff --git a/tests/regress/regress_user_string.c b/tests/regress/regress_user_string.c
+new file mode 100644
+--- /dev/null
++++ b/tests/regress/regress_user_string.c
+@@ -0,0 +1,113 @@
++// Build: aarch64-linux-musl-gcc -static -O0 -Wall -o userstring regress_user_string.c
++// Run inside iSH with a fakefs root: /tmp/userstring
++#define _GNU_SOURCE
++#include <errno.h>
++#include <fcntl.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++#include <sys/mman.h>
++#include <sys/mount.h>
++#include <sys/prctl.h>
++#include <sys/stat.h>
++#include <unistd.h>
++
++static int pass, fail;
++
++static void check(int ok, const char *what) {
++    if (ok) {
++        pass++;
++        printf("  PASS  %s\n", what);
++    } else {
++        fail++;
++        printf("  FAIL  %s (errno=%d)\n", what, errno);
++    }
++}
++
++int main(void) {
++    char dir[] = "/tmp/userstring-XXXXXX", link[128];
++    if (mkdtemp(dir) == NULL) {
++        perror("mkdtemp");
++        return 1;
++    }
++    snprintf(link, sizeof(link), "%s/link", dir);
++    char text[4097];
++    memset(text, 'x', sizeof(text));
++    text[4096] = '\0';
++    errno = 0;
++    check(symlink(text, link) == -1 && errno == ENAMETOOLONG,
++            "unterminated target -> ENAMETOOLONG");
++    struct stat st;
++    errno = 0;
++    check(lstat(link, &st) == -1 && errno == ENOENT, "failed symlink creates nothing");
++    errno = 0;
++    int fd = open(text, O_RDONLY);
++    check(fd == -1 && errno == ENAMETOOLONG, "overlong open path -> ENAMETOOLONG");
++    if (fd >= 0)
++        close(fd);
++    errno = 0;
++    check(stat(text, &st) == -1 && errno == ENAMETOOLONG, "overlong stat path -> ENAMETOOLONG");
++    char *args[] = {text, NULL}, *env[] = {NULL};
++    errno = 0;
++    check(execve(text, args, env) == -1 && errno == ENAMETOOLONG,
++            "overlong exec path -> ENAMETOOLONG");
++    errno = 0;
++    check(mount(text, dir, "tmpfs", 0, "") == -1 && errno == ENAMETOOLONG,
++            "overlong mount source -> ENAMETOOLONG");
++    errno = 0;
++    check(mount("tmpfs", dir, "tmpfs", 0, text) == -1 && errno == ENAMETOOLONG,
++            "overlong mount data -> ENAMETOOLONG");
++    char type[101];
++    memset(type, 't', sizeof(type));
++    type[100] = '\0';
++    errno = 0;
++    check(mount("tmpfs", dir, type, 0, "") == -1 && errno == ENAMETOOLONG,
++            "overlong mount type -> ENAMETOOLONG");
++    errno = 0;
++    check(open((const char *) 1, O_RDONLY) == -1 && errno == EFAULT,
++            "unreadable path still reports EFAULT");
++
++    text[4095] = '\0';
++    int res = symlink(text, link);
++    check(res == 0, "NUL at the last permitted byte is accepted");
++    if (res == 0) {
++        char target[4096];
++        ssize_t size = readlink(link, target, sizeof(target));
++        check(size == 4095 && memcmp(target, text, 4095) == 0, "maximum target round-trips");
++        unlink(link);
++    }
++
++    size_t page = sysconf(_SC_PAGESIZE);
++    char *map = mmap(NULL, page * 2, PROT_READ | PROT_WRITE,
++            MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
++    if (map == MAP_FAILED || mprotect(map + page, page, PROT_NONE) < 0) {
++        perror("guard page");
++        rmdir(dir);
++        return 1;
++    }
++    char *name = map + page - 15;
++    memset(name, 'q', 15);
++    check(prctl(PR_SET_NAME, name, 0, 0, 0) == 0, "PR_SET_NAME truncates without probing byte 16");
++    fd = open("/proc/self/stat", O_RDONLY);
++    check(fd >= 0, "open process stat");
++    if (fd >= 0) {
++        char statbuf[1024];
++        ssize_t n = read(fd, statbuf, sizeof(statbuf) - 1);
++        check(n > 0, "read process stat");
++        if (n > 0) {
++            statbuf[n] = '\0';
++            check(strstr(statbuf, "(qqqqqqqqqqqqqqq)") != NULL, "process name keeps all 15 bytes");
++        }
++        close(fd);
++    }
++    memcpy(map + page - 4, "abc", 4);
++    check(prctl(PR_SET_NAME, map + page - 4, 0, 0, 0) == 0,
++            "short name stops at NUL before an unreadable page");
++    errno = 0;
++    check(prctl(PR_SET_NAME, (void *) 1, 0, 0, 0) == -1 && errno == EFAULT,
++            "PR_SET_NAME preserves address errors");
++    munmap(map, page * 2);
++    rmdir(dir);
++    printf("%d passed, %d failed\n", pass, fail);
++    return fail != 0;
++}

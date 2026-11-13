@@ -189,7 +189,7 @@ def wait_webview_ready(udid: str, *, timeout: float = 120) -> float:
         return read_status(udid).get("phase") == "webViewReady"
 
     _, _ = wait_for(ready, timeout=timeout, describe="webViewReady phase")
-    # webViewReady is the WKWebView's didFinish; report the wall clock from launch.
+    # Wait for the rendered DSH client, not didFinish; time starts at this call.
     return round(time.time() - start, 2)
 
 

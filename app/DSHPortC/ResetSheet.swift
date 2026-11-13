@@ -2,7 +2,7 @@
 //  ResetSheet.swift
 //  DSHPortC
 //
-//  The reset panel: two switches, the list of what they will move, the list of
+//  The reset panel: keep switches, an old-guest opt-in, their move list, the list of
 //  what is kept, the size of the data an earlier reset left behind, and the one
 //  button that clears that leftover.
 //
@@ -45,11 +45,12 @@ enum ResetTable {
     /// minutes and loses whatever was installed in it, and it has nothing to do
     /// with "DSH will not start". A separate entrance, not a third switch.
     static let guest = "Library/Application Support/ish-root"
+    static let guestBackups = "Library/Application Support/ish-root-previous"
 
     /// Every planned path, grouped by the tier that decides when it moves.
     ///
     /// `always` moves on every combination; `conversations` and `settings` move
-    /// unless their switch is on; `guest` only when asked for by name.
+    /// unless their switch is on; `guest` and `guestBackups` only when requested.
     static let tiers: [(tier: String, entries: [(relative: String, reason: String)])] = [
         ("always", [
             ("Library/Application Support/DSH/cache",
@@ -88,6 +89,10 @@ enum ResetTable {
         ("guest", [
             ("Library/Application Support/ish-root",
              "Linux 客户机镜像；从 App 内置压缩包重新导入要几分钟，里面装过的东西会全丢"),
+        ]),
+        ("guestBackups", [
+            ("Library/Application Support/ish-root-previous",
+             "旧 Linux 客户机副本；移进暂存目录后，再确认清除才会释放空间"),
         ]),
     ]
 
@@ -131,7 +136,7 @@ enum ResetTable {
         for (tier, entries) in tiers {
             let isKept = (tier == "conversations" && keepConversations)
                 || (tier == "settings" && keepSettings)
-                || tier == "guest"
+                || tier == "guest" || tier == "guestBackups"
             guard isKept else { continue }
             let prefix = tier == "conversations" ? "保留对话："
                 : tier == "settings" ? "保留设置：" : "保留："
@@ -176,6 +181,7 @@ struct ResetSheet: View {
     @Environment(\.dismiss) private var dismiss
     @State private var keepConversations = true
     @State private var keepSettings = true
+    @State private var discardGuestBackups = false
     @State private var preview = ResetPlanPreview()
     @State private var confirmReset = false
     @State private var confirmPurge = false
@@ -187,7 +193,14 @@ struct ResetSheet: View {
             + "\(keepSettings ? "keep" : "drop")-settings"
     }
 
-    private var combo: ResetCombo? { preview.combos[comboKey] }
+    private var combo: ResetCombo? {
+        guard var combo = preview.combos[comboKey] else { return nil }
+        if discardGuestBackups {
+            combo.move = ResetTable.outermost(combo.move + [ResetTable.guestBackups])
+            combo.keep.removeAll { $0.relative == ResetTable.guestBackups }
+        }
+        return combo
+    }
 
     /// `ResetSheet.builtinCombos()` — the entry point `BootGuard.resetPreview()`
     /// calls when Node's file is not there.
@@ -201,11 +214,13 @@ struct ResetSheet: View {
                         .accessibilityIdentifier("resetKeepConversations")
                     Toggle("保留设置", isOn: $keepSettings)
                         .accessibilityIdentifier("resetKeepSettings")
+                    Toggle("移走旧客户机副本", isOn: $discardGuestBackups)
+                        .accessibilityIdentifier("resetDiscardGuestBackups")
                 } header: {
                     Text("重置运行环境")
                 } footer: {
                     Text("对话包括会话、被隔离的会话和附件；设置包括 API 密钥、提供商配置和你自己的指令。"
-                         + "工作区里的文件永远不动。")
+                         + "工作区里的文件永远不动。旧客户机副本默认保留，勾选后移进暂存目录，再确认清除才会释放空间。")
                 }
 
                 Section("会移走（移进暂存目录，不删除）") {
@@ -287,7 +302,8 @@ struct ResetSheet: View {
                 Button("重置并退出", role: .destructive) {
                     ResetRunner.requestReset(
                         keepConversations: keepConversations,
-                        keepSettings: keepSettings
+                        keepSettings: keepSettings,
+                        discardGuestBackups: discardGuestBackups
                     )
                 }
                 Button("取消", role: .cancel) { }
@@ -316,6 +332,7 @@ struct ResetSheet: View {
         return "将移走 \(moves) 项运行数据，保留"
             + (keepConversations ? "对话" : "（不含对话）") + "、"
             + (keepSettings ? "设置" : "（不含设置）") + "。"
+            + (discardGuestBackups ? "旧客户机副本将移进暂存目录；重新打开 App 后，还需确认清除暂存数据才会释放空间。" : "")
     }
 
     /// `Library/Application Support/DSH/sessions` reads as `DSH/sessions`.

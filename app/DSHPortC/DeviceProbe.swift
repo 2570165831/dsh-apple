@@ -19,6 +19,7 @@
 //  plus `os_proc_available_memory()`.
 //
 
+#if DEBUG
 import Foundation
 import Darwin
 import os
@@ -130,7 +131,7 @@ final class DeviceProbe {
 
     private func waitForWeb() async {
         for _ in 0..<300 {
-            if NodeRunner.shared.status.phase == BootPhase.webViewReady.rawValue { return }
+            if NodeRunner.shared.statusSnapshot.phase == BootPhase.webViewReady.rawValue { return }
             try? await Task.sleep(nanoseconds: 200_000_000)
         }
     }
@@ -148,7 +149,7 @@ final class DeviceProbe {
 
     private func runMem() async {
         await waitForWeb()
-        report["webViewReadySeconds"] = NodeRunner.shared.status.secondsSinceLaunch
+        report["webViewReadySeconds"] = NodeRunner.shared.statusSnapshot.secondsSinceLaunch
         point("T0_node_up_guest_not_booted")
 
         let t = Date()
@@ -226,8 +227,9 @@ final class DeviceProbe {
             let h = dlopen(path, RTLD_NOW)
             checks[name] = h == nil ? "REJECTED: " + (dlerror().map { String(cString: $0) } ?? "nil") : "OPENED"
         }
-        checks["node_childProcessBlocked"] = NodeRunner.shared.status.node.childProcessBlocked
-        checks["node_addonLoadingBlocked"] = NodeRunner.shared.status.node.addonLoadingBlocked
+        let status = NodeRunner.shared.statusSnapshot
+        checks["node_childProcessBlocked"] = status.node.childProcessBlocked
+        checks["node_addonLoadingBlocked"] = status.node.addonLoadingBlocked
         report["os_checks"] = checks
     }
 
@@ -239,7 +241,7 @@ final class DeviceProbe {
             var hb: [String: Any] = ["n": n, "at": ISO8601DateFormatter().string(from: Date()),
                                      "uptime_s": ProcessInfo.processInfo.systemUptime,
                                      "footprint_mb": Self.footprintMB(), "available_mb": Self.availableMB(),
-                                     "pid": getpid(), "phase": NodeRunner.shared.status.phase]
+                                     "pid": getpid(), "phase": NodeRunner.shared.statusSnapshot.phase]
             // Node alive: TCP connect to the loopback web port.
             if let u = NodeRunner.shared.authenticatedURL, let port = u.port { hb["node_port_open"] = Self.portOpen(port) }
             if n % 5 == 1, ISHGuest.shared.state == .ready {
@@ -266,3 +268,4 @@ final class DeviceProbe {
         return withUnsafePointer(to: &a) { $0.withMemoryRebound(to: sockaddr.self, capacity: 1) { connect(s, $0, socklen_t(MemoryLayout<sockaddr_in>.size)) } } == 0
     }
 }
+#endif

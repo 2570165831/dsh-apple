@@ -25,9 +25,9 @@
 // ----
 // A phone's boot log is small, but an error loop can make it large, and the zip
 // has to be shareable. Two limits: per file, and for the whole bundle. Reading is
-// bounded too: only the tail of a large file is read, the first (partial) line is
-// dropped so a secret split across the cut cannot appear half-redacted, and the
-// report says how many bytes were kept out of how many.
+// bounded too: a cut log keeps only complete, prefixed records. Other files
+// need their field context and are omitted if the read window cannot hold them.
+// Per-file and bundle limits are applied after redaction.
 
 import {
   closeSync, existsSync, fstatSync, lstatSync, mkdirSync, openSync, readFileSync, readSync,
@@ -116,7 +116,7 @@ export const EXCLUDED = Object.freeze([
  */
 const STRONG_KEYS = '(?:api[_-]?key|api[_-]?token|access[_-]?token|refresh[_-]?token|id[_-]?token|auth[_-]?token'
   + '|session[_-]?token|bearer[_-]?token|[_-]token|access[_-]?key|secret[_-]?key|private[_-]?key'
-  + '|client[_-]?secret|secret|password|passwd|passphrase|credentials?)';
+  + '|client[_-]?secret|secret|password|passwd|passphrase|credentials?|(?:set[_-]?)?cookies?)';
 const WEAK_KEYS = '(?:token|auth|authorization|bearer|pwd)';
 /** A field value: a JSON/YAML quoted string, or the rest of the line. */
 const FIELD_VALUE = `("(?:[^"\\\\\\n]|\\\\.)*"|'(?:[^'\\n]|'')*'|[^\\s"',}\\]][^\\n]*?(?=[ \\t\\r]*$))`;
@@ -147,11 +147,76 @@ function redactAssignment(match, context, key, value) {
   return `${context}${key}=${shown}`;
 }
 
+/** Check field starts, using the same strong/weak key contexts as the rules. */
+const SENSITIVE_FIELDS = [
+  new RegExp('(^[ \\t]*(?:-[ \\t]+)?|[^A-Za-z0-9_-])(["\']?)([A-Za-z0-9_-]*?' + STRONG_KEYS + ')\\2[ \\t]*:[ \\t]*', 'gi'),
+  new RegExp('(^[ \\t]*(?:-[ \\t]+)?|[|>{,\\[][ \\t]*)(["\']?)(' + WEAK_KEYS + ')\\2[ \\t]*:[ \\t]*', 'gi'),
+];
+
+function hasMultilineSecret(text) {
+  const lines = text.split('\n').map((line) => line.replace(/\r$/, ''));
+  for (let index = 0; index < lines.length; index += 1) {
+    for (const pattern of SENSITIVE_FIELDS) {
+      for (const field of lines[index].matchAll(pattern)) {
+        const atStart = field.index === 0 && /^[ \t]*(?:-[ \t]+)?$/.test(field[1]);
+        const indent = atStart ? field[1].length : lines[index].match(/^[ \t]*/)[0].length;
+        const value = lines[index].slice(field.index + field[0].length)
+          .replace(/^(?:!\S+[ \t]+)+/, '').trim();
+        if (/^[|>][+-]?\d*[+-]?(?:[ \t]+#.*)?$/.test(value)
+          || /^"(?:[^"\\]|\\.)*\\?$|^'(?:[^']|'')*$/.test(value)) return true;
+        if (value.startsWith('"') || value.startsWith("'")) continue;
+        // Only a key position can own an indented continuation, not an error sentence.
+        const before = lines[index].slice(0, field.index + field[1].length);
+        if (!atStart && !/[|>{,\[][ \t]*$/.test(before)) continue;
+        let next = index + 1;
+        while (next < lines.length && /^[ \t]*(?:#.*)?$/.test(lines[next])) next += 1;
+        if (next === lines.length) continue;
+        const following = lines[next];
+        const depth = following.match(/^[ \t]*/)[0].length;
+        const trimmed = following.replace(/^[ \t]*/, '');
+        // Empty auth mappings are settings namespaces; check their child keys in turn.
+        if (field[3].toLowerCase() === 'auth' && /^(?:#.*)?$/.test(value)
+          && /^["']?[^"' \t:]+["']?[ \t]*:(?:[ \t]|$)/.test(trimmed)) continue;
+        if (depth > indent || (depth === indent && /^-[ \t]+/.test(trimmed))) return true;
+      }
+    }
+  }
+  return false;
+}
+
 /**
  * Redaction rules, in order. Each one is named, so the manifest can say which
  * rule fired how many times without quoting what it replaced.
  */
 export const REDACTIONS = Object.freeze([
+  {
+    // Old delivery messages interpolated unescaped, possibly multiline content.
+    // There is no reliable end marker, so omit the remainder of the text.
+    name: 'legacy-notification-log',
+    pattern: /^.*\bdshportc: notify delivered\b[^\n]*[ \t]title=[\s\S]*$/gim,
+    replacement: '[omitted: legacy notification content]\n',
+  },
+  {
+    name: 'bridge-payload',
+    pattern: /^.*\bDSHPORTC_(?:NOTIFY|BUSY)\b[^\n]*$/gm,
+    replacement: '[omitted: bridge payload]',
+  },
+  {
+    // Also covers the status JSON embedded in old snapshot summaries.
+    name: 'notification-content',
+    pattern: /("(?:title|body)"\s*:\s*)(?!"<redacted>")"(?:[^"\\]|\\[\s\S])*"/gi,
+    replacement: '$1"<redacted>"',
+  },
+  {
+    name: 'cookie-values',
+    pattern: /((["']?)(?:set[_-]?)?cookies?\2[ \t]*:[ \t]*)\[(?:"(?:[^"\\]|\\[\s\S])*"|'(?:[^']|'')*'|[^\]"'])*\]/gi,
+    replacement: '$1"<redacted>"',
+  },
+  {
+    name: 'cookie-pair',
+    pattern: /(["'](?:set[_-]?)?cookies?["']\s*,\s*)("(?:[^"\\]|\\[\s\S])*"|'(?:[^']|'')*')/gi,
+    replacement: '$1"<redacted>"',
+  },
   {
     name: 'authorization-header',
     // The prefix group keeps a log prefix (`node| `) and matches the header
@@ -330,6 +395,9 @@ function ancestorLink(root, absolute) {
  */
 export function redactText(text) {
   let out = typeof text === 'string' ? text : String(text ?? '');
+  if (hasMultilineSecret(out)) {
+    return { text: '[omitted: multiline sensitive field]\n', counts: { 'multiline-secret': 1 } };
+  }
   const counts = {};
   for (const rule of REDACTIONS) {
     let hits = 0;
@@ -547,8 +615,16 @@ function readOneSource(source, roots, limits, options) {
   const markers = [];
   let truncated = null;
   if (tail.windowStart > 0) {
+    if (source.id !== 'app-log') {
+      return {
+        kind: 'excluded', path: `${source.root}/${source.rel}`,
+        reason: 'read window omits field context; content not included',
+      };
+    }
     const newline = text.indexOf('\n');
-    text = newline === -1 ? '' : text.slice(newline + 1);
+    // Unprefixed lines may continue an old notification whose header was cut.
+    text = (newline === -1 ? '' : text.slice(newline + 1))
+      .split('\n').filter((line) => /^(?:node\| |dshportc: )/.test(line)).join('\n');
     truncated = 'window';
     markers.push(`[truncated: only the last ${tail.buffer.length} of ${tail.size} bytes were examined]`);
   }
@@ -557,7 +633,7 @@ function readOneSource(source, roots, limits, options) {
   const perFile = tailByBytes(content, limits.maxFileBytes);
   content = perFile.text;
   if (perFile.truncated) {
-    truncated = truncated === null ? 'file' : truncated;
+    truncated ??= 'file';
     markers.push(`[truncated: kept the last ${perFile.bytes} of ${tail.size} bytes]`);
   }
   if (options.redactPaths) content = redactPathsIn(content);

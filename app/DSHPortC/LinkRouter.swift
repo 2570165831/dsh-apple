@@ -34,6 +34,8 @@
 //    * Anything else with an http/https/mailto/tel scheme goes to the system
 //      browser (`UIApplication.shared.open`). Never into this web view: the
 //      DSH session is the app's content and must not be replaced by a web page.
+//    * A main-frame tap on `dshportc://about` from our own server opens the
+//      native About sheet. Other uses of the internal scheme are cancelled.
 //    * A download (see `DownloadCoordinator`) is a download at every entry
 //      point: an action that says so, a `blob:`/`data:` URL, a response header,
 //      or a MIME type the web view cannot display.
@@ -78,9 +80,22 @@ final class LinkRouter {
 
     /// What to do with one navigation action (a tap, a form post, a script
     /// navigation).
-    func decide(_ action: WKNavigationAction) -> Decision {
+    func decide(_ action: WKNavigationAction, onAbout: (() -> Void)? = nil) -> Decision {
         let url = action.request.url
         let scheme = (url?.scheme ?? "").lowercased()
+
+        if scheme == "dshportc" {
+            guard url?.absoluteString == "dshportc://about",
+                  action.navigationType == .linkActivated,
+                  action.sourceFrame.isMainFrame,
+                  action.targetFrame?.isMainFrame == true,
+                  let sourceURL = action.sourceFrame.request.url,
+                  isOwnServer(sourceURL), let onAbout else {
+                return note(.cancel, action: action, extra: ["reason": "internal-link-blocked"])
+            }
+            onAbout()
+            return note(.cancel, action: action, extra: ["reason": "native-about"])
+        }
 
         // 1. Download triggers WebKit can already see before the request goes
         //    out: an `<a download>`, or a `blob:`/`data:` URL that cannot be

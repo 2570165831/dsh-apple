@@ -2,6 +2,8 @@
 
 本文件登记**所有**对 vendored DSH 的改动，包括第 1 单之前就存在、第 2 单开场时补登的那些。
 
+当前基座：`@deepseek-ai/dsh` 与 agent-team profile 均为 `0.2.1-rc.5`。本次升级及实物比对见末尾“rc.5 升级”节。
+
 登记的目的很具体：DSH 官方说插件 API 会趋于稳定，但**内部实现不承诺**。一旦升级 DSH，本文件里每一条都要重新判定"还成不成立"。没有本文件，升级后只能靠症状去猜。
 
 ## 判定原则
@@ -49,51 +51,65 @@ grep -n 'requireInternal("internal/' payload/node_modules/@deepseek-ai/dsh-app-b
 
 ---
 
-### P-2 `@deepseek-ai/cordis-plugin-loader` — 同样的 `requireInternal` 形状
+### P-2 `@deepseek-ai/cordis-plugin-loader` — 上游自带的 `requireInternal`（原登记更正）
 
 | 项 | 内容 |
 |---|---|
 | 文件 | `payload/node_modules/@deepseek-ai/cordis-plugin-loader/lib/index.js` |
 | 位置 | 第 9–18 行，`ModuleLoader.requireInternal` |
-| 改动 | 与 P-1 同形状：先试 `require(id)`（需 `--expose-internals`），再退 `node-addon-require-builtin` |
-| 来源 | 继承自 ios-port-A / ios-port-C，**不是本单新增** |
+| 实际归属 | 上游自带，与干净 rc.2 逐字节一致；rc.5 继续自带，不重打本地补丁 |
+| 来源 | rc.2 与 rc.5 的上游发布代码，本次撤销本地补丁归属 |
 
 **为什么不能用插件实现**：这是 `cordis-plugin-loader` 在**定位 Node 的模块加载器**，它本身就是"加载插件"的那个组件，插件机制还没起来。鸡生蛋问题，无法用插件解决。
 
-**DSH 升级后怎么检查**：同 P-1 的四条命令，把文件换成这个。注意这一处与 P-1 **不是同一个包**，升级时可能只动其中一个。
+**DSH 升级后怎么检查**：核对上游的分支和内部模块调用，不查 P-1 独有的本地标记。
+
+```bash
+grep -n 'requireInternal\|expose-internals\|requireBuiltin' payload/node_modules/@deepseek-ai/cordis-plugin-loader/lib/index.js
+```
+
+这与 P-1 属于不同包，升级后仍需分别检查。
 
 ---
 
-### P-3 `@deepseek-ai/dsh-hmr` — 同样的 `requireInternal` 形状
+### P-3 `@deepseek-ai/dsh-hmr` — 上游自带的 `requireInternal`（原登记更正）
 
 | 项 | 内容 |
 |---|---|
 | 文件 | `payload/node_modules/@deepseek-ai/dsh-hmr/lib/index.js` |
 | 位置 | 第 172–189 行 |
-| 改动 | 同形状的 `requireInternal`；第 786 行在缺 `--expose-internals` 时抛 `--expose-internals is required for HMR service` |
-| 来源 | 继承，**不是本单新增** |
+| 实际归属 | 上游自带，与干净 rc.2 逐字节一致；rc.5 继续自带，不重打本地补丁。缺参数时仍抛 `--expose-internals is required for HMR service` |
+| 来源 | rc.2 与 rc.5 的上游发布代码，本次撤销本地补丁归属 |
 
 **为什么不能用插件实现**：HMR 服务要拿 `internal/bootstrap/realm` 和模块图，这是加载器内部状态。
 
-**DSH 升级后怎么检查**：同上。另外注意第 786 行的显式错误信息——如果升级后 HMR 开始报这句，说明 `--expose-internals` 丢了。
+**DSH 升级后怎么检查**：核对上游内部模块分支及缺参数时的显式错误。
+
+```bash
+grep -n 'requireInternal\|expose-internals\|requireBuiltin' payload/node_modules/@deepseek-ai/dsh-hmr/lib/index.js
+```
+
+如果 HMR 报 `--expose-internals is required for HMR service`，应检查启动参数。
 
 ---
 
 ### P-4 无 ICU 的 Unicode 属性转义重写（**脚本化、可重放**）
 
-这一条**不是**手工改 DSH 源码，而是每次构建时由脚本重写 payload。性质与 P-1..P-3 不同，但同样改的是 DSH 的发布文件，所以登记。
+这一条**不是**手工改 DSH 源码，而是每次构建时由脚本重写 payload。性质与 P-1 不同，但同样改的是 DSH 的发布文件，所以登记。
 
 | 项 | 内容 |
 |---|---|
 | 脚本 | `scripts/patch-payload-i18n.py`（被 `scripts/build-app.sh` 每次构建调用） |
-| 影响文件 | 4 个：`@deepseek-ai/dsh-tools/lib/index.js`、`@deepseek-ai/dsh-tools/lib/types/py-types.js`、`@deepseek-ai/dsh-llm-deepseek/lib/index.js`、`@js-temporal/polyfill/dist/index.esm.js` |
+| 影响文件 | 6 个：原 4 个 `@deepseek-ai/dsh-tools/lib/index.js`、`@deepseek-ai/dsh-tools/lib/types/py-types.js`、`@deepseek-ai/dsh-llm-deepseek/lib/index.js`、`@js-temporal/polyfill/dist/index.esm.js`；rc.5 新增 `@earendil-works/pi-schema/dist/formats/typebox/idn_email.js` 与 `idna/pattern/pattern.js` |
 | 改动 | 把 `\p{XID_Start}` / `\p{XID_Continue}` / `\p{L}` / `\p{N}` 这些**正则字面量**里的 Unicode 属性转义，换成显式的字符类区间 |
 | 记录 | 每次运行把逐条结果写进 `logs/i18n-patch.json`；原件备份在 `work/i18n-patch-backup/` |
 | 来源 | 继承（ios-port-C 阶段），**不是本单新增** |
 
 **为什么不能用插件实现**：`nodejs-mobile v24.5.0` 的 iOS 切片是 `v8_enable_i18n_support=0` 构建的，`\p{...}` 在**语法解析阶段**就抛错（不是运行时）。这些是模块顶层的正则**字面量**，模块根本加载不起来，插件没有机会介入——插件本身就是 module。
 
-**这是一个近似，报告里写明**：`XID_Start`/`XID_Continue` 被换成一个覆盖面较宽的区间表，不是精确的 Unicode 表。未列出的文字（如格鲁吉亚文、埃塞俄比亚文）会被当作非标识符字符。受影响的代码路径是 PTC 运行时（本 profile 已禁用）的 Python 标识符命名、DeepSeek provider 的一处文件 id 词边界检查、js-temporal 的年号清洗——都不在聊天和文件工具路径上。
+**原 4 文件仍使用近似范围；新增 2 文件使用精确表**：`pi-schema` 的 16 种属性按宿主 Node 的 Unicode 16.0 生成静态区间，保留分组、量词和 `u`/`i` 标志；`node scripts/unicode-property-unit.mjs` 对每种属性遍历全部 1,114,112 个码点，并验证 8 个 IDN 格式用例。设备上的 NFC 归一化仍受现有运行时 shim 限制，本补丁不补齐它。
+
+**原有近似的边界**：`XID_Start`/`XID_Continue` 被换成一个覆盖面较宽的区间表，不是精确的 Unicode 表。未列出的文字（如格鲁吉亚文、埃塞俄比亚文）会被当作非标识符字符。受影响的代码路径是 PTC 运行时（本 profile 已禁用）的 Python 标识符命名、DeepSeek provider 的一处文件 id 词边界检查、js-temporal 的年号清洗——都不在聊天和文件工具路径上。
 
 **DSH 升级后怎么检查**：
 
@@ -347,9 +363,10 @@ grep -A 2 "'type': z.literal(\"image\").readonly()," payload/node_modules/@deeps
 # 2b. 能力报告的 zod 也已放宽（否则浏览器又把 HEIC 挡回去）：该文件共 7 处宽版
 grep -c 'z.literal("image/heic")' payload/node_modules/@deepseek-ai/dsh-api-session-controller/lib/typert.host.js   # 期望 7
 
-# 2c. 存储引用的输出枚举必须仍是四类 —— 出现宽版就是打歪了
-grep -o '"mediaType":{"type":"string","enum":\[[^]]*\]' payload/node_modules/@deepseek-ai/dsh-api-session-controller/lib/typert.host.js | sort -u
-# 应只看到一条（四类）；若看到"六类"版本，说明输出侧被误放宽了
+# 2c. 检查实际入参 codec 和各 RPC 的输出 schema，区分输入/输出方向。
+node scripts/heic-boundary-unit.mjs
+# 期望：36 个输入检查（HEIC/HEIF 通过，SVG 拒绝），6 个存储输出校验、2 个枚举仍为四类。
+# 原先全文件 grep 同时命中已放宽的输入，不能用它判定输出被误改。
 ```
 
 ### P-10b App 外壳：工作区注册表去重（`repairWorkspaceRegistry()`）与诊断插件
@@ -787,7 +804,7 @@ App 外壳（Swift）、`sim/` 下的启动层与 shim、`plugins/`、以及 pro
 | 停车后还原（修） | `restoreUserPatch()` 现在会看当前用户层内容：不是空也不是 `[]` 就说明安全模式期间有人存过设置，把它改名成 `cordis.patch.yml.safe-mode-edited`（已存在加序号、绝不覆盖），返回值带路径，启动日志说明"设置保存在这里"。`[]` 与空文件不算改动 |
 | 失败页 | 两个按钮（查看启动日志 / 导出诊断包）+ 一个"重置运行环境"入口，`accessibilityIdentifier` 为 `bootLogButton`、`bootDiagnosticsButton`、`bootResetButton`。诊断包在 Node 已死时有最小包兜底 |
 | 安全模式横幅 | 顶部窄条：跳过 N 个插件、原因、"退出安全模式"、"重置运行环境"。用 overlay 而不是改布局，因为安全模式正是最不该让页面重排的那次启动 |
-| 看门狗 | 60 秒（冷启动实测中位 4.74 秒的十倍以上）。复现手段 `-DSHPortEStep19HoldReadyMs <毫秒>`：页面照常 `didFinish` 但不声明就绪。挡端口产生的是 WebView 错误，不是超时 |
+| 看门狗 | 60 秒，覆盖插件加载及客户端挂载。旧的 4.74 秒中位数测到 `didFinish`，不能与现在的界面就绪耗时直接比较，也不能据此验证新口径的超时阈值。`didFinish` 只记 `documentLoaded`；`webViewReady` 等待 `#root` 内出现可见布局或交互控件且不再显示插件加载页。`-DSHPortEStep19HoldReadyMs <毫秒>` 延迟这个就绪信号；普通客户端异常只留作诊断，超时时附上第一条错误，ResizeObserver loop 提示忽略。升级后须复验首次安装、已有会话、安全模式及不同语言的界面 |
 | 诊断包（修） | `diagnostics/` 原方案写成 `dirname(dshHome)/diagnostics`，那是 `.../Application Support/diagnostics`，而 App 读 `.../Application Support/DSHPortC/diagnostics`。修正后实测 9 个文件、64 KB，五条脱敏规则在真实内容上命中，假密钥 0 泄漏 |
 | 重置 | 两个开关 + 清单预览（Node 写 `boot/reset-plan.json`；缺失时用 App 内置的同一张表）+ 确认。两阶段 `rename` 进 `reset-staging/`，`in-progress.json` 让断电后能接着做完。`boot/` 本身在移走范围内，所以清单先读进内存 |
 | 清暂存（新） | 面板上"彻底清除上次重置留下的数据"：先显示占用，确认后删除，**绝不自动**。实测 45056 字节 → 清除 3 项 → 0 字节 |
@@ -820,3 +837,206 @@ App 外壳（Swift）、`sim/` 下的启动层与 shim、`plugins/`、以及 pro
 | 文档 | `THIRD_PARTY_NOTICES.md` 的包数改为实际的 599 个（原写 536），无 LICENSE 文件的为 15 个；`ISHImageService.m` 补 `profileIsSRGB` 原型 |
 | 验收 | 构建通过；Node 单元测试 163/163（`tests/fetch`、`tests/step19`、`tests/subprocess`、`tests/fs-fence`），路径单元 21/21；模拟器上第 19 单 14/14、子进程 12/12、step7 6/6、step8 4/4、step9 5/5、客户机围栏 3/3。证据在 `logs/must-fix/` |
 | 未解决 | 真机未测；测试开关仍在产品构建里（普通安装不会打开，发安装包前要去掉）；App 内没有法律文本 |
+
+### P-38 许可页面现状、分发检查与对应源码边界
+
+`ec86b85` 已增加“关于与许可”页面，并将 `LICENSE`、
+`THIRD_PARTY_NOTICES.md`、`RootfsPackages.md` 打进 App。P-37 的
+“App 内没有法律文本”是此前的历史状态。
+
+| 项 | 内容 |
+|---|---|
+| 许可资源 | 额外打包整个 `LICENSES/`；关于页显示两份 iSH 说明及已补入的 npm、客户机正文 |
+| npm | 裁剪后逐包检查根目录许可文件或精确版本的补充正文，默认报告缺件并警告 |
+| 客户机 | 按完整 apk 记录生成名称、版本、许可证和源包四列；缺正文时默认仍生成表格和镜像，不完整的数据库捕获仍停止导出 |
+| 表达式 | AND/OR/WITH 不区分大小写；`custom:` 明确报告需人工核对的映射，不猜许可证，默认仍保留草稿表 |
+| 旧产物 | Xcode 复查 npm 和客户机材料、镜像与数据库哈希、展示清单；默认 Debug（含模拟器）只警告 |
+| 分发 | 必须以 `DSH_REQUIRE_NOTICES=1` 获取 payload、生成镜像，并作为构建设置传给 `xcodebuild`；Release 配置、install/archive 动作也自动严格检查 |
+| 源码 | 关于页只承诺仓库含 App 和构建脚本；客户机逐构建对应源码归档仍未提供 |
+| 待补 | 两份 LICENSES 子目录说明只列收集要求，没有伪造上游正文；旧镜像须在分发前重建，默认开发不受此限制 |
+| 应用后验证 | `python3 -B -m unittest discover -s tests/licenses -p 'test_*.py'`；补齐材料并重建后，在关于页核对各许可正文 |
+
+### P-39 客户机内核隔离加固（iSH 补丁 0004–0018）
+
+审查发现客户机里一条系统调用就能让宿主 App 崩溃，或越界读写宿主内存。下列补丁按 `ish/patches/` 的编号由 `ish/scripts/fetch-sources.sh` 重放；`--check` 可验证。重放改用 `git apply --index`，补丁新增的客户机回归测试计入树摘要，重置时一并清理 `tests/regress`。
+
+| 补丁 | 修的问题 |
+|---|---|
+| 0004 | eventfd、epoll、socket 上的 `pread`/`pwrite` 调空函数指针；改为返回 `ESPIPE`，并修 `pwrite` 的缓冲区泄漏 |
+| 0005 | 在 `/proc`、`/dev/pts`、tmpfs 下 bind UNIX socket 调空的 `mknod`；改为 `EPERM`，只在 `ENOENT` 时创建 |
+| 0006 | 卸载 tmpfs 走到 `TODO()` 直接 abort；改为返回 `EBUSY` 并保留挂载 |
+| 0007 | 对 `PROT_NONE` 页做系统调用复制时宿主故障；改为 `EFAULT`，缺页补映射不再放开保护页 |
+| 0008 | `close_range` 有符号裁剪：`closefrom` 一个都不关，大 `first` 负下标访问 |
+| 0009 | `rt_sigaction` 信号编号无下界，负数越界读写 `sighand->action` |
+| 0010 | 设备主次号未限界的分派表访问，PTY 槽位差一 |
+| 0011 | 用户地址区间回绕被当作复制成功，48 位以上地址别名 |
+| 0012 | `user_read_string` 未读到结尾仍返回成功 |
+| 0013 | `readv` 短读后复制未初始化宿主堆 |
+| 0014 | 文件偏移校验与 tmpfs 读写越界 |
+| 0015 | `clone`/`clone3` 退出信号可为 0–255，子进程退出时越界读写信号表 |
+| 0016 | `timer_create` 信号编号未校验；无效线程路径漏解 `pids_lock` |
+| 0017 | `getsockname` 长度 0 或 1 时下溢写宿主栈 |
+| 0018 | `recvfrom` 按请求长度而非实际长度写回，泄露未初始化堆 |
+
+| 项 | 内容 |
+|---|---|
+| 未纳入 | SCM_RIGHTS 校验、`clone` 失败回滚、`sendto` 长度上限、停用二进制级原生卸载四项，审查后仍需修改 |
+| 验证 | 宿主侧编译和现有回归；新增的 `tests/regress/*.c` 需要 aarch64 musl 工具链，在客户机里执行 |
+
+## 十六、rc.5 升级：逐文件核对与补丁移植
+
+本次将 DSH 和 agent-team profile 从 **0.2.1-rc.2（历史基座）**升到
+**0.2.1-rc.5**。原包清单、锁文件逐字节复制到 `$TMPDIR`，在其真实路径下
+执行官方源 `npm ci --ignore-scripts`；两个输入安装前后完全一致。npm 缓存
+始终指向本工作树 `.npm-cache`，没有运行包的生命周期脚本。宿主为 Node
+v24.10.0、npm 11.17.0。最初带 `/var` 别名的 `--prefix` 路线使 npm 对根包
+身份误判；改为临时目录的真实工作路径后，原锁文件直接安装成功，没有改写
+任何上游版本来凑基线。
+
+逐文件检查内容 SHA-256、文件/软链接类型、链接目标及可执行位：干净安装
+63,625 个文件，原仓库 27,605 个；**14 个内容改动、0 个新增、36,020 个裁剪**。
+14 个改动全部可由 P-1 与原有三个脚本在内存中逐字节复原，未发现未登记的
+内容补丁。每个目标的旧/新上游及补丁后哈希见
+[`payload/rc5-upgrade-audit.json`](payload/rc5-upgrade-audit.json)。完整逐文件
+原始清单保留在本地忽略目录 `work/rc5-upgrade/rc2-comparison.json`；复现裁剪
+只需已提交的 `payload/ios-pruning.json`，无需该临时清单。
+
+### 每处内容补丁的处理
+
+下表路径均相对 `payload/node_modules/`。
+
+| 文件 | 登记 | rc.5 处理 |
+|---|---|---|
+| `@deepseek-ai/dsh-app-boot/lib/index.js` | P-1 | 上游文件未变，原样重打 `requireInternal`；仍有 5 个内部模块调用 |
+| `@deepseek-ai/dsh-tools/lib/index.js` | P-4 | 上游文件未变，重打原有 3 类 Unicode 正则替换 |
+| `@deepseek-ai/dsh-tools/lib/types/py-types.js` | P-4 | 上游文件未变，重打原有 3 类替换 |
+| `@deepseek-ai/dsh-llm-deepseek/lib/index.js` | P-4 | 上游文件有变化，原替换仍精确匹配；只重打文件 id 边界正则，保留其它上游变动 |
+| `@js-temporal/polyfill/dist/index.esm.js` | P-4 | 上游文件未变，重打年号清洗正则 |
+| `@deepseek-ai/dsh-client-ui-conversation/lib/client.js` | P-11 HEIC | 上游 bundle 有变化，两处 composer 判定仍精确匹配；重打，不回写整个旧 bundle |
+| `@deepseek-ai/dsh-api-session-controller/lib/typert.host.js` | P-11 HEIC | 上游文件未变，重打输入及能力报告，不放宽存储输出 |
+| `@deepseek-ai/dsh-api-session-controller/lib/typert.remote-client.js` | P-11 HEIC | 同上 |
+| `@deepseek-ai/dsh-commands/lib/typert.host.js` | P-11 HEIC | 上游文件未变，重打命令附件输入 |
+| `@deepseek-ai/dsh-commands/lib/typert.remote-client.js` | P-11 HEIC | 同上 |
+| `@deepseek-ai/dsh-subagent/lib/typert.host.js` | P-11 HEIC | 上游文件未变，重打子代理图像输入 |
+| `@deepseek-ai/dsh-subagent/lib/typert.remote-client.js` | P-11 HEIC | 同上 |
+| `@deepseek-ai/dsh-tool-fs/lib/index.js` | P-11 HEIC | 上游文件未变，重打 `.heic` / `.heif` 扩展名表 |
+| `@deepseek-ai/dsh-timeout/lib/index.js` | P-28 | 上游文件未变，原样重打冻结时间扣除，6 处脚本替换 |
+| `@earendil-works/pi-schema/dist/formats/typebox/idn_email.js` | P-4 扩展 | 新依赖中的 1 个正则；用 Unicode 16.0 静态区间替换属性转义 |
+| `@earendil-works/pi-schema/dist/formats/typebox/idna/pattern/pattern.js` | P-4 扩展 | 新依赖中的 12 个正则；保持 ASCII、类别、脚本属性的原有成员集合 |
+
+旧内容补丁没有被上游修复而作废，也没有必须改写旧替换上下文的条目。
+本次改写的是 **P-4 补丁脚本的覆盖范围**，新增 13 个字面量替换，另使缺文件
+或模式不匹配返回非零。它们来自 `pi-ai` 的 `pi-schema/formats` 导入链，
+保留属性转义会在无 ICU 的运行时解析这些模块时失败。新增静态表覆盖 16
+种 Unicode 属性，宿主上逐属性遍历全部 1,114,112 个码点与原正则对照相同。
+这不证明设备上的 NFC 归一化完整，设备 shim 的原有限制仍在。
+
+### 登记与实物对照的差异
+
+- **P-2、P-3 原登记有误**：对应文件与干净 rc.2 逐字节一致，rc.5 也继续自带
+  `--expose-internals` 分支。保留兼容性检查，撤销“本地补丁”的归属；没有
+  删除实际代码，也不能说是本次上游才修好。
+- **裁剪未完整登记**：补登 `payload/ios-pruning.json`。14 个包根、239 条路径
+  和 `.d.ts` / `.d.cts` / `.d.mts` / `.map` 后缀规则，在旧基线上恰好覆盖
+  36,020 个缺失文件，既无漏项，也无误裁。包括嵌套 Zod 测试源码、原有
+  `build/` 裁剪和 `node-addon-system` 二进制；保留它的 JS shim。未将所有
+  `.ts` 源文件一概移除。`scripts/prune-payload-ios.py` 可重放，移动到忽略的
+  `work/pruned-payload-*`，可恢复，第二次执行为 0 个文件。
+- **HEIC 的旧 2c 检查会误报**：全文件 grep 同时命中应当放宽的输入镜像。
+  现改用 `node scripts/heic-boundary-unit.mjs`，运行真实生成 codec 并只遍历
+  RPC 结果的存储输出枚举；36 个输入检查、6 个实际存储输出校验和 2 个存储输出枚举通过。
+- **许可文档引用了不存在的公开导出脚本**：本私有仓库确实跟踪 payload。
+  `THIRD_PARTY_NOTICES.md` 与 npm 许可待补表已按现有 602 包更新。新增
+  `pi-schema` 的组件许可仍保留，包本身的完整许可列为待补，未伪造正文。
+
+### 本次可运行的验证
+
+三份 `scripts/patch-payload-*.py` 均执行成功。首次原补丁为 i18n 4 文件/9
+处、HEIC 8 文件/9 次改写、timeout 1 文件/6 处替换；扩展 i18n 又改 2 文件/13
+处。最终重跑 i18n 的 21 条规则、HEIC 的 9 条规则和 timeout 均已应用，
+没有 missing 或 pattern_not_found。
+
+```bash
+python3 -B scripts/prune-payload-ios.py
+python3 -B scripts/patch-payload-i18n.py
+python3 -B scripts/patch-payload-heic-media-type.py
+python3 -B scripts/patch-payload-frozen-timeout.py
+node scripts/unicode-property-unit.mjs
+node scripts/heic-boundary-unit.mjs
+```
+
+指定 Node 测试：265 tests、6 suites、265 pass、0 fail、0 cancelled、0 skipped、
+0 todo。其余输出保留原样如下：
+
+```text
+boot runtime checks passed: active
+boot runtime checks passed: background
+boot runtime checks passed: returned
+boot runtime checks passed: recovery
+boot state checks passed
+52 Foundation redaction cases, fallback copies and bridge checks passed
+21/21 path-unit checks passed
+67/67 checks passed
+Ran 21 tests
+OK
+16 Unicode classes x 1114112 code points and 8 IDN format cases passed
+36 runtime HEIC/HEIF/SVG input checks, 6 stored-image codec checks and 2 output enums passed
+pi-ai provider import passed
+```
+
+实际 npm 许可完整性检查退出 1，缺 16 项正文；这是与 21 项许可单元测试
+不同的结果。完整日志在 `work/rc5-upgrade/`。未执行 xcodebuild、模拟器、
+`build-*.sh` 或任何验收脚本。依赖自身的空白格式保持上游原样。
+
+### 后续模拟器及真机重点
+
+在实际 nodejs-mobile 上冷启动，检查 profile 组合、插件装载、普通及安全模式；
+走真实模型适配器的工具 schema 校验，确认新 pi-schema 模块可以解析。再查
+HEIC/HEIF 的相册输入、RPC、原生转码和 `read_image`，并回归工作区迁移、
+子进程与文件路径、抽屉/输入框，以及禁用入口定制后各栏和会话视图的可达性。
+后台冻结后超时预算需要
+真机复验；宿主上的表检查和单元测试不能代替这些结果。worker bootstrap
+仍是 P-1 已登记的未补分支，本 profile 继续不启用它。
+
+### rc.5 后续：入口定制等待 pluginNavigation（仅改 iOS profile）
+
+`profiles/ios-sim/cordis.patch.yml` 以 id 禁用 `entry-customization`。
+rc.5 新增的 `dsh-client-ui-entry-customization` 硬注入 `pluginNavigation`，
+但唯一提供者 `ui-plugin-manager` 已按 TASK-3 第 13 条禁用。该入口贡献的
+浏览插件和 Creator 动作也不适合此配置；禁用它不撤掉侧栏、会话或右栏。
+会话在没有 More 菜单贡献时保留常规视图标签，不按 More 菜单的宽度折叠。
+
+没有改 payload，也没有提供空操作的假导航服务。单启管理器前端会挂上
+Plugins 页和安装操作，并调用未启用的 `pluginManager` / `pluginRegistryProbe`
+后端；`remote.*` 代理存在不等于后端可用，不能满足只启前端方案的前提。
+配置属于每次启动重写的 `dsh-ios-profile` App 层，安全模式收起用户层时仍
+生效；安全模式原有跳过清单及计数不变。
+
+新增 `scripts/ios-profile-dependencies.mjs` 使用上游 `composeEntries` 合成
+实际 bundle 顺序和安全模式 overlay，扫描全部 79 个 web 前端声明的硬注入、
+嵌套注入、模块依赖及服务提供候选，并对照显式禁用的 Host RPC 命名空间。
+这是源码检查，不能证明浏览器实际激活。普通 / 安全组合分别包含 63 / 62
+个前端包，均未发现缺少候选提供者的注入；恢复旧配置会报告
+`entry-customization -> pluginNavigation`。实验性语音输入也需要这个服务，
+当前不在 iOS 组合内；终端前端与其服务提供者均已禁用。
+
+测试：`tests/step19/*.test.mjs` 156 项通过；全量主机 Node 测试 275 项中
+267 通过、4 因沙盒禁止监听 loopback 而失败、4 因未提供已构建 App 而跳过；
+Python 许可单元测试 21 项通过。详细命令、同类依赖、证据和模拟器复验清单
+见 `work/rc5-upgrade/HANDOFF-pluginnav.md`。未运行模拟器，不把这些结果
+登记为 step19 全量验收通过。
+
+## 十七、`web_fetch` 在 iOS 上大面积失败
+
+### P-40 `web_fetch`：把 `dsh-web-fetch-http` 的 `import("undici")` 答成不依赖 WebAssembly 的传输（**不改 DSH 内部代码**）
+
+| 项 | 内容 |
+|---|---|
+| 文件 | `sim/undici-hook.mjs`（新，ESM resolve hook）、`sim/undici-web-fetch.mjs`（新，被答成的模块）；`sim/ios-app-entry.mjs` 注册；`tests/fetch/undici-web-fetch.test.mjs`（新） |
+| 症状 | 真机一个会话里 `web_fetch` 26 次调用失败 18 次，全部是 `Error: web fetch failed: TypeError: fetch failed`；所有 `http://` 网址必败，gov.cn、央视、腾讯新闻等失败，网易、新浪成功 |
+| 原因 | 该包不走全局 `fetch`（所以 `sim/fetch-polyfill.cjs` 管不到），而是直接 `import("undici")`，好把"已校验为公网的那组地址"钉进 `Agent` 的 lookup。undici 解析 HTTP/1.1 用的 llhttp 是 WebAssembly，`--jitless` 下没有，报 `ReferenceError: WebAssembly is not defined`，被包成一句 `fetch failed`。能协商 HTTP/2 的站点不经过 llhttp，所以还能抓 |
+| 做法 | hook 只在"导入方是 `dsh-web-fetch-http/lib/`、specifier 是 `undici`"时改答；替身导出该包用到的 `Agent` 与 `fetch`，底层是 `node:http(s)`。保留：钉死的 lookup 是唯一地址来源、Host 与 SNI 仍是原主机名、`redirect: 'manual'`、流式 body（字节上限仍然有效）、gzip/deflate/br 解码。不是自己建的 dispatcher（代理路由）原样交回真 undici |
+| 与上游的一处差别 | 失败信息带上底层原因（`fetch failed: ECONNRESET …`）。上游只打印 `String(error)`，原因被吞掉正是这个问题难查的地方 |
+| 开关 | `DSHPORTE_UNDICI_HOOK=0` 关 hook（回到原行为） |
+| 已验证 | Mac 上 `node --jitless`：`tests/fetch` 15/15；用 payload 里真实的 `HttpFetchProvider` 端到端，关 hook 复现真机症状（6 个网址只有网易成功），开 hook 后 6 个全部 200 且正文正确。真机（iPhone 15 Pro Max，0.2.1 build 21 开发签名，2026-11-13）：同一会话重抓 20 次，无一次 `fetch failed`，18 次 HTTP 200，另 2 次是站点自身 403 与 PDF 类型不支持。模拟器 App 内未单独跑 |
+| 升级后检查 | `grep -n 'import("undici")' payload/node_modules/@deepseek-ai/dsh-web-fetch-http/lib/index.js`（还在 = hook 仍必要；若它改用了 `Agent`/`fetch` 之外的导出，替身要补）。Node 换成带 WebAssembly 的版本（如 24.22.1 的 polywasm）后可评估撤掉 |

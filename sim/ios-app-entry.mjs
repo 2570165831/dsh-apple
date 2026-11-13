@@ -563,6 +563,21 @@ if (process.env.DSHPORTE_RG_HOOK !== '0' && (process.env.DSH_GUEST_CHANNEL_URL ?
   }
 }
 
+// Give `web_fetch` a transport that works without WebAssembly.
+//
+// `dsh-web-fetch-http` imports the npm `undici` directly (not global fetch, so
+// `sim/fetch-polyfill.cjs` does not cover it), and undici parses HTTP/1.1 with a
+// wasm llhttp that a jitless Node cannot run: every origin that does not negotiate
+// HTTP/2 failed with a bare "fetch failed". The hook answers that one import with
+// `sim/undici-web-fetch.mjs`, which keeps the provider's pinned lookup.
+if (process.env.DSHPORTE_UNDICI_HOOK !== '0') {
+  try {
+    register('./undici-hook.mjs', pathToFileURL(HERE + '/'));
+  } catch (error) {
+    process.stderr.write(`dshportc: undici hook registration failed: ${error}\n`);
+  }
+}
+
 // "And it can still take a turn" — imported HERE, after the flock redirect and
 // before DSH itself, for the reason given at the gate's comment above: resuming a
 // session takes the flock, and the pure-JS redirect has to be registered first or

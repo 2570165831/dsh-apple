@@ -68,7 +68,8 @@
 //    D. A short fade at the bottom edge of the scrolling candidate list.
 //    E. Below 500 pt the dialog's two columns become one: the nav turns into a
 //       horizontal strip at the top and the content takes the full 354 pt. No
-//       entry is removed; the same four pages stay one tap away.
+//       entry is removed; the upstream pages stay one tap away. A separate
+//       About/privacy link before their container opens the native sheet.
 //    F. On `(hover: none)` the sticky background hovers are switched off and
 //       `:active` provides the same feedback while the finger is down.
 //    G. `min-height` on the approval / question card buttons and the panel strip.
@@ -82,9 +83,9 @@
 //      places, each of which is a container DSH gives no `data-*` attribute to
 //      and each of which is asserted by the audit so that a DSH rename shows up
 //      as a number changing rather than as silence.
-//    * It does not rewrite DSH's markup. The one structural change (E) is a
-//      two-column → one-column switch on a modal that already has its own
-//      container.
+//    * Besides the column change (E), it inserts an About/privacy link before
+//      the settings nav's last div, only after all four known page labels are
+//      found. The link stays outside that container so a tablist keeps its tabs.
 //
 
 import Foundation
@@ -637,14 +638,13 @@ enum MobileWebPolish {
             max-height: none !important;
             border-right: 0 !important;
           }
-          /* The strip of four pages. Measured at 402 pt: the strip is 330 pt wide
-             and its four entries need 429 pt, so the fourth ("Agent 预设") sat at
-             x 343..465 — 63 pt past the right edge, reachable only by swiping a
-             strip that gives no sign it scrolls. Four entries is few enough that
-             they should all simply be visible, so the strip WRAPS. Each entry
-             keeps its natural width and the row takes a second line when it must;
-             the dialog is 730 pt tall with 622 pt of content, so the extra 44 pt
-             is inside the room the one-column switch already bought.
+          /* The upstream page strip; the separate About/privacy link sits above
+             this container. Before that link, at 402 pt the strip was 330 pt wide
+             and its four entries needed 429 pt, so the fourth ("Agent 预设") sat
+             at x 343..465 — 63 pt past the right edge, reachable only by swiping a
+             strip that gave no sign it scrolled. The upstream entries WRAP so
+             they stay visible. The About/privacy link adds its own 44 pt row;
+             the content column below the nav keeps its scrolling area.
              overflow-x: auto stays as the fallback for a width so narrow that a
              single entry cannot fit at all (content width 346 pt: the strip is
              274 pt and the widest entry 122 pt, so this cannot happen today, but
@@ -1217,7 +1217,30 @@ enum MobileWebPolish {
             return true;
           };
 
+          // Keep the native policy link outside the upstream page/tab container.
+          const installAboutLink = () => {
+            const pages = ['通用设置', '模型', '内置插件', 'Agent 预设'];
+            for (const nav of document.querySelectorAll('[role="dialog"] > nav')) {
+              const entries = nav.lastElementChild;
+              if (entries === null || entries.tagName !== 'DIV'
+                  || nav.closest('[role="tablist"]') !== null
+                  || nav.querySelector('[data-dsh-about-link]') !== null) continue;
+              const labels = Array.from(entries.children)
+                .filter(el => el.matches('button, [role="tab"]'))
+                .map(el => (el.getAttribute('aria-label') || el.textContent || '').trim());
+              if (!pages.every(page => labels.includes(page))) continue;
+              const link = document.createElement('a');
+              link.setAttribute('data-dsh-about-link', '');
+              link.href = 'dshportc://about';
+              link.textContent = '关于与隐私';
+              link.style.cssText = 'display:flex;align-items:center;min-height:44px;padding:8px 12px;'
+                + 'box-sizing:border-box;color:inherit;font:inherit;text-decoration:none;flex:0 0 auto;';
+              nav.insertBefore(link, entries);
+            }
+          };
+
           state.pass = () => {
+            installAboutLink();
             let enlarged = 0, considered = 0;
             for (const el of document.querySelectorAll(CANDIDATES)) {
               considered += 1;
@@ -1375,10 +1398,11 @@ enum MobileWebPolish {
           // All three are the page's own outputs for one string, and a phone only
           // needs them not to name a chord.
           //
-          // A HARDWARE KEYBOARD EXEMPTS THE PAGE. `state.hardwareKeyboard` is
-          // already measured for the focus guard below (a hardware keyboard does
-          // not shrink the web view); the same flag is reused here, so an iPad
-          // with a keyboard keeps the original sentence and its working chord.
+          // A HARDWARE KEYBOARD EXEMPTS THE PAGE. The focus guard in
+          // MobileWebTuning sets `hardwareKeyboard` on its own state object
+          // (window.__dshMobileTuning) from trusted keys outside
+          // an editor or the viewport after a direct draft press. Reuse that hint
+          // here so a detected keyboard keeps the sentence and its working chord.
           const CHORD_PATTERNS = [
             // The exact string DSH ships, and its English form.
             [/^\\s*Cmd\\/Ctrl\\+Enter\\s*/i, ''],
@@ -1387,7 +1411,7 @@ enum MobileWebPolish {
           state.chordRewrites = 0;
           const stripChord = (text) => {
             if (typeof text !== 'string' || text === '') return text;
-            if (state.hardwareKeyboard === true) return text;
+            if (window.__dshMobileTuning?.hardwareKeyboard === true) return text;
             for (const [pattern, replacement] of CHORD_PATTERNS) {
               if (pattern.test(text)) {
                 state.chordRewrites += 1;
@@ -1397,7 +1421,7 @@ enum MobileWebPolish {
             return text;
           };
           const rewriteChord = () => {
-            if (state.hardwareKeyboard === true) return;
+            if (window.__dshMobileTuning?.hardwareKeyboard === true) return;
             const draft = document.querySelector('[data-composer-input]');
             if (draft !== null) {
               const placeholder = draft.getAttribute('data-placeholder');
@@ -1543,7 +1567,7 @@ enum MobileWebPolish {
             styled: document.getElementById('dsh-mobile-polish') !== null,
             painted: state.applied,
             chordRewrites: state.chordRewrites,
-            hardwareKeyboard: state.hardwareKeyboard === true,
+            hardwareKeyboard: window.__dshMobileTuning?.hardwareKeyboard === true,
             newlineInserts: state.newlineInserts,
             newlineInstalled: document.getElementById(NEWLINE_ID) !== null,
           });

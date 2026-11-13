@@ -1,0 +1,94 @@
+diff --git a/fs/sock.c b/fs/sock.c
+--- a/fs/sock.c
++++ b/fs/sock.c
+@@ -422,6 +422,12 @@
+         }
+         // If the file can't be found, try to create it as a socket.
+         if (err < 0) {
++            if (err != _ENOENT)
++                goto out;
++            if (!mount->fs->mknod) {
++                err = _EPERM;
++                goto out;
++            }
+             mode_t_ mode = 0777;
+             struct fs_info *fs = current->fs;
+             lock(&fs->lock);
+@@ -430,6 +436,7 @@
+             err = mount->fs->mknod(mount, path, S_IFSOCK | mode, 0);
+             if (err < 0)
+                 goto out;
++            path_cache_invalidate();
+             err = mount->fs->stat(mount, path, &stat);
+             if (err < 0)
+                 goto out;
+diff --git a/tests/regress/regress_unix_bind.c b/tests/regress/regress_unix_bind.c
+new file mode 100644
+--- /dev/null
++++ b/tests/regress/regress_unix_bind.c
+@@ -0,0 +1,65 @@
++// Filesystem UNIX socket binds must not call an absent mknod callback.
++// Run under fakefs; realfs cannot create socket nodes.
++// Build: aarch64-linux-musl-gcc -static -O0 -o regress_unix_bind regress_unix_bind.c
++#define _GNU_SOURCE
++#include <assert.h>
++#include <errno.h>
++#include <fcntl.h>
++#include <stddef.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++#include <sys/socket.h>
++#include <sys/stat.h>
++#include <sys/un.h>
++#include <unistd.h>
++
++static int bind_path(const char *path) {
++    struct sockaddr_un addr = {.sun_family = AF_UNIX};
++    assert(strlen(path) < sizeof(addr.sun_path));
++    strcpy(addr.sun_path, path);
++    int fd = socket(AF_UNIX, SOCK_STREAM, 0);
++    assert(fd >= 0);
++    int res = bind(fd, (struct sockaddr *)&addr,
++            offsetof(struct sockaddr_un, sun_path) + strlen(path) + 1);
++    int err = errno;
++    assert(close(fd) == 0);
++    errno = err;
++    return res;
++}
++
++int main(void) {
++    const char *mounts[] = {"/proc", "/dev/pts"};
++    char path[108];
++    struct stat st;
++    for (unsigned i = 0; i < sizeof(mounts) / sizeof(mounts[0]); i++) {
++        assert(stat(mounts[i], &st) == 0 && S_ISDIR(st.st_mode));
++        snprintf(path, sizeof(path), "%s/ish-bind-%ld", mounts[i], (long)getpid());
++        errno = 0;
++        assert(bind_path(path) == -1 && errno == EPERM);
++    }
++
++    char dir[] = "/tmp/ish-bind-XXXXXX";
++    assert(mkdtemp(dir) != NULL);
++    snprintf(path, sizeof(path), "%s/socket", dir);
++    assert(bind_path(path) == 0);
++    assert(lstat(path, &st) == 0 && S_ISSOCK(st.st_mode));
++    errno = 0;
++    assert(bind_path(path) == -1 && errno == EADDRINUSE);
++    assert(unlink(path) == 0);
++
++    snprintf(path, sizeof(path), "%s/file", dir);
++    int fd = open(path, O_CREAT | O_EXCL | O_WRONLY, 0600);
++    assert(fd >= 0);
++    assert(close(fd) == 0);
++    errno = 0;
++    assert(bind_path(path) == -1 && errno == EADDRINUSE);
++    char child[108];
++    snprintf(child, sizeof(child), "%s/file/socket", dir);
++    errno = 0;
++    assert(bind_path(child) == -1 && errno == ENOTDIR);
++    assert(unlink(path) == 0);
++    assert(rmdir(dir) == 0);
++    puts("PASS UNIX socket bind");
++    return 0;
++}

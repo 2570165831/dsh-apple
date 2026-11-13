@@ -1,0 +1,107 @@
+Source package: ca-certificates@20261020-r0
+Alpine aports revision (installed database c: field): 660f223b42ca35e7d2a76ce568e15c847b92d33d
+Recipe: https://raw.githubusercontent.com/alpinelinux/aports/660f223b42ca35e7d2a76ce568e15c847b92d33d/main/ca-certificates/APKBUILD
+Recipe SHA-256: 7b35fb8e11790105578f47d57a3b22831227b0d8ad7d064e575bad146023f3da
+Installed subpackages: ca-certificates
+
+Sources verified against the exact APKBUILD checksums:
+https://distfiles.alpinelinux.org/distfiles/v3.21/ca-certificates-20261020.tar.bz2
+SHA-256: 1048bc7f50fa42a6621bc2f8816173f89a0c0098f26dff072bc8fe40af714400
+SHA-512: d28eb01751b1a914ffb5d8cb99e662f0a35a95148c21dcf98de1ab3108b54db9714a99472d07715023867f4f76a21f2a79a2bc1c7e9876ce5167fdd865ad2dd7
+
+Alpine-local sources (immutable revision above):
+
+The following are verbatim license/copyright/author files and source comment
+notices from these sources. Identical notices are printed once with all paths.
+The source collection can include build/test material beyond the shipped subset.
+This notice collection does not supply corresponding source.
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: ca-certificates-20261020.tar.bz2::ca-certificates-20261020/c_rehash.c
+
+/* c_rehash.c - Create hash symlinks for certificates
+ * C implementation based on the original Perl and shell versions
+ *
+ * Copyright (c) 2013-2014 Timo Teräs <timo.teras@iki.fi>
+ * All rights reserved.
+ *
+ * This software is licensed under the MIT License.
+ * Full license available at: http://opensource.org/licenses/MIT
+ */
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: ca-certificates-20261020.tar.bz2::ca-certificates-20261020/certdata.txt
+
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: ca-certificates-20261020.tar.bz2::ca-certificates-20261020/certdata.txt
+
+#
+# Certificate "OISTE WISeKey Global Root GA CA"
+#
+# Issuer: CN=OISTE WISeKey Global Root GA CA,OU=OISTE Foundation Endorsed,OU=Copyright (c) 2005,O=WISeKey,C=CH
+# Serial Number:41:3d:72:c7:f4:6b:1f:81:43:7d:f1:d2:28:54:df:9a
+# Subject: CN=OISTE WISeKey Global Root GA CA,OU=OISTE Foundation Endorsed,OU=Copyright (c) 2005,O=WISeKey,C=CH
+# Not Valid Before: Sun Dec 11 16:03:44 2005
+# Not Valid After : Fri Dec 11 16:09:51 2037
+# Fingerprint (SHA-256): 41:C9:23:86:6A:B4:CA:D6:B7:AD:57:80:81:58:2E:02:07:97:A6:CB:DF:4F:FF:78:CE:83:96:B3:89:37:D7:F5
+# Fingerprint (SHA1): 59:22:A1:E1:5A:EA:16:35:21:F8:98:39:6A:46:46:B0:44:1B:0F:A9
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: ca-certificates-20261020.tar.bz2::ca-certificates-20261020/certdata.txt
+
+# Trust for "OISTE WISeKey Global Root GA CA"
+# Issuer: CN=OISTE WISeKey Global Root GA CA,OU=OISTE Foundation Endorsed,OU=Copyright (c) 2005,O=WISeKey,C=CH
+# Serial Number:41:3d:72:c7:f4:6b:1f:81:43:7d:f1:d2:28:54:df:9a
+# Subject: CN=OISTE WISeKey Global Root GA CA,OU=OISTE Foundation Endorsed,OU=Copyright (c) 2005,O=WISeKey,C=CH
+# Not Valid Before: Sun Dec 11 16:03:44 2005
+# Not Valid After : Fri Dec 11 16:09:51 2037
+# Fingerprint (SHA-256): 41:C9:23:86:6A:B4:CA:D6:B7:AD:57:80:81:58:2E:02:07:97:A6:CB:DF:4F:FF:78:CE:83:96:B3:89:37:D7:F5
+# Fingerprint (SHA1): 59:22:A1:E1:5A:EA:16:35:21:F8:98:39:6A:46:46:B0:44:1B:0F:A9
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: ca-certificates-20261020.tar.bz2::ca-certificates-20261020/mk-ca-bundle.pl
+
+#!/usr/bin/env perl
+# ***************************************************************************
+# *                                  _   _ ____  _
+# *  Project                     ___| | | |  _ \| |
+# *                             / __| | | | |_) | |
+# *                            | (__| |_| |  _ <| |___
+# *                             \___|\___/|_| \_\_____|
+# *
+# * Copyright (C) Daniel Stenberg, <daniel@haxx.se>, et al.
+# *
+# * This software is licensed as described in the file COPYING, which
+# * you should have received as part of this distribution. The terms
+# * are also available at https://curl.se/docs/copyright.html.
+# *
+# * You may opt to use, copy, modify, merge, publish, distribute and/or sell
+# * copies of the Software, and permit persons to whom the Software is
+# * furnished to do so, under the terms of the COPYING file.
+# *
+# * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
+# * KIND, either express or implied.
+# *
+# * SPDX-License-Identifier: curl
+# *
+# ***************************************************************************
+# This Perl script creates a fresh ca-bundle.crt file for use with libcurl.
+# It downloads certdata.txt from Mozilla's source tree (see URL below),
+# then parses certdata.txt and extracts CA Root Certificates into PEM format.
+# These are then processed with the OpenSSL commandline tool to produce the
+# final ca-bundle.crt file.
+# The script is based on the parse-certs script written by Roland Krikava.
+# This Perl script works on almost any platform since its only external
+# dependency is the OpenSSL commandline tool for optional text listing.
+# Hacked by Guenter Knauf.
+#
+===== END UPSTREAM NOTICE =====

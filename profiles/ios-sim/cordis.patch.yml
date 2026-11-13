@@ -263,6 +263,16 @@
 - id: ui-plugin-manager
   disabled: true
 
+# rc.5's More-menu contribution hard-injects pluginNavigation from the disabled
+# ui-plugin-manager. Its browse/install and Creator actions need plugin
+# management, which this profile deliberately omits (TASK-3 criterion 13).
+# Disable the contribution too: a no-op service would leave unusable actions.
+# Sidebar, conversation and rightbar chrome handle absent menu contributions.
+# This belongs in the app bundle so safe mode keeps the same restriction when
+# it parks the user's cordis.patch.yml; do not add it to the safe-only skip list.
+- id: entry-customization
+  disabled: true
+
 # HMR only matters while developing DSH itself; its service refuses to start
 # without --expose-internals and it watches the whole tree.
 - id: hmr

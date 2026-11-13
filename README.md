@@ -112,19 +112,97 @@ App 里不带任何 API 密钥。在 App 设置里添加模型服务商和密钥
 
 ### 测试
 
+管道分行的 Swift 测试需要装有完整 Xcode 的 macOS，在仓库根目录运行：
+
 ```sh
-node --test tests/fetch/*.cjs tests/step19/*.test.mjs tests/subprocess/*.test.mjs tests/fs-fence/*.test.mjs
+(
+  set -e
+  dsh_platform="$(xcrun --sdk macosx --show-sdk-platform-path)"
+  dsh_frameworks="$dsh_platform/Developer/Library/Frameworks"
+  dsh_swift_libs="$dsh_platform/Developer/usr/lib"
+  dsh_test_dir="$(mktemp -d)"
+  trap 'rm -f -- "$dsh_test_dir/tests"; rmdir -- "$dsh_test_dir"' EXIT
+  xcrun --sdk macosx swiftc -swift-version 5 -parse-as-library \
+    -F "$dsh_frameworks" -I "$dsh_swift_libs" -L "$dsh_swift_libs" -framework XCTest \
+    -Xlinker -rpath -Xlinker "$dsh_frameworks" \
+    -Xlinker -rpath -Xlinker "$dsh_swift_libs" \
+    app/DSHPortC/PipeLineBuffer.swift tests/node-runner/PipeLineBufferTests.swift \
+    -o "$dsh_test_dir/tests"
+  "$dsh_test_dir/tests"
+)
 ```
 
-这会跑单元测试：`fetch` 替代实现的重定向处理、启动保护、安全模式、重置和诊断逻辑、命令工作目录的选择，以及文件工具的围栏。Node 24 在这里不接受只写目录名。
+```sh
+node --test tests/fetch/*.cjs tests/fetch/*.mjs tests/step19/*.test.mjs tests/subprocess/*.test.mjs tests/fs-fence/*.test.mjs tests/mobile-web/*.test.mjs
+```
+
+这会跑单元测试：`fetch` 替代实现的重定向处理、启动保护、安全模式、重置和诊断逻辑、命令工作目录的选择、文件工具的围栏，以及移动端草稿聚焦。Node 24 在这里不接受只写目录名。
+
+分发产物验收单独运行，需提供已经构建的 Debug 和最终 Release（或 Archive 内的）App：
+
+```sh
+DSH_DEBUG_APP=DerivedData/Build/Products/Debug-iphonesimulator/DSHPortC.app \
+DSH_RELEASE_APP=DerivedData/Build/Products/Release-iphonesimulator/DSHPortC.app \
+node --test tests/distribution/*.test.mjs
+```
+
+未设置对应路径的用例会跳过，跳过不代表产物通过。测试会对主程序和 NodeMobile 执行 `nm -u`；若发现时钟或磁盘 API 缺少声明，须审阅对应源码并由作者确认理由代码，不能只按符号填代码。
+
+待办 `G:ASR-001-DiskSpace`：审阅最终构建所用的 iSH `statfs` 透传、NodeMobile `fs.statfs` 调用及结果用途，再选择适用的 `85F4.1`、`E174.1` 或其他理由并补入清单。当前未声明磁盘空间类别，ASR-001 仅部分修复；含相关符号的产物仍会验收失败。
+
+日志追加的 Swift 测试也在装有完整 Xcode 的 macOS 上、从仓库根目录运行：
+
+```sh
+(
+  set -e
+  dsh_platform="$(xcrun --sdk macosx --show-sdk-platform-path)"
+  dsh_frameworks="$dsh_platform/Developer/Library/Frameworks"
+  dsh_swift_libs="$dsh_platform/Developer/usr/lib"
+  dsh_test_dir="$(mktemp -d)"
+  trap 'rm -f -- "$dsh_test_dir/tests"; rmdir -- "$dsh_test_dir"' EXIT
+  xcrun --sdk macosx swiftc -swift-version 5 -parse-as-library \
+    -F "$dsh_frameworks" -I "$dsh_swift_libs" -L "$dsh_swift_libs" -framework XCTest \
+    -Xlinker -rpath -Xlinker "$dsh_frameworks" \
+    -Xlinker -rpath -Xlinker "$dsh_swift_libs" \
+    app/DSHPortC/BootLogFile.swift tests/node-runner/BootLogFileTests.swift \
+    -o "$dsh_test_dir/tests"
+  "$dsh_test_dir/tests"
+)
+```
 
 `mock/` 是一个本地假模型服务。`scripts/*acceptance*` 和 `app/DSHPortCUITests/` 是验收测试，其中有几个是按某台机器的模拟器环境写的，可能要设 `DSH_DEVICE_UDID` 或调整路径。
+
+状态快照的 Swift 测试启用 Thread Sanitizer；同样需要完整 Xcode，在仓库根目录运行：
+
+```sh
+(
+  set -e
+  dsh_platform="$(xcrun --sdk macosx --show-sdk-platform-path)"
+  dsh_frameworks="$dsh_platform/Developer/Library/Frameworks"
+  dsh_swift_libs="$dsh_platform/Developer/usr/lib"
+  dsh_test_dir="$(mktemp -d)"
+  trap 'rm -f -- "$dsh_test_dir/tests"; rmdir -- "$dsh_test_dir"' EXIT
+  xcrun --sdk macosx swiftc -swift-version 5 -parse-as-library -sanitize=thread \
+    -F "$dsh_frameworks" -I "$dsh_swift_libs" -L "$dsh_swift_libs" -framework XCTest \
+    -Xlinker -rpath -Xlinker "$dsh_frameworks" \
+    -Xlinker -rpath -Xlinker "$dsh_swift_libs" \
+    app/DSHPortC/LockedValue.swift tests/node-runner/LockedValueTests.swift \
+    -o "$dsh_test_dir/tests"
+  "$dsh_test_dir/tests"
+)
+```
 
 ### 许可与分发
 
 Copyright (C) 2026 dsh-apple contributors。采用 GPL-3.0：App 链接了 iSH 模拟器内核，所以整个 App 都是 GPL-3.0。各组件的条款见 [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md)，客户机镜像里的软件包见 [`RootfsPackages.md`](RootfsPackages.md)。
 
-给自己的设备签名安装不算分发。把安装包给任何别人都算分发，包括通过 TestFlight 或 App Store：对方必须能拿到那个构建对应的完整源码，包括客户机镜像和生成它的脚本，还有 `LICENSE` 和 `THIRD_PARTY_NOTICES.md`。App 目前还没有内置或显示这些文件，分发之前要先补上。`LICENSES/ISH-LICENSE.IOS` 只处理 GPL 和 App Store 条款之间的冲突。
+给自己的设备签名安装不算分发。把安装包给任何别人都算分发，包括通过 TestFlight 或 App Store：对方必须能拿到那个构建对应的完整源码，包括客户机软件包的对应源码和镜像构建脚本。仓库提供 App 本体和构建脚本；Alpine 的逐构建对应源码归档尚未提供，分发前须按 `THIRD_PARTY_NOTICES.md` 第 4 节补齐。
+
+构建会内置 `LICENSE`、`THIRD_PARTY_NOTICES.md`、`RootfsPackages.md` 和整个 `LICENSES/`，入口是双指长按打开的调试菜单中的“关于与许可”。页面包含 iSH 两份许可说明，并列出补入的 npm 和客户机许可正文。这个隐藏入口的存在不代表已确认满足 GPL §5(d) 对法律声明展示的要求，分发前仍须核对。`LICENSES/ISH-LICENSE.IOS` 只处理 GPL 和 App Store 条款之间的冲突。
+
+npm 和客户机的许可正文、版权声明仍待取得，收集要求见 `LICENSES/npm/README.md`、`LICENSES/rootfs/README.md`。默认获取 payload、生成客户机镜像和 Debug 构建只报告缺件并警告，四列表和镜像仍会生成，便于继续开发和收集材料。损坏或不完整的数据库捕获仍会停止镜像导出。
+
+分发构建必须设置 `DSH_REQUIRE_NOTICES=1`：获取 payload、生成镜像时作为环境变量传入，调用 `xcodebuild` 时显式传入同名构建设置；项目生成器也会读取该环境变量。Xcode 的 Release 配置或 install/archive 动作自动严格检查，不能用 `0` 关闭。旧镜像和历史清单可供默认 Debug 开发使用，但分发前须重建，取得数据库捕获和哈希记录并补齐正文。检查通过仍不代表对应源码归档已经完成。
 
 ---
 
@@ -253,12 +331,32 @@ Treat the model as having full access to this app's data.
 ### Tests
 
 ```sh
-node --test tests/fetch/*.cjs tests/step19/*.test.mjs tests/subprocess/*.test.mjs tests/fs-fence/*.test.mjs
+node --test tests/fetch/*.cjs tests/fetch/*.mjs tests/step19/*.test.mjs tests/subprocess/*.test.mjs tests/fs-fence/*.test.mjs tests/mobile-web/*.test.mjs
 ```
 
 runs the unit tests: the `fetch` replacement's redirect handling, the start-up
 guard, safe mode, reset and diagnostics logic, how a command's working directory is
-chosen, and the file tools' fence. Node 24 does not accept a bare directory here.
+chosen, the file tools' fence, and mobile draft focus. Node 24 does not accept a
+bare directory here.
+
+Distribution artifact acceptance runs separately on macOS:
+
+```sh
+DSH_DEBUG_APP=DerivedData/Build/Products/Debug-iphonesimulator/DSHPortC.app \
+DSH_RELEASE_APP=DerivedData/Build/Products/Release-iphonesimulator/DSHPortC.app \
+node --test tests/distribution/*.test.mjs
+```
+
+Use the final Release or Archive app for `DSH_RELEASE_APP`. Tests without the
+corresponding path are skipped; a skip is not artifact acceptance. The clock and
+disk symbol check runs `nm -u` on the executable and NodeMobile. Missing
+declarations need a source audit and author-confirmed reasons, not guesses from
+symbol names.
+
+Follow-up `G:ASR-001-DiskSpace`: audit the final build's iSH `statfs` forwarding,
+NodeMobile `fs.statfs` calls and the uses of their results before adding `85F4.1`,
+`E174.1` or another applicable reason. The disk-space category is still undeclared;
+ASR-001 is only partially fixed, and artifacts using these APIs still fail acceptance.
 
 `mock/` is a local fake model server. `scripts/*acceptance*` and
 `app/DSHPortCUITests/` are the acceptance tests. Several were written for one
@@ -273,8 +371,31 @@ makes the whole app GPL-3.0. Each component's terms are in
 
 Signing it for your own device is not distribution. Giving a copy to anyone else,
 including through TestFlight or the App Store, is: the recipient must be able to get
-the complete corresponding source for that exact build, including the guest image
-and the recipe that produced it, together with `LICENSE` and
-`THIRD_PARTY_NOTICES.md`. The app does not bundle or show those files yet, so that
-has to be added before distributing a copy. `LICENSES/ISH-LICENSE.IOS` covers only
-the conflict between the GPL and the App Store terms.
+the complete corresponding source for that exact build, including the guest
+packages' source and the image build scripts. This repository provides the app
+source and build scripts; per-build Alpine corresponding-source archives are
+still missing and must be supplied as described in section 4 of
+`THIRD_PARTY_NOTICES.md` before distribution.
+
+The build bundles `LICENSE`, `THIRD_PARTY_NOTICES.md`, `RootfsPackages.md` and the
+whole `LICENSES/` tree. Open About and Licences (关于与许可) from the debug menu
+with a two-finger long press. It includes both iSH notices and lists supplied
+npm and guest license texts. This hidden entry alone is not a claim that the
+notices meet GPL §5(d); review their presentation before distribution.
+`LICENSES/ISH-LICENSE.IOS` covers only the conflict between the GPL and the
+App Store terms.
+
+npm and guest license texts and copyright notices still need to be obtained;
+see `LICENSES/npm/README.md` and `LICENSES/rootfs/README.md`. By default, payload
+fetching, rootfs generation and Debug builds report missing material as warnings.
+The four-column inventory and image are still produced for development and
+notice collection. A broken or incomplete database capture still stops export.
+
+Distribution builds must set `DSH_REQUIRE_NOTICES=1`: pass it as an environment
+variable when fetching payloads or generating images, and explicitly as a build
+setting to `xcodebuild`. The project generator also reads that environment
+variable. Xcode Release configurations and install/archive actions enforce
+strict checks regardless of a value of `0`. Default Debug builds can use old
+images and historical inventories with warnings; distribution requires a
+rebuild with the database capture, hash record and complete notice files.
+Passing these checks does not supply a corresponding-source archive.

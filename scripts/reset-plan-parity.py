@@ -46,10 +46,9 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 SWIFT = ROOT / "app/DSHPortC/ResetSheet.swift"
 
-# The four tiers, in the order the sheet shows them. `guest` is in the table but
-# not in any of the four combinations — the sheet keeps it as a separate entrance,
-# and `relativeCombos()` mirrors that.
-TIERS = ("always", "conversations", "settings", "guest")
+# The tiers, in the order the sheet shows them. Guest data stays out of the four
+# default combinations; old copies only move when the user opts in.
+TIERS = ("always", "conversations", "settings", "guest", "guestBackups")
 
 ENTRY = re.compile(r'\(\s*"([^"]+)"\s*,\s*\n?\s*"([^"]*)"\s*\)')
 

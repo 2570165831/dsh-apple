@@ -1,0 +1,163 @@
+diff --git a/fs/sock.c b/fs/sock.c
+--- a/fs/sock.c
++++ b/fs/sock.c
+@@ -830,17 +830,13 @@
+     return client_f;
+ }
+ 
+-static void copy_unix_name(char *sockaddr, dword_t *sockaddr_len, struct fd *sock) {
+-    struct sockaddr_ *fake_addr = (void *) sockaddr;
+-    fake_addr->family = PF_LOCAL_;
+-
+-    size_t data_len = *sockaddr_len - offsetof(struct sockaddr_, data);
++static void copy_unix_name(struct sockaddr_max_ *sockaddr, dword_t *sockaddr_len, struct fd *sock) {
++    sockaddr->family = PF_LOCAL_;
+     size_t name_len = sock->socket.unix_name_len;
+-    if (name_len > data_len)
+-        name_len = data_len;
+-    memset(fake_addr->data, 0, data_len);
+-    memcpy(fake_addr->data, sock->socket.unix_name, name_len);
+-    *sockaddr_len = offsetof(struct sockaddr_, data) + name_len;
++    if (name_len > sizeof(sockaddr->data))
++        name_len = sizeof(sockaddr->data);
++    memcpy(sockaddr->data, sock->socket.unix_name, name_len);
++    *sockaddr_len = offsetof(struct sockaddr_max_, data) + name_len;
+ }
+ 
+ int_t sys_getsockname(fd_t sock_fd, addr_t sockaddr_addr, addr_t sockaddr_len_addr) {
+@@ -851,7 +847,10 @@
+     dword_t sockaddr_len;
+     if (user_get(sockaddr_len_addr, sockaddr_len))
+         return _EFAULT;
+-    char sockaddr[sockaddr_len];
++    if (sockaddr_len > INT32_MAX)
++        return _EINVAL;
++    dword_t capacity = sockaddr_len;
++    struct sockaddr_max_ sockaddr = {};
+ 
+     // [STAGE-0 PROBE] netlink: report a sockaddr_nl. Go's netlinkrib calls
+     // getsockname() to learn the pid the kernel assigned, then matches it
+@@ -862,9 +861,8 @@
+         struct sockaddr_nl_ nl = { .nl_family = AF_NETLINK_, .nl_pad = 0,
+                                    .nl_pid = 0, .nl_groups = 0 };
+         dword_t out_len = sizeof(nl);
+-        if (sockaddr_len < out_len)
+-            out_len = sockaddr_len;
+-        if (user_write(sockaddr_addr, &nl, out_len))
++        dword_t copy = capacity < out_len ? capacity : out_len;
++        if (copy && user_write(sockaddr_addr, &nl, copy))
+             return _EFAULT;
+         if (user_put(sockaddr_len_addr, out_len))
+             return _EFAULT;
+@@ -874,19 +872,21 @@
+ 
+     // if this is a unix socket, return the same string passed to bind
+     if (sock->socket.domain == PF_LOCAL_) {
+-        copy_unix_name(sockaddr, &sockaddr_len, sock);
+-        if (user_write(sockaddr_addr, sockaddr, sizeof(sockaddr)))
++        copy_unix_name(&sockaddr, &sockaddr_len, sock);
++        dword_t copy = capacity < sockaddr_len ? capacity : sockaddr_len;
++        if (copy && user_write(sockaddr_addr, &sockaddr, copy))
+             return _EFAULT;
+         if (user_put(sockaddr_len_addr, sockaddr_len))
+             return _EFAULT;
+         return 0;
+     }
+ 
+-    int res = getsockname(sock->real_fd, (void *) sockaddr, &sockaddr_len);
++    sockaddr_len = sizeof(sockaddr);
++    int res = getsockname(sock->real_fd, (void *) &sockaddr, &sockaddr_len);
+     if (res < 0)
+         return errno_map();
+ 
+-    int err = sockaddr_write(sockaddr_addr, sockaddr, sizeof(sockaddr), &sockaddr_len);
++    int err = sockaddr_write(sockaddr_addr, &sockaddr, capacity, &sockaddr_len);
+     if (err < 0)
+         return err;
+     if (user_put(sockaddr_len_addr, sockaddr_len))
+diff --git a/tests/regress/regress_socket_name.c b/tests/regress/regress_socket_name.c
+new file mode 100644
+--- /dev/null
++++ b/tests/regress/regress_socket_name.c
+@@ -0,0 +1,81 @@
++// getsockname must report the full address length and honor any capacity.
++// Build: aarch64-linux-musl-gcc -static -O0 -Wall -o socket_name regress_socket_name.c
++// Run:   ish -r <rootfs> /tmp/socket_name
++#define _GNU_SOURCE
++#include <errno.h>
++#include <linux/netlink.h>
++#include <netinet/in.h>
++#include <stddef.h>
++#include <stdint.h>
++#include <stdio.h>
++#include <string.h>
++#include <sys/socket.h>
++#include <sys/syscall.h>
++#include <sys/un.h>
++#include <unistd.h>
++
++#define CHECK(cond) do { if (!(cond)) { \
++    printf("FAIL line %d (errno=%d)\n", __LINE__, errno); return 1; \
++} } while (0)
++
++static int check_name(int fd, const void *expected, socklen_t full_len) {
++    const socklen_t caps[] = {0, 1, 2, full_len - 1, full_len,
++                             full_len + 16, INT32_MAX};
++    for (size_t i = 0; i < sizeof(caps) / sizeof(caps[0]); i++) {
++        struct {
++            unsigned char before[8];
++            unsigned char addr[sizeof(struct sockaddr_storage)];
++            unsigned char after[8];
++        } out;
++        memset(&out, 0xa5, sizeof(out));
++        socklen_t len = caps[i];
++        void *addr = len ? out.addr : (void *) 1;
++        CHECK(syscall(SYS_getsockname, fd, addr, &len) == 0);
++        CHECK(len == full_len);
++        size_t copy = caps[i] < full_len ? caps[i] : full_len;
++        CHECK(memcmp(out.addr, expected, copy) == 0);
++        for (size_t j = copy; j < sizeof(out.addr); j++)
++            CHECK(out.addr[j] == 0xa5);
++        for (size_t j = 0; j < sizeof(out.before); j++)
++            CHECK(out.before[j] == 0xa5 && out.after[j] == 0xa5);
++    }
++    return 0;
++}
++
++int main(void) {
++    int fd = socket(AF_UNIX, SOCK_DGRAM, 0);
++    CHECK(fd >= 0);
++    struct sockaddr_un un = {.sun_family = AF_UNIX};
++    snprintf(un.sun_path + 1, sizeof(un.sun_path) - 1,
++             "ish-name-%ld", (long) getpid());
++    socklen_t full_len = offsetof(struct sockaddr_un, sun_path) +
++                        1 + strlen(un.sun_path + 1);
++    CHECK(bind(fd, (struct sockaddr *) &un, full_len) == 0);
++    CHECK(check_name(fd, &un, full_len) == 0);
++
++    socklen_t len = UINT32_MAX;
++    errno = 0;
++    CHECK(syscall(SYS_getsockname, fd, (void *) 1, &len) == -1 && errno == EINVAL);
++    len = 1;
++    errno = 0;
++    CHECK(syscall(SYS_getsockname, fd, (void *) 1, &len) == -1 && errno == EFAULT);
++    close(fd);
++
++    // The host must receive a full-size buffer even when the guest has none.
++    fd = socket(AF_INET, SOCK_DGRAM, 0);
++    CHECK(fd >= 0);
++    struct sockaddr_in in = {.sin_family = AF_INET};
++    CHECK(check_name(fd, &in, sizeof(in)) == 0);
++    close(fd);
++    fd = socket(AF_NETLINK, SOCK_RAW, NETLINK_ROUTE);
++    if (fd >= 0) {
++        struct sockaddr_nl nl = {.nl_family = AF_NETLINK};
++        CHECK(check_name(fd, &nl, sizeof(nl)) == 0);
++        close(fd);
++    } else {
++        CHECK(errno == EAFNOSUPPORT);
++        puts("SKIP netlink disabled");
++    }
++    puts("PASS socket name capacities");
++    return 0;
++}

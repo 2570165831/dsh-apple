@@ -89,6 +89,25 @@ final class Step19BootGuardTests: XCTestCase {
         closeShareSheet()
     }
 
+    func testLateReadinessKeepsTheFailureScreen() throws {
+        launch(["-DSHPortEStep19HoldReadyMs", "75000"])
+        let reset = element("bootResetButton")
+        XCTAssertTrue(reset.waitForExistence(timeout: 90), "no watchdog failure screen")
+        XCTAssertTrue(element("bootDetail").label.contains("60 秒"), "the watchdog did not fire")
+        requireTap(element("bootLogButton"), "the log button")
+        let held = app.staticTexts.containing(NSPredicate(
+            format: "label CONTAINS %@", "TEST holding the page-ready signal")).firstMatch
+        XCTAssertTrue(held.waitForExistence(timeout: 5), "no held readiness callback")
+        let released = app.staticTexts.containing(NSPredicate(
+            format: "label CONTAINS %@", "TEST releasing the page-ready signal")).firstMatch
+        XCTAssertTrue(released.waitForExistence(timeout: 100), "the late callback did not run")
+        app.swipeDown(velocity: .fast)
+        XCTAssertTrue(reset.isHittable, "late readiness hid the failure screen")
+        XCTAssertTrue(element("bootLogButton").isHittable)
+        XCTAssertTrue(element("bootDiagnosticsButton").isHittable)
+        XCTAssertFalse(element("dshWebView").exists, "hidden web content remains accessible")
+    }
+
     func testButtons() throws {
         // Stage 1: three failed launches, and the failure screen they end on.
         for _ in 0..<3 {
@@ -126,6 +145,17 @@ final class Step19BootGuardTests: XCTestCase {
 
         requireTap(element("bootResetButton"), "the reset button")
         XCTAssertTrue(element("resetKeepConversations").waitForExistence(timeout: 10), "no reset panel")
+        let oldGuests = app.switches["resetDiscardGuestBackups"].firstMatch
+        XCTAssertTrue(oldGuests.waitForExistence(timeout: 10), "no old-guest opt-in")
+        XCTAssertEqual(oldGuests.value as? String, "0", "old guests must be kept by default")
+        oldGuests.tap()
+        let oldGuestReason = app.staticTexts["旧 Linux 客户机副本；移进暂存目录后，再确认清除才会释放空间"].firstMatch
+        scrollTo(oldGuestReason)
+        XCTAssertTrue(oldGuestReason.exists, "old guests are missing from the move preview")
+        for _ in 0..<8 where !oldGuests.isHittable { app.swipeDown() }
+        XCTAssertTrue(oldGuests.isHittable, "the old-guest opt-in did not scroll back into view")
+        oldGuests.tap()
+        XCTAssertEqual(oldGuests.value as? String, "0")
         shot("06-reset-panel-from-failure")
         let builtin = app.staticTexts.containing(NSPredicate(format: "label CONTAINS %@", "App 内置")).firstMatch
         scrollTo(builtin)

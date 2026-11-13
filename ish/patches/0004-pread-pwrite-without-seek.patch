@@ -1,0 +1,129 @@
+diff --git a/kernel/fs.c b/kernel/fs.c
+--- a/kernel/fs.c
++++ b/kernel/fs.c
+@@ -550,8 +550,12 @@
+     ssize_t res;
+     if (fd->ops->pread) {
+         res = fd->ops->pread(fd, buf, size, off);
+-    } else {
++    } else if (fd->ops->lseek && fd->ops->read) {
+         off_t_ saved_off = fd->ops->lseek(fd, 0, LSEEK_CUR);
++        if (saved_off < 0) {
++            res = saved_off;
++            goto out;
++        }
+         if ((res = fd->ops->lseek(fd, off, LSEEK_SET)) < 0) {
+             goto out;
+         }
+@@ -562,6 +566,8 @@
+         // EINVAL: can't happen other than typoing LSEEK_SET, because we know saved_off is not negative.
+         off_t_ lseek_res = fd->ops->lseek(fd, saved_off, LSEEK_SET);
+         assert(lseek_res >= 0);
++    } else {
++        res = _ESPIPE;
+     }
+     if (res >= 0) {
+         buf[res] = '\0';
+@@ -583,14 +589,20 @@
+     char *buf = malloc(size+1);
+     if (buf == NULL)
+         return _ENOMEM;
+-    if (user_read(buf_addr, buf, size))
+-        return _EFAULT;
++    if (user_read(buf_addr, buf, size)) {
++        free(buf);
++        return _EFAULT;
++    }
+     lock(&fd->lock);
+     ssize_t res;
+     if (fd->ops->pwrite) {
+         res = fd->ops->pwrite(fd, buf, size, off);
+-    } else {
++    } else if (fd->ops->lseek && fd->ops->write) {
+         off_t_ saved_off = fd->ops->lseek(fd, 0, LSEEK_CUR);
++        if (saved_off < 0) {
++            res = saved_off;
++            goto out;
++        }
+         if ((res = fd->ops->lseek(fd, off, LSEEK_SET)) >= 0) {
+             res = fd->ops->write(fd, buf, size);
+             // This really shouldn't fail. The lseek man page lists these reasons:
+@@ -600,7 +612,10 @@
+             off_t_ lseek_res = fd->ops->lseek(fd, saved_off, LSEEK_SET);
+             assert(lseek_res >= 0);
+         }
+-    }
++    } else {
++        res = _ESPIPE;
++    }
++out:
+     unlock(&fd->lock);
+     free(buf);
+     return res;
+diff --git a/tests/regress/regress_pio.c b/tests/regress/regress_pio.c
+new file mode 100644
+--- /dev/null
++++ b/tests/regress/regress_pio.c
+@@ -0,0 +1,62 @@
++// Positional I/O must reject descriptors without seek/read/write callbacks.
++// Build: aarch64-linux-musl-gcc -static -O0 -o regress_pio regress_pio.c
++#define _GNU_SOURCE
++#include <assert.h>
++#include <errno.h>
++#include <fcntl.h>
++#include <stdint.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++#include <sys/epoll.h>
++#include <sys/eventfd.h>
++#include <sys/socket.h>
++#include <sys/syscall.h>
++#include <unistd.h>
++
++static void check_unseekable(int fd) {
++    assert(fd >= 0);
++    uint64_t value = 1;
++    errno = 0;
++    assert(pread(fd, &value, sizeof(value), 0) == -1 && errno == ESPIPE);
++    errno = 0;
++    assert(pwrite(fd, &value, sizeof(value), 0) == -1 && errno == ESPIPE);
++}
++
++int main(void) {
++    int fd = eventfd(7, EFD_NONBLOCK);
++    check_unseekable(fd);
++    uint64_t value;
++    assert(read(fd, &value, sizeof(value)) == sizeof(value) && value == 7);
++    assert(close(fd) == 0);
++
++    fd = epoll_create1(0);
++    check_unseekable(fd);
++    assert(close(fd) == 0);
++
++    int sockets[2];
++    assert(socketpair(AF_UNIX, SOCK_STREAM, 0, sockets) == 0);
++    check_unseekable(sockets[0]);
++    assert(close(sockets[0]) == 0);
++    assert(close(sockets[1]) == 0);
++
++    char path[] = "/tmp/ish-pio-XXXXXX";
++    fd = mkstemp(path);
++    assert(fd >= 0);
++    assert(unlink(path) == 0);
++    assert(write(fd, "abcdef", 6) == 6);
++    assert(lseek(fd, 3, SEEK_SET) == 3);
++    char buf[6];
++    assert(pread(fd, buf, 2, 1) == 2 && memcmp(buf, "bc", 2) == 0);
++    assert(lseek(fd, 0, SEEK_CUR) == 3);
++    assert(pwrite(fd, "XY", 2, 0) == 2);
++    assert(lseek(fd, 0, SEEK_CUR) == 3);
++    assert(pread(fd, buf, sizeof(buf), 0) == sizeof(buf));
++    assert(memcmp(buf, "XYcdef", sizeof(buf)) == 0);
++    errno = 0;
++    assert(syscall(SYS_pwrite64, fd, (void *)1, (size_t)8, (off_t)0) == -1 && errno == EFAULT);
++    assert(lseek(fd, 0, SEEK_CUR) == 3);
++    assert(close(fd) == 0);
++    puts("PASS positional I/O");
++    return 0;
++}

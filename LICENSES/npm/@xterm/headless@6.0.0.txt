@@ -1,0 +1,351 @@
+Package: @xterm/headless@6.0.0
+Published package: https://registry.npmjs.org/@xterm/headless/-/headless-6.0.0.tgz
+npm tarball integrity (verified): sha512-5Yj1QINYCyzrZtf8OFIHi47iQtI+0qYFPHmouEfG8dHNxbZ9Tb9YGSuLcsEwj9Z+OL75GJqPyJbyoFer80a2Hw==
+Upstream revision: f447274f430fd22513f6adbf9862d19524471c04
+Source archive: https://codeload.github.com/xtermjs/xterm.js/tar.gz/f447274f430fd22513f6adbf9862d19524471c04
+Source archive SHA-256: 82337f91a9df63998d89ba906389d5152a2e8278b558ea72c5dec25ec93a591e
+Version evidence: npm gitHead pins this revision; bin/package_headless.js copies
+the root package version (6.0.0) into the headless publication manifest.
+The checked-in headless/package.json is a template with version 5.5.0.
+License texts and original notices follow verbatim.
+
+===== BEGIN UPSTREAM TEXT =====
+Source: https://github.com/xtermjs/xterm.js/blob/f447274f430fd22513f6adbf9862d19524471c04/LICENSE
+Path: LICENSE
+
+Copyright (c) 2017-2019, The xterm.js authors (https://github.com/xtermjs/xterm.js)
+Copyright (c) 2014-2016, SourceLair Private Company (https://www.sourcelair.com)
+Copyright (c) 2012-2013, Christopher Jeffrey (https://github.com/chjj/)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+===== END UPSTREAM TEXT =====
+
+===== BEGIN UPSTREAM TEXT =====
+Source: https://github.com/xtermjs/xterm.js/blob/f447274f430fd22513f6adbf9862d19524471c04/addons/addon-attach/src/AttachAddon.ts
+Path: addons/addon-attach/src/AttachAddon.ts
+
+/**
+ * Copyright (c) 2014, 2019 The xterm.js authors. All rights reserved.
+ * @license MIT
+ *
+ * Implements the attach method, that attaches the terminal to a WebSocket stream.
+ */
+===== END UPSTREAM TEXT =====
+
+===== BEGIN UPSTREAM TEXT =====
+Source: https://github.com/xtermjs/xterm.js/blob/f447274f430fd22513f6adbf9862d19524471c04/addons/addon-attach/test/AttachAddon.test.ts
+Path: addons/addon-attach/test/AttachAddon.test.ts
+
+/**
+ * Copyright (c) 2019 The xterm.js authors. All rights reserved.
+ * @license MIT
+ */
+===== END UPSTREAM TEXT =====
+
+===== BEGIN UPSTREAM TEXT =====
+Source: https://github.com/xtermjs/xterm.js/blob/f447274f430fd22513f6adbf9862d19524471c04/addons/addon-attach/typings/addon-attach.d.ts
+Path: addons/addon-attach/typings/addon-attach.d.ts
+
+/**
+ * Copyright (c) 2017 The xterm.js authors. All rights reserved.
+ * @license MIT
+ */
+===== END UPSTREAM TEXT =====
+
+===== BEGIN UPSTREAM TEXT =====
+Source: https://github.com/xtermjs/xterm.js/blob/f447274f430fd22513f6adbf9862d19524471c04/addons/addon-clipboard/src/ClipboardAddon.ts
+Path: addons/addon-clipboard/src/ClipboardAddon.ts
+
+/**
+ * Copyright (c) 2023 The xterm.js authors. All rights reserved.
+ * @license MIT
+ */
+===== END UPSTREAM TEXT =====
+
+===== BEGIN UPSTREAM TEXT =====
+Source: https://github.com/xtermjs/xterm.js/blob/f447274f430fd22513f6adbf9862d19524471c04/addons/addon-image/src/ImageAddon.ts
+Path: addons/addon-image/src/ImageAddon.ts
+
+/**
+ * Copyright (c) 2020 The xterm.js authors. All rights reserved.
+ * @license MIT
+ */
+===== END UPSTREAM TEXT =====
+
+===== BEGIN UPSTREAM TEXT =====
+Source: https://github.com/xtermjs/xterm.js/blob/f447274f430fd22513f6adbf9862d19524471c04/addons/addon-image/src/SixelHandler.ts
+Path: addons/addon-image/src/SixelHandler.ts
+
+/**
+ * Copyright (c) 2020, 2023 The xterm.js authors. All rights reserved.
+ * @license MIT
+ */
+===== END UPSTREAM TEXT =====
+
+===== BEGIN UPSTREAM TEXT =====
+Source: https://github.com/xtermjs/xterm.js/blob/f447274f430fd22513f6adbf9862d19524471c04/addons/addon-image/typings/addon-image.d.ts
+Path: addons/addon-image/typings/addon-image.d.ts
+
+/**
+ * Copyright (c) 2022 The xterm.js authors. All rights reserved.
+ * @license MIT
+ */
+===== END UPSTREAM TEXT =====
+
+===== BEGIN UPSTREAM TEXT =====
+Source: https://github.com/xtermjs/xterm.js/blob/f447274f430fd22513f6adbf9862d19524471c04/addons/addon-ligatures/bin/download-fonts.js
+Path: addons/addon-ligatures/bin/download-fonts.js
+
+/**
+ * Copyright (c) 2018 The xterm.js authors. All rights reserved.
+ * @license MIT
+ */
+===== END UPSTREAM TEXT =====
+
+===== BEGIN UPSTREAM TEXT =====
+Source: https://github.com/xtermjs/xterm.js/blob/f447274f430fd22513f6adbf9862d19524471c04/addons/addon-ligatures/typings/addon-ligatures.d.ts
+Path: addons/addon-ligatures/typings/addon-ligatures.d.ts
+
+/**
+ * Copyright (c) 2018 The xterm.js authors. All rights reserved.
+ * @license MIT
+ *
+ * This contains the type declarations for the @xterm/addon-ligatures library.
+ * Note that some interfaces may differ between this file and the actual
+ * implementation in src/, that's because this file declares the *public* API
+ * which is intended to be stable and consumed by external programs.
+ */
+===== END UPSTREAM TEXT =====
+
+===== BEGIN UPSTREAM TEXT =====
+Source: https://github.com/xtermjs/xterm.js/blob/f447274f430fd22513f6adbf9862d19524471c04/addons/addon-progress/src/ProgressAddon.ts
+Path: addons/addon-progress/src/ProgressAddon.ts
+
+/**
+ * Copyright (c) 2024 The xterm.js authors. All rights reserved.
+ * @license MIT
+ */
+===== END UPSTREAM TEXT =====
+
+===== BEGIN UPSTREAM TEXT =====
+Source: https://github.com/xtermjs/xterm.js/blob/f447274f430fd22513f6adbf9862d19524471c04/addons/addon-serialize/src/SerializeAddon.ts
+Path: addons/addon-serialize/src/SerializeAddon.ts
+
+/**
+ * Copyright (c) 2019 The xterm.js authors. All rights reserved.
+ * @license MIT
+ *
+ * (EXPERIMENTAL) This Addon is still under development
+ */
+===== END UPSTREAM TEXT =====
+
+===== BEGIN UPSTREAM TEXT =====
+Source: https://github.com/xtermjs/xterm.js/blob/f447274f430fd22513f6adbf9862d19524471c04/addons/addon-unicode-graphemes/src/UnicodeGraphemesAddon.ts
+Path: addons/addon-unicode-graphemes/src/UnicodeGraphemesAddon.ts
+
+/**
+ * Copyright (c) 2023 The xterm.js authors. All rights reserved.
+ * @license MIT
+ *
+ * UnicodeVersionProvider for V15 with grapeme cluster handleing.
+ */
+===== END UPSTREAM TEXT =====
+
+===== BEGIN UPSTREAM TEXT =====
+Source: https://github.com/xtermjs/xterm.js/blob/f447274f430fd22513f6adbf9862d19524471c04/addons/addon-unicode11/src/Unicode11Addon.ts
+Path: addons/addon-unicode11/src/Unicode11Addon.ts
+
+/**
+ * Copyright (c) 2019 The xterm.js authors. All rights reserved.
+ * @license MIT
+ *
+ * UnicodeVersionProvider for V11.
+ */
+===== END UPSTREAM TEXT =====
+
+===== BEGIN UPSTREAM TEXT =====
+Source: https://github.com/xtermjs/xterm.js/blob/f447274f430fd22513f6adbf9862d19524471c04/addons/addon-webgl/src/CustomGlyphs.ts
+Path: addons/addon-webgl/src/CustomGlyphs.ts
+
+/**
+ * Copyright (c) 2021 The xterm.js authors. All rights reserved.
+ * @license MIT
+ */
+===== END UPSTREAM TEXT =====
+
+===== BEGIN UPSTREAM TEXT =====
+Source: https://github.com/xtermjs/xterm.js/blob/f447274f430fd22513f6adbf9862d19524471c04/bin/extract_vtfeatures.js
+Path: bin/extract_vtfeatures.js
+
+/**
+ * Copyright (c) 2019 The xterm.js authors. All rights reserved.
+ * @license MIT
+ *
+ * Script to extract vt features documented in docstrings.
+ */
+===== END UPSTREAM TEXT =====
+
+===== BEGIN UPSTREAM TEXT =====
+Source: https://github.com/xtermjs/xterm.js/blob/f447274f430fd22513f6adbf9862d19524471c04/bin/test_mousemodes.js
+Path: bin/test_mousemodes.js
+
+/**
+ * Copyright (c) 2019 The xterm.js authors. All rights reserved.
+ * @license MIT
+ * 
+ * Script to test different mouse modes in terminal emulators.
+ * Tests for protocols DECSET 9, 1000, 1002, 1003 with different
+ * report encodings (default, UTF8, SGR, URXVT, SGR-pixels).
+ * 
+ * VT200 Highlight mode (DECSET 1001) is not implemented.
+ * 
+ * The test basically applies the report data to the cursor, thus
+ * a mouse report should move the cursor to the cell under the mouse.
+ * Furthermore the reports are printed in the left lower corner as
+ * raw data and their meaning.
+ * 
+ * A failing test might show:
+ *  - wrong coords: the cursor will jump to some other place
+ *  - wrong buttons: see meaning output and check whether it makes sense
+ *  - faulty reports: inspect the raw data and compare with other emulators
+ *  - missing events: compare with spec / other emulators
+ */
+===== END UPSTREAM TEXT =====
+
+===== BEGIN UPSTREAM TEXT =====
+Source: https://github.com/xtermjs/xterm.js/blob/f447274f430fd22513f6adbf9862d19524471c04/demo/client.ts
+Path: demo/client.ts
+
+/**
+ * Copyright (c) 2018 The xterm.js authors. All rights reserved.
+ * @license MIT
+ *
+ * This file is the entry point for browserify.
+ */
+===== END UPSTREAM TEXT =====
+
+===== BEGIN UPSTREAM TEXT =====
+Source: https://github.com/xtermjs/xterm.js/blob/f447274f430fd22513f6adbf9862d19524471c04/src/browser/Clipboard.test.ts
+Path: src/browser/Clipboard.test.ts
+
+/**
+ * Copyright (c) 2016 The xterm.js authors. All rights reserved.
+ * @license MIT
+ */
+===== END UPSTREAM TEXT =====
+
+===== BEGIN UPSTREAM TEXT =====
+Source: https://github.com/xtermjs/xterm.js/blob/f447274f430fd22513f6adbf9862d19524471c04/src/browser/CoreBrowserTerminal.ts
+Path: src/browser/CoreBrowserTerminal.ts
+
+/**
+ * Copyright (c) 2014 The xterm.js authors. All rights reserved.
+ * Copyright (c) 2012-2013, Christopher Jeffrey (MIT License)
+ * @license MIT
+ *
+ * Originally forked from (with the author's permission):
+ *   Fabrice Bellard's javascript vt100 for jslinux:
+ *   http://bellard.org/jslinux/
+ *   Copyright (c) 2011 Fabrice Bellard
+ *   The original design remains. The terminal itself
+ *   has been extended to include xterm CSI codes, among
+ *   other features.
+ *
+ * Terminal Emulation References:
+ *   http://vt100.net/
+ *   http://invisible-island.net/xterm/ctlseqs/ctlseqs.txt
+ *   http://invisible-island.net/xterm/ctlseqs/ctlseqs.html
+ *   http://invisible-island.net/vttest/
+ *   http://www.inwap.com/pdp10/ansicode.txt
+ *   http://linux.die.net/man/4/console_codes
+ *   http://linux.die.net/man/7/urxvt
+ */
+===== END UPSTREAM TEXT =====
+
+===== BEGIN UPSTREAM TEXT =====
+Source: https://github.com/xtermjs/xterm.js/blob/f447274f430fd22513f6adbf9862d19524471c04/src/browser/decorations/BufferDecorationRenderer.ts
+Path: src/browser/decorations/BufferDecorationRenderer.ts
+
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+===== END UPSTREAM TEXT =====
+
+===== BEGIN UPSTREAM TEXT =====
+Source: https://github.com/xtermjs/xterm.js/blob/f447274f430fd22513f6adbf9862d19524471c04/src/browser/renderer/dom/DomRendererRowFactory.ts
+Path: src/browser/renderer/dom/DomRendererRowFactory.ts
+
+/**
+ * Copyright (c) 2018, 2023 The xterm.js authors. All rights reserved.
+ * @license MIT
+ */
+===== END UPSTREAM TEXT =====
+
+===== BEGIN UPSTREAM TEXT =====
+Source: https://github.com/xtermjs/xterm.js/blob/f447274f430fd22513f6adbf9862d19524471c04/src/common/CoreTerminal.ts
+Path: src/common/CoreTerminal.ts
+
+/**
+ * Copyright (c) 2014-2020 The xterm.js authors. All rights reserved.
+ * Copyright (c) 2012-2013, Christopher Jeffrey (MIT License)
+ * @license MIT
+ *
+ * Originally forked from (with the author's permission):
+ *   Fabrice Bellard's javascript vt100 for jslinux:
+ *   http://bellard.org/jslinux/
+ *   Copyright (c) 2011 Fabrice Bellard
+ *   The original design remains. The terminal itself
+ *   has been extended to include xterm CSI codes, among
+ *   other features.
+ *
+ * Terminal Emulation References:
+ *   http://vt100.net/
+ *   http://invisible-island.net/xterm/ctlseqs/ctlseqs.txt
+ *   http://invisible-island.net/xterm/ctlseqs/ctlseqs.html
+ *   http://invisible-island.net/vttest/
+ *   http://www.inwap.com/pdp10/ansicode.txt
+ *   http://linux.die.net/man/4/console_codes
+ *   http://linux.die.net/man/7/urxvt
+ */
+===== END UPSTREAM TEXT =====
+
+===== BEGIN UPSTREAM TEXT =====
+Source: https://github.com/xtermjs/xterm.js/blob/f447274f430fd22513f6adbf9862d19524471c04/src/common/InputHandler.ts
+Path: src/common/InputHandler.ts
+
+/**
+ * Copyright (c) 2014 The xterm.js authors. All rights reserved.
+ * Copyright (c) 2012-2013, Christopher Jeffrey (MIT License)
+ * @license MIT
+ */
+===== END UPSTREAM TEXT =====
+
+===== BEGIN UPSTREAM TEXT =====
+Source: https://github.com/xtermjs/xterm.js/blob/f447274f430fd22513f6adbf9862d19524471c04/src/common/services/InstantiationService.ts
+Path: src/common/services/InstantiationService.ts
+
+/**
+ * Copyright (c) 2019 The xterm.js authors. All rights reserved.
+ * @license MIT
+ *
+ * This was heavily inspired from microsoft/vscode's dependency injection system (MIT).
+ */
+===== END UPSTREAM TEXT =====

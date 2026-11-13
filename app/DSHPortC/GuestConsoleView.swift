@@ -116,10 +116,12 @@ struct GuestConsoleView: View {
             Button("cp -a 目录") { model.runQuick(GuestConsoleModel.cpArchiveScript) }
                 .buttonStyle(.bordered)
                 .accessibilityIdentifier("guestCpArchiveButton")
+            #if DEBUG
             Button("触发 die()") { model.triggerDie() }
                 .buttonStyle(.bordered)
                 .tint(.red)
                 .accessibilityIdentifier("guestDieButton")
+            #endif
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
@@ -279,10 +281,12 @@ final class GuestConsoleModel: ObservableObject {
         }
     }
 
+    #if DEBUG
     func triggerDie() {
         append("[console] triggering a kernel die() on a guest task")
         _ = guest.triggerKernelDieForTesting()
     }
+    #endif
 
     func clearOutput() {
         ISHGuestLog.shared.clear()

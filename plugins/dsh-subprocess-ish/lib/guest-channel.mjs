@@ -4,11 +4,10 @@
 // an import of it. The differences are all things a *provider* needs and an
 // acceptance script does not:
 //
-//   * `exec()` takes an AbortSignal and actually cancels the guest process
-//     through `POST /v1/cancel`, instead of throwing "not implemented".
-//   * A cancel that the server says it did not apply (the process already
-//     finished, or its id was stale) is *reported*, not swallowed. Silence
-//     there would look exactly like a clean exit.
+//   * `exec()` takes an AbortSignal. The provider requests cancellation through
+//     `POST /v1/cancel`; closing the stream also cancels pending or running work.
+//   * Cancellation states are returned intact, so an initially unknown id is
+//     never mistaken for a confirmed exit.
 //   * The NDJSON reader tolerates the terminating chunk boundary and a body
 //     that ends without a trailing newline; the acceptance client only ever saw
 //     well-formed streams from its own commands.
@@ -153,15 +152,15 @@ export async function resolveExecutable(name, pathValue, signal) {
 }
 
 /**
- * `POST /v1/cancel` — ask the guest to terminate a running exec.
+ * `POST /v1/cancel` — cancel a pending or running exec.
  *
- * The answer is returned rather than reduced to a boolean, because "the id was
- * not the running one" is a fact the caller needs: it means the process either
- * already exited (fine) or was never started (a bug), and those are different.
+ * state is pending-cancelled (cannot start), running (termination requested),
+ * finished (completion observed), or unknown (no retained record).
+ * Closing the exec stream also requests cancellation; it does not prove exit.
  *
  * @param {string} execId - the id passed to `exec()`.
  * @param {AbortSignal} [signal] - cancellation of the *cancel request* itself.
- * @returns {Promise<{execId: string, cancelled: boolean, active: number}>} the guest's answer.
+ * @returns {Promise<{execId: string, cancelled: boolean, state: string, active: number}>} the guest's answer.
  */
 export async function cancel(execId, signal) {
   const config = requireChannel();

@@ -1,0 +1,208 @@
+Source package: mpdecimal@4.0.0-r0
+Alpine aports revision (installed database c: field): 2eb73f6cb661fb3582606482331ad083155f18e8
+Recipe: https://raw.githubusercontent.com/alpinelinux/aports/2eb73f6cb661fb3582606482331ad083155f18e8/main/mpdecimal/APKBUILD
+Recipe SHA-256: 29b09db97e79b1361e47fac7d291cc1024f23730e1c338c895cbddd27cd7b113
+Installed subpackages: mpdecimal
+
+Sources verified against the exact APKBUILD checksums:
+https://distfiles.alpinelinux.org/distfiles/v3.21/mpdecimal-4.0.0.tar.gz
+SHA-256: 942445c3245b22730fd41a67a7c5c231d11cb1b9936b9c0f76334fb7d0b4468c
+SHA-512: 7610ac53ac79f7a8a33fa7a3e61515810444ec73ebca859df7a9ddc18e96b990c99323172810c9cc7f6d6e1502c0be308cd443d6c2d5d0c871648e4842e05d59
+
+Alpine-local sources (immutable revision above):
+
+The following are verbatim license/copyright/author files and source comment
+notices from these sources. Identical notices are printed once with all paths.
+The source collection can include build/test material beyond the shipped subset.
+This notice collection does not supply corresponding source.
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/COPYRIGHT.txt
+
+Copyright (c) 2008-2024 Stefan Krah. All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+SUCH DAMAGE.
+
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/doc/COPYRIGHT.txt
+
+
+SOURCE CODE LICENSE
+===================
+
+Copyright (c) 2008-2024 Stefan Krah. All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+SUCH DAMAGE.
+
+DOCUMENTATION LICENSE
+=====================
+
+Copyright 2010-2024 Stefan Krah. All rights reserved.
+
+Redistribution and use in source and 'compiled' forms (HTML, PDF, PostScript
+and so forth) with or without modification, are permitted provided that the
+following conditions are met:
+
+   1. Redistributions of source code must retain the above copyright notice,
+      this list of conditions and the following disclaimer as the first
+      lines of this file unmodified.
+
+   2. Modified documents must carry a notice that modification has
+      occurred. This notice must also be present in any compiled form.
+
+   3. Redistributions in compiled form (converted to HTML, PDF,
+      PostScript and other formats) must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer
+      in the documentation and/or other materials provided with the
+      distribution.
+
+THIS DOCUMENTATION IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN
+NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS DOCUMENTATION, EVEN
+IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec/basearith.c, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec/basearith.h, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec/bench.c, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec/bench_full.c, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec/bits.h, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec/constants.c, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec/constants.h, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec/context.c, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec/convolute.c, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec/convolute.h, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec/crt.c, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec/crt.h, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec/difradix2.c, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec/difradix2.h, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec/examples/compare.c, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec/examples/div.c, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec/examples/divmod.c, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec/examples/multiply.c, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec/examples/pow.c, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec/examples/powmod.c, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec/examples/shift.c, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec/examples/sqrt.c, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec/fnt.c, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec/fnt.h, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec/fourstep.c, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec/fourstep.h, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec/io.c, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec/io.h, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec/mpalloc.c, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec/mpalloc.h, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec/mpdecimal.c, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec/mpdecimal.h.in, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec/mpdecimal32vc.h, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec/mpdecimal64vc.h, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec/mpsignal.c, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec/numbertheory.c, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec/numbertheory.h, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec/sixstep.c, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec/sixstep.h, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec/transpose.c, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec/transpose.h, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec/typearith.h, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec/umodarith.h, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/tests/runtest.c, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/tests/test.c, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/tests/test.h, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/tests/vctest.h
+
+/*
+ * Copyright (c) 2008-2024 Stefan Krah. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ */
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec/literature/fnt.py
+
+#
+# Copyright (c) 2008-2024 Stefan Krah. All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+#
+# 1. Redistributions of source code must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright
+#    notice, this list of conditions and the following disclaimer in the
+#    documentation and/or other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+# OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+# HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+# LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+# OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+# SUCH DAMAGE.
+#
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec++/bench.cc, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec++/bench_full.cc, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec++/decimal.cc, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec++/examples/factorial.cc, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/libmpdec++/examples/pi.cc, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/tests++/apitest.cc, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/tests++/runtest.cc, mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/tests++/test.cc
+
+/*
+ * Copyright (c) 2020-2024 Stefan Krah. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ */
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: mpdecimal-4.0.0.tar.gz::mpdecimal-4.0.0/tests/gettests.sh
+
+    # The official tests are freely downloadable, but copyrighted.
+===== END UPSTREAM NOTICE =====

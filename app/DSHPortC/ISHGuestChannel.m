@@ -74,6 +74,9 @@ static const NSUInteger kMaxImageRequestBytes = 48u * 1024 * 1024;
 /// How long a connection may sit without completing its headers.
 static const NSTimeInterval kRequestTimeout = 30.0;
 
+/// Keep late cancellation acknowledgements bounded by count, not a socket timer.
+static const NSUInteger kFinishedExecLimit = 256;
+
 /// Fault injection for the "provider failure is visible" acceptance criterion.
 /// Guarded by a dedicated lock, not the channel queue: handler bodies run ON
 /// the channel queue, so guarding them with it would self-deadlock.
@@ -88,7 +91,8 @@ static const NSTimeInterval kRequestTimeout = 30.0;
 @property (nonatomic, strong) nw_connection_t connection;
 @property (nonatomic, strong) NSMutableData *input;
 @property (nonatomic) BOOL headersParsed;
-@property (nonatomic) BOOL closed;
+@property (atomic) BOOL closed;
+@property (nonatomic, copy, nullable) NSString *execID;
 /// Serializes sends: NWConnection allows overlapping sends but the ordering of
 /// chunked bodies must not be left to chance.
 @property (nonatomic, strong) dispatch_queue_t sendQueue;
@@ -120,6 +124,8 @@ static const NSTimeInterval kRequestTimeout = 30.0;
     NSMutableArray<DSHChannelConnection *> *_connections;
     /// Executions started by this server, so a shutdown can cancel them.
     NSMutableSet<NSString *> *_activeExecs;
+    /// Completed ids, oldest first; guarded by _activeExecsLock too.
+    NSMutableOrderedSet<NSString *> *_finishedExecs;
 }
 
 + (ISHGuestChannel *)shared {
@@ -136,6 +142,7 @@ static const NSTimeInterval kRequestTimeout = 30.0;
         _activeExecsLock = OS_UNFAIR_LOCK_INIT;
         _connections = [NSMutableArray array];
         _activeExecs = [NSMutableSet set];
+        _finishedExecs = [NSMutableOrderedSet orderedSet];
         _state = ISHGuestChannelStateIdle;
         _token = [ISHGuestChannel makeToken];
     }
@@ -317,11 +324,9 @@ static const NSTimeInterval kRequestTimeout = 30.0;
 
     nw_connection_set_state_changed_handler(connection, ^(nw_connection_state_t state, nw_error_t error) {
         if (state == nw_connection_state_failed || state == nw_connection_state_cancelled) {
-            context.closed = YES;
             ISHGuestChannel *strongSelf = weakSelf;
-            if (strongSelf != nil) {
-                dispatch_async(strongSelf->_queue, ^{ [strongSelf->_connections removeObject:context]; });
-            }
+            if (strongSelf != nil) [strongSelf closeConnection:context];
+            else context.closed = YES;
         }
     });
 
@@ -343,7 +348,7 @@ static const NSTimeInterval kRequestTimeout = 30.0;
                           ^(dispatch_data_t data, dispatch_data_t contextData,
                             bool isComplete, nw_error_t error) {
         ISHGuestChannel *strongSelf = weakSelf;
-        if (strongSelf == nil) return;
+        if (strongSelf == nil || context.closed) return;
         if (data != NULL) {
             dispatch_data_apply(data, ^bool(dispatch_data_t region, size_t offset, const void *buffer, size_t size) {
                 [context.input appendBytes:buffer length:size];
@@ -516,12 +521,11 @@ static const NSTimeInterval kRequestTimeout = 30.0;
     }
 
     // ---- /v1/cancel ----------------------------------------------------
-    // POST { "execId": "..." }. Cancels the exec if it is the running one.
+    // POST { "execId": "..." }. Cancels a pending or running exec.
+    // state is pending-cancelled, running, finished, or unknown.
     //
-    // A separate endpoint rather than "close the execed connection": the
-    // provider has to be able to cancel from a place that is not the streaming
-    // response handler (a timeout, an AbortController, service disposal), and
-    // those callers may already be gone by the time the socket would close.
+    // Closing the stream also requests cancellation. This endpoint lets timeouts,
+    // aborts and service disposal ask explicitly and observe the guest's answer.
     if ([path isEqualToString:@"/v1/cancel"]) {
         if (![method isEqualToString:@"POST"]) {
             [self respondAndClose:context status:405 message:@"use POST" body:nil];
@@ -780,6 +784,8 @@ static const NSTimeInterval kRequestTimeout = 30.0;
 }
 
 - (void)closeConnection:(DSHChannelConnection *)context {
+    // Also cancel an exec attached after an earlier close notification.
+    if (context.execID.length > 0) [ISHGuest.shared cancelExecWithID:context.execID];
     if (context.closed) return;
     context.closed = true;
     nw_connection_cancel(context.connection);
@@ -916,11 +922,21 @@ static const NSTimeInterval kRequestTimeout = 30.0;
 
 /// Start the command and stream its events as chunked NDJSON.
 - (void)beginStreamingExec:(ISHGuestExecRequest *)request onConnection:(DSHChannelConnection *)context {
+    if (context.closed) return;
     NSString *execID = request.execID.length > 0 ? request.execID : [[NSUUID UUID] UUIDString];
     request.execID = execID;
     os_unfair_lock_lock(&_activeExecsLock);
-    [self->_activeExecs addObject:execID];
+    BOOL duplicate = [self->_activeExecs containsObject:execID];
+    if (!duplicate) {
+        [self->_activeExecs addObject:execID];
+        [self->_finishedExecs removeObject:execID];
+    }
     os_unfair_lock_unlock(&_activeExecsLock);
+    if (duplicate) {
+        [self respondAndClose:context status:409 message:@"execId is already active" body:nil];
+        return;
+    }
+    context.execID = execID;
 
     NSString *header =
         @"HTTP/1.1 200 OK\r\n"
@@ -960,36 +976,56 @@ static const NSTimeInterval kRequestTimeout = 30.0;
                       completion:^(ISHGuestExecResult *result) {
         ISHGuestChannel *strongSelf = weakSelf;
         DSHChannelConnection *strongContext = weakContext;
-        if (strongSelf == nil || strongContext == nil) return;
-
-        NSMutableDictionary *done = [@{
-            @"type": @"exit",
-            @"execId": result.execID ?: execID,
-            @"pid": @(result.pid),
-            @"exitCode": @(result.exitCode),
-            @"durationMs": @(result.duration * 1000.0),
-            @"timedOut": @(result.timedOut),
-            @"truncated": @(result.truncated),
-            @"totalOutputBytes": @(result.totalOutputBytes),
-            @"t": @([NSDate date].timeIntervalSince1970 * 1000.0),
-        } mutableCopy];
-        if (result.launchError.length > 0) done[@"launchError"] = result.launchError;
-        sendEvent(done);
-
-        // The terminating chunk is already framed ("0\r\n\r\n"); sending it
-        // through sendChunk: would frame it a second time and leave the client
-        // with a stray "\r" line after the last event.
-        [strongSelf sendOnConnection:strongContext
-                                data:[NSMutableData dataWithBytes:"0\r\n\r\n" length:5]
-                          completion:^(BOOL ok) { (void) ok; }];
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)),
-                       strongSelf->_queue, ^{
-            [strongSelf closeConnection:strongContext];
+        if (strongSelf == nil) return;
+        dispatch_async(strongSelf->_queue, ^{
             os_unfair_lock_lock(&strongSelf->_activeExecsLock);
-            [strongSelf->_activeExecs removeObject:execID];
+            [strongSelf->_finishedExecs addObject:execID];
+            if (strongSelf->_finishedExecs.count > kFinishedExecLimit) {
+                [strongSelf->_finishedExecs removeObjectAtIndex:0];
+            }
             os_unfair_lock_unlock(&strongSelf->_activeExecsLock);
+            // A later socket close must not cancel another use of this id.
+            strongContext.execID = nil;
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)),
+                           strongSelf->_queue, ^{
+                if (strongContext != nil) [strongSelf closeConnection:strongContext];
+                os_unfair_lock_lock(&strongSelf->_activeExecsLock);
+                [strongSelf->_activeExecs removeObject:execID];
+                os_unfair_lock_unlock(&strongSelf->_activeExecsLock);
+            });
+            if (strongContext == nil) return;
+
+            NSMutableDictionary *done = [@{
+                @"type": @"exit",
+                @"execId": result.execID ?: execID,
+                @"pid": @(result.pid),
+                @"exitCode": @(result.exitCode),
+                @"durationMs": @(result.duration * 1000.0),
+                @"timedOut": @(result.timedOut),
+                @"truncated": @(result.truncated),
+                @"totalOutputBytes": @(result.totalOutputBytes),
+                @"t": @([NSDate date].timeIntervalSince1970 * 1000.0),
+            } mutableCopy];
+            if (result.launchError.length > 0) done[@"launchError"] = result.launchError;
+            sendEvent(done);
+
+            // The terminating chunk is already framed ("0\r\n\r\n"); sending it
+            // through sendChunk: would frame it a second time and leave the client
+            // with a stray "\r" line after the last event.
+            [strongSelf sendOnConnection:strongContext
+                                    data:[NSMutableData dataWithBytes:"0\r\n\r\n" length:5]
+                              completion:^(BOOL ok) { (void) ok; }];
         });
     }];
+
+    // This connection carries one request. EOF or further input cancels its exec,
+    // including while the guest queue is blocked and has produced no output.
+    nw_connection_receive(context.connection, 1, 1,
+                          ^(dispatch_data_t data, dispatch_data_t contextData,
+                            bool isComplete, nw_error_t error) {
+        ISHGuestChannel *strongSelf = weakSelf;
+        if (strongSelf != nil) [strongSelf closeConnection:context];
+    });
 }
 
 /// One chunk of the chunked-transfer body.
@@ -1013,13 +1049,17 @@ static const NSTimeInterval kRequestTimeout = 30.0;
         return;
     }
 
-    BOOL cancelled = [ISHGuest.shared cancelExecWithID:execID];
+    ISHGuestCancelState state = [ISHGuest.shared cancelExecWithID:execID];
+    os_unfair_lock_lock(&_activeExecsLock);
+    BOOL finished = [_finishedExecs containsObject:execID];
+    os_unfair_lock_unlock(&_activeExecsLock);
+    NSString *status = state == ISHGuestCancelStatePending ? @"pending-cancelled"
+        : state == ISHGuestCancelStateRunning ? @"running"
+        : finished ? @"finished" : @"unknown";
     NSDictionary *payload = @{
         @"execId": execID,
-        // Honest answer, not a success flag: NO means the id did not name the
-        // exec that is running right now (already finished, or never started),
-        // and the caller must not treat that as "the process is dead".
-        @"cancelled": @(cancelled),
+        @"cancelled": @(state != ISHGuestCancelStateUnknown),
+        @"state": status,
         @"active": @([self activeExecCount]),
     };
     NSData *responseBody = [NSJSONSerialization dataWithJSONObject:payload options:0 error:nil];

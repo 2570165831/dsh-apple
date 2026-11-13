@@ -169,6 +169,27 @@ test('a launch ended in the background does not count', () => {
   assert.equal(existsSync(paths.backgroundFile), false, 'the marker is consumed');
 });
 
+test('an early marker for the current launch survives beginLaunch', () => {
+  const paths = workspace();
+  writeFileSync(paths.backgroundFile, 'L1\n');
+  beginLaunch({ ...paths, launchId: 'L1', now: at(0) });
+  assert.equal(readFileSync(paths.backgroundFile, 'utf8'), 'L1\n');
+  const next = beginLaunch({ ...paths, launchId: 'L2', now: at(1) });
+  assert.equal(next.previous.kind, 'abandoned');
+  assert.equal(next.failures, 0);
+  assert.equal(existsSync(paths.backgroundFile), false);
+});
+
+test('clearing a current marker restores foreground crash counting', () => {
+  const paths = workspace();
+  writeFileSync(paths.backgroundFile, 'L1\n');
+  beginLaunch({ ...paths, launchId: 'L1', now: at(0) });
+  rmSync(paths.backgroundFile);
+  const next = beginLaunch({ ...paths, launchId: 'L2', now: at(1) });
+  assert.equal(next.previous.kind, 'failure');
+  assert.equal(next.failures, 1);
+});
+
 test('the in-state background mark is as good as the marker file', () => {
   const paths = workspace();
   beginLaunch({ ...paths, launchId: 'L1', now: at(0) });

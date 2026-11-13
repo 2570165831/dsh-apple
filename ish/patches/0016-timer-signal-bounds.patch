@@ -1,0 +1,115 @@
+diff --git a/kernel/time.c b/kernel/time.c
+--- a/kernel/time.c
++++ b/kernel/time.c
+@@ -430,11 +430,15 @@
+     }
+     if (sigev.method != SIGEV_SIGNAL_ && sigev.method != SIGEV_NONE_ && sigev.method != SIGEV_THREAD_ID_)
+         return _EINVAL;
++    if (sigev.method != SIGEV_NONE_ && (sigev.signo < 1 || sigev.signo >= NUM_SIGS))
++        return _EINVAL;
+ 
+     if (sigev.method == SIGEV_THREAD_ID_) {
+         lock(&pids_lock);
+-        if (pid_get_task(sigev.tid) == NULL)
++        if (pid_get_task(sigev.tid) == NULL) {
++            unlock(&pids_lock);
+             return _EINVAL;
++        }
+         unlock(&pids_lock);
+     }
+ 
+diff --git a/tests/regress/regress_timer_signal.c b/tests/regress/regress_timer_signal.c
+new file mode 100644
+--- /dev/null
++++ b/tests/regress/regress_timer_signal.c
+@@ -0,0 +1,90 @@
++// Exercise timer_create validation without libc's timer wrapper.
++#define _GNU_SOURCE
++#include <errno.h>
++#include <limits.h>
++#include <signal.h>
++#include <stdio.h>
++#include <sys/syscall.h>
++#include <time.h>
++#include <unistd.h>
++
++#ifndef SIGEV_THREAD_ID
++#define SIGEV_THREAD_ID 4
++#endif
++
++struct sigevent_guest {
++    union sigval value;
++    int signo, method;
++    union {
++        int tid;
++        char pad[64 - sizeof(union sigval) - 2 * sizeof(int)];
++    };
++};
++
++static int failures;
++static volatile sig_atomic_t notified;
++#define CHECK(ok, what) do { if (!(ok)) { \
++    printf("FAIL %s (errno=%d)\n", what, errno); failures++; \
++} } while (0)
++
++static void handler(int sig) {
++    notified = sig;
++}
++
++static int create(struct sigevent_guest *event, int error) {
++    int timer = -1;
++    errno = 0;
++    long res = syscall(SYS_timer_create, CLOCK_MONOTONIC, event, &timer);
++    if (error)
++        CHECK(res == -1 && errno == error, "invalid timer notification rejected");
++    else
++        CHECK(res == 0, "valid timer notification accepted");
++    if (res == 0)
++        CHECK(syscall(SYS_timer_delete, timer) == 0, "delete timer");
++    return res == 0;
++}
++
++int main(void) {
++    int invalid[] = {INT_MIN, -5, 0, 64, 200, INT_MAX};
++    int methods[] = {SIGEV_SIGNAL, SIGEV_THREAD_ID};
++    for (size_t i = 0; i < sizeof(invalid) / sizeof(invalid[0]); i++) {
++        for (size_t j = 0; j < sizeof(methods) / sizeof(methods[0]); j++) {
++            struct sigevent_guest event = {
++                .signo = invalid[i], .method = methods[j],
++                .tid = (int) syscall(SYS_gettid),
++            };
++            create(&event, EINVAL);
++        }
++        struct sigevent_guest event = {.signo = invalid[i], .method = SIGEV_NONE};
++        create(&event, 0);
++    }
++
++    struct sigevent_guest event = {
++        .signo = SIGUSR1, .method = SIGEV_THREAD_ID, .tid = 0,
++    };
++    create(&event, EINVAL);
++    event.tid = (int) syscall(SYS_gettid);
++    create(&event, 0);
++    event.signo = 63;
++    create(&event, 0);
++
++    struct sigaction action = {.sa_handler = handler};
++    sigemptyset(&action.sa_mask);
++    CHECK(sigaction(SIGUSR1, &action, NULL) == 0, "install timer handler");
++    event = (struct sigevent_guest) {.signo = SIGUSR1, .method = SIGEV_SIGNAL};
++    int timer = -1;
++    if (syscall(SYS_timer_create, CLOCK_MONOTONIC, &event, &timer) == 0) {
++        struct itimerspec spec = {.it_value = {.tv_nsec = 10000000}};
++        CHECK(syscall(SYS_timer_settime, timer, 0, &spec, NULL) == 0, "arm timer");
++        for (int i = 0; i < 100 && !notified; i++) {
++            struct timespec nap = {.tv_nsec = 10000000};
++            nanosleep(&nap, NULL);
++        }
++        CHECK(notified == SIGUSR1, "valid timer delivers a signal");
++        CHECK(syscall(SYS_timer_delete, timer) == 0, "delete armed timer");
++    } else {
++        CHECK(0, "create timer after invalid notifications");
++    }
++    printf("%d failures\n", failures);
++    return failures != 0;
++}

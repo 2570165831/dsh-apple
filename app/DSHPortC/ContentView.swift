@@ -26,6 +26,7 @@ struct ContentView: View {
     @State private var showingNotificationSettings = false
     @State private var showingAbout = false
     @State private var showingReset = false
+    @AppStorage("ish.rootfs.notice") private var guestRootfsNotice = ""
     /// The one-line result of the last diagnostics export, shown on the failure
     /// screen. A share sheet that the user dismissed is not an error, so this is
     /// a sentence rather than an alert.
@@ -79,9 +80,10 @@ struct ContentView: View {
                         anchor: shareAnchor,
                         reloadGeneration: model.reloadGeneration,
                         onDebugGesture: { showingDebugMenu = true },
+                        onAbout: { showingAbout = true },
                         onLoadStart: { model.noteWebViewLoading() },
                         onReady: {
-                            model.noteWebViewReady()
+                            guard model.noteWebViewReady() else { return }
                             // Step 21: cross-fade the page in over the splash.
                             model.notePagePainted()
                             // Step 16: a notification tapped while the app was
@@ -148,6 +150,8 @@ struct ContentView: View {
                     // rather than a `.transition` on the branch, because a
                     // transition would remove one side before inserting the other.
                     .opacity(model.pageVisible ? 1 : 0)
+                    .allowsHitTesting(model.pageVisible)
+                    .accessibilityHidden(!model.pageVisible)
             }
             bootScreen
                 .opacity(model.pageVisible ? 0 : 1)
@@ -190,6 +194,14 @@ struct ContentView: View {
             }
             .sheet(isPresented: $showingAbout) {
                 AboutView()
+            }
+            .alert("旧 Linux 客户机已保留", isPresented: Binding(
+                get: { !guestRootfsNotice.isEmpty },
+                set: { if !$0 { guestRootfsNotice = "" } }
+            )) {
+                Button("知道了", role: .cancel) { guestRootfsNotice = "" }
+            } message: {
+                Text(guestRootfsNotice)
             }
             // A launch-argument way to open the same menu, for the UI test that
             // proves the entries are still reachable. Without it the only way in
@@ -270,8 +282,10 @@ struct ContentView: View {
             // guest acceptance run lives behind this, so a normal launch is
             // untouched.
             GuestSelfTest.shared.runIfConfigured()
+            #if DEBUG
             // Step 4B device measurements; no-op without -DSHPortEProbe 1.
             DeviceProbe.shared.runIfConfigured()
+            #endif
         }
     }
 
@@ -469,6 +483,7 @@ struct DSHWebView: UIViewRepresentable {
     /// Bumped by the debug menu's reload entry; a change reloads the page.
     let reloadGeneration: Int
     let onDebugGesture: () -> Void
+    let onAbout: () -> Void
     let onLoadStart: () -> Void
     let onReady: () -> Void
     let onFailure: (String) -> Void
@@ -485,6 +500,7 @@ struct DSHWebView: UIViewRepresentable {
             url: url,
             reloadGeneration: reloadGeneration,
             onDebugGesture: onDebugGesture,
+            onAbout: onAbout,
             onLoadStart: onLoadStart,
             onReady: onReady,
             onFailure: onFailure,
@@ -498,6 +514,16 @@ struct DSHWebView: UIViewRepresentable {
         // The UI is same-origin loopback over plain HTTP, so nothing needs to be
         // relaxed here beyond what Info.plist already allows for localhost.
         configuration.defaultWebpagePreferences.allowsContentJavaScript = true
+
+        let readinessScript = (try? String(
+            contentsOf: NodeRunner.shared.simDirectory.appendingPathComponent("page-readiness.js"),
+            encoding: .utf8
+        )) ?? "window.__dshBootState = {ready: false, error: 'Missing page-readiness.js'};"
+        configuration.userContentController.addUserScript(WKUserScript(
+            source: readinessScript,
+            injectionTime: .atDocumentStart,
+            forMainFrameOnly: true
+        ))
 
         // Test-only diagnostics. A failing RPC on this page is otherwise
         // invisible: the composer simply stays disabled and the only clue is a
@@ -631,12 +657,16 @@ struct DSHWebView: UIViewRepresentable {
         var currentURL: URL
         var reloadGeneration: Int
         private let onDebugGesture: () -> Void
+        private let onAbout: () -> Void
         private let onLoadStart: () -> Void
         private let onReady: () -> Void
         private let onFailure: (String) -> Void
         private let onPageScheme: (String?) -> Void
         private weak var webView: WKWebView?
         private var readyReported = false
+        private var readinessFailed = false
+        private var readinessErrorReported = false
+        private var readinessGeneration = 0
         /// The last scheme the page reported, so a poll that finds nothing new
         /// does not redraw the whole view tree every second.
         private var reportedScheme: String?
@@ -645,6 +675,7 @@ struct DSHWebView: UIViewRepresentable {
             url: URL,
             reloadGeneration: Int,
             onDebugGesture: @escaping () -> Void,
+            onAbout: @escaping () -> Void,
             onLoadStart: @escaping () -> Void,
             onReady: @escaping () -> Void,
             onFailure: @escaping (String) -> Void,
@@ -653,6 +684,7 @@ struct DSHWebView: UIViewRepresentable {
             currentURL = url
             self.reloadGeneration = reloadGeneration
             self.onDebugGesture = onDebugGesture
+            self.onAbout = onAbout
             self.onLoadStart = onLoadStart
             self.onReady = onReady
             self.onFailure = onFailure
@@ -676,7 +708,7 @@ struct DSHWebView: UIViewRepresentable {
 
         func load() {
             guard let webView else { return }
-            readyReported = false
+            resetReadiness()
             onLoadStart()
             webView.load(URLRequest(url: currentURL))
         }
@@ -687,7 +719,7 @@ struct DSHWebView: UIViewRepresentable {
         func reload() {
             guard let webView else { return }
             guard webView.url != nil else { load(); return }
-            readyReported = false
+            resetReadiness()
             onLoadStart()
             webView.reload()
         }
@@ -705,6 +737,7 @@ struct DSHWebView: UIViewRepresentable {
         }
 
         func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+            resetReadiness()
             onLoadStart()
             InteractionProbe.shared.noteNavigation("didStartProvisional", ["url": NodeRunner.redact(webView.url?.absoluteString ?? "nil")])
         }
@@ -747,9 +780,9 @@ struct DSHWebView: UIViewRepresentable {
 
         /// Step 17: every navigation action is classified by `LinkRouter` — a
         /// download, an external link that leaves for the system browser, a
-        /// "new window" that stays in place, or an ordinary page load.
+        /// "new window" that stays in place, the native About sheet, or a page load.
         func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
-            switch LinkRouter.shared.decide(navigationAction) {
+            switch LinkRouter.shared.decide(navigationAction, onAbout: onAbout) {
             case .allow:
                 decisionHandler(.allow)
             case .cancel:
@@ -827,31 +860,64 @@ struct DSHWebView: UIViewRepresentable {
         /// idempotent — an already-swapped view is skipped.
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
             MobileWebTuning.removeInputAccessoryFromContentViews(webView)
-            // `didFinish` fires when the document and its synchronous resources
-            // are in, which is what "the UI is up" means for this app. The React
-            // tree finishes its own hydration a moment later; the readiness flag
-            // is checked separately so the number in the report is about the
-            // web view, not about DSH's hydration.
-            if !readyReported {
-                readyReported = true
-                // STEP 19B's way to reproduce "the page never becomes ready", which
-                // PLAN-19 §11 item 7 left open. Blocking the loopback port or
-                // pointing the web view at a dead one reproduces a DIFFERENT failure
-                // (`didFailProvisionalNavigation`, a web-view error), not this one:
-                // the page has to load and then simply never be declared ready.
-                // Waiting here does exactly that, and it is gated on a launch
-                // argument so a normal launch cannot reach it.
-                let holdMs = UserDefaults.standard.integer(forKey: "DSHPortEStep19HoldReadyMs")
-                if holdMs > 0 {
-                    NodeRunner.shared.emit(
-                        "dshportc: TEST holding the page-ready signal for \(holdMs) ms (page painted)")
-                    DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(holdMs)) { [weak self] in
-                        NodeRunner.shared.emit("dshportc: TEST releasing the page-ready signal")
-                        self?.onReady()
+            NodeRunner.shared.noteDocumentLoaded()
+            pollReadiness(webView, generation: readinessGeneration)
+        }
+
+        private func resetReadiness() {
+            readinessGeneration += 1
+            readyReported = false
+            readinessFailed = false
+            readinessErrorReported = false
+        }
+
+        /// Evaluation is in the main frame, only on this launch's loopback server.
+        private func isTrustedPage(_ webView: WKWebView) -> Bool {
+            guard let url = webView.url, let host = url.host else { return false }
+            return url.scheme == "http" && url.scheme == currentURL.scheme
+                && ["127.0.0.1", "localhost", "[::1]", "::1"].contains(host)
+                && host == currentURL.host && url.port == currentURL.port
+        }
+
+        private func pollReadiness(_ webView: WKWebView, generation: Int) {
+            guard generation == readinessGeneration, !readyReported, !readinessFailed else { return }
+            guard isTrustedPage(webView) else {
+                readinessFailed = true
+                onFailure("webview: unexpected page origin")
+                return
+            }
+            webView.evaluateJavaScript("window.__dshBootState || null") { [weak self, weak webView] value, error in
+                guard let self, let webView, generation == self.readinessGeneration,
+                      !self.readyReported, !self.readinessFailed, self.isTrustedPage(webView) else { return }
+                if let error {
+                    self.readinessFailed = true
+                    self.onFailure("webview: " + error.localizedDescription)
+                    return
+                }
+                let state = value as? [String: Any]
+                if let message = state?["error"] as? String, !self.readinessErrorReported {
+                    self.readinessErrorReported = true
+                    NodeRunner.shared.noteClientStartupError(message)
+                }
+                if state?["ready"] as? Bool == true {
+                    self.readyReported = true
+                    let holdMs = UserDefaults.standard.integer(forKey: "DSHPortEStep19HoldReadyMs")
+                    if holdMs > 0 {
+                        NodeRunner.shared.emit("dshportc: TEST holding the page-ready signal for \(holdMs) ms (DSH ready)")
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(max(0, holdMs))) { [weak self, weak webView] in
+                        guard let self, let webView, generation == self.readinessGeneration,
+                              !self.readinessFailed, self.isTrustedPage(webView) else { return }
+                        if holdMs > 0 { NodeRunner.shared.emit("dshportc: TEST releasing the page-ready signal") }
+                        self.onReady()
                     }
                     return
                 }
-                onReady()
+                guard NodeRunner.shared.statusSnapshot.phase != BootPhase.failed.rawValue else { return }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) { [weak self, weak webView] in
+                    guard let webView else { return }
+                    self?.pollReadiness(webView, generation: generation)
+                }
             }
         }
 
@@ -867,6 +933,7 @@ struct DSHWebView: UIViewRepresentable {
             let nsError = error as NSError
             // A cancelled navigation is the normal result of a reload; not a failure.
             if nsError.domain == NSURLErrorDomain && nsError.code == NSURLErrorCancelled { return }
+            readinessFailed = true
             onFailure("webview: \(nsError.domain) \(nsError.code) \(nsError.localizedDescription)")
         }
     }
@@ -933,6 +1000,7 @@ final class BootViewModel: ObservableObject {
     @Published private(set) var safeMode = SafeModeReport()
     private static let slowLaunchAfter: TimeInterval = 8.0
     private var slowLaunchTimer: Timer?
+    private var pageWasVisible = false
 
     private let runner = NodeRunner.shared
     private var started = false
@@ -943,7 +1011,7 @@ final class BootViewModel: ObservableObject {
     }
 
     var statusBadge: String {
-        let node = runner.status.node
+        let node = runner.statusSnapshot.node
         guard !node.nodeVersion.isEmpty else { return "" }
         return "Node \(node.nodeVersion)"
     }
@@ -989,7 +1057,7 @@ final class BootViewModel: ObservableObject {
 
     /// The page has painted: fade it in over the splash.
     ///
-    /// Called from the web view's `onReady`, which fires on `didFinish`. The one
+    /// Called after the document and DSH's interface are ready. The one
     /// frame of delay matters: SwiftUI needs the page to have been laid out once
     /// before an opacity change on it can animate, otherwise the first frame of
     /// the fade shows an unlaid-out web view — a grey rectangle, which is the same
@@ -999,7 +1067,12 @@ final class BootViewModel: ObservableObject {
         slowLaunchTimer = nil
         guard !pageVisible else { return }
         DispatchQueue.main.async { [weak self] in
-            self?.pageVisible = true
+            guard let self else { return }
+            let status = self.runner.statusSnapshot
+            guard !self.bootFailed, status.runtimeFatal != true,
+                  status.phase != BootPhase.failed.rawValue else { return }
+            self.pageWasVisible = true
+            self.pageVisible = true
         }
     }
 
@@ -1008,7 +1081,7 @@ final class BootViewModel: ObservableObject {
         pollTimer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true) { [weak self] _ in
             Task { @MainActor in
                 guard let self else { return }
-                let status = NodeRunner.shared.status
+                let status = NodeRunner.shared.statusSnapshot
                 if let facts = self.formatFacts(status.node) { self.runtimeFacts = facts }
                 // Step 19: one assignment per poll, and only when it changed, so
                 // the banner's animation is driven by a real transition rather
@@ -1026,9 +1099,12 @@ final class BootViewModel: ObservableObject {
                 Step15Probe.shared.noteBootScreen(headline: self.headline,
                                                   detail: self.detail,
                                                   runtimeFacts: self.runtimeFacts)
-                switch status.phase {
+                switch status.runtimeFatal == true ? BootPhase.failed.rawValue : status.phase {
                 case BootPhase.failed.rawValue:
-                    self.headline = "启动失败"
+                    self.headline = status.runtimeFatal == true && self.pageWasVisible ? "运行时已停止" : "启动失败"
+                    if status.runtimeFatal == true { self.pageVisible = false }
+                    self.slowLaunchTimer?.invalidate()
+                    self.slowLaunchTimer = nil
                     self.detail = status.error ?? status.detail
                     // Step 21: a failed launch is worth a sentence and a way into
                     // the log. This is what replaced the splash screen's permanent
@@ -1039,7 +1115,7 @@ final class BootViewModel: ObservableObject {
                 case BootPhase.nodeRunning.rawValue:
                     self.headline = "Node 已启动，正在加载 DSH"
                     self.detail = status.detail
-                case BootPhase.serverListening.rawValue, BootPhase.webViewLoading.rawValue:
+                case BootPhase.serverListening.rawValue, BootPhase.webViewLoading.rawValue, BootPhase.documentLoaded.rawValue:
                     self.headline = "正在加载界面"
                     self.detail = status.detail
                 default:
@@ -1077,8 +1153,16 @@ final class BootViewModel: ObservableObject {
     }
 
     func noteWebViewLoading() { runner.noteWebViewLoading() }
-    func noteWebViewReady() { runner.noteWebViewReady() }
-    func noteWebViewFailure(_ message: String) { runner.noteFailure(message) }
+    func noteWebViewReady() -> Bool {
+        runner.noteWebViewReady()
+    }
+    func noteWebViewFailure(_ message: String) {
+        if pageWasVisible {
+            runner.emit("dshportc: navigation failed after readiness: " + message)
+        } else {
+            runner.noteFailure(message)
+        }
+    }
     func reloadWebView() { reloadGeneration += 1 }
     func load(url: URL) { readyURL = url }
 }

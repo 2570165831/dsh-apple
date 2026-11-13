@@ -1,0 +1,36 @@
+License identifier: X11
+Source: https://distfiles.alpinelinux.org/distfiles/v3.21/ncurses-6.5-20241006.tgz
+Source archive SHA-256: fefd7f516ba7a236239d3213f698fa9736c394bece176671411e94dac83eadfd
+Source archive SHA-512: 60ca1c6e1797feade55306f7c9be57e546ddbdad36fa09a914f8884c628fbd8683660f895899a419172518b78e3edd49257c0fb7b6d4d83705f494f4766aa066
+Alpine aports revision: 2cf24c798675a7f7deb2603c350d4adc7b59c8bb
+Archive member: ncurses-6.5-20241006/COPYING
+
+Copyright 2018-2023,2024 Thomas E. Dickey
+Copyright 1998-2017,2018 Free Software Foundation, Inc.
+
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, distribute with modifications, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
+THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+Except as contained in this notice, the name(s) of the above copyright
+holders shall not be used in advertising or otherwise to promote the
+sale, use or other dealings in this Software without prior written
+authorization.
+
+-- vile:txtmode fc=72
+-- $Id: COPYING,v 1.13 2024/01/05 21:13:17 tom Exp $

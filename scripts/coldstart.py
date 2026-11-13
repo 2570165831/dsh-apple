@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Measure cold start: simctl launch -> status.phase == webViewReady.
 
-The same metric REPORT-1 and REPORT-2 used, so the numbers are comparable. The
-step-2 report asked step 5 for one specific thing: measure the GUEST-ON path
-separately, because the earlier 4.45 s was taken with the guest off and step 5
-makes it the default.
+webViewReady now waits for the rendered DSH client after plugin loading.
+REPORT-1/2 and step 21 measured document completion (didFinish), so their
+numbers are historical references, not directly comparable to this metric.
+Keep measuring the guest-on and guest-off paths separately.
 
 Usage
     scripts/coldstart.py [--runs N] [--guest on|off] [--label NAME]
@@ -111,7 +111,7 @@ def main() -> int:
         time.sleep(2)
 
     summary = {
-        "metric": f"simctl launch -> {RUNTIME_DIR}/DSHPortC-status.json phase == webViewReady",
+        "metric": f"simctl launch -> {RUNTIME_DIR}/DSHPortC-status.json phase == webViewReady (DSH client ready)",
         "guest_channel": args.guest,
         "runs": runs,
         "median": round(statistics.median(runs), 2) if runs else None,
@@ -120,7 +120,7 @@ def main() -> int:
         "reference": {
             "step1": 4.89,
             "step2_guest_off": 4.45,
-            "_note": "both measured on this device with this metric; see REPORT-1 §8.1 and REPORT-2 §10.2",
+            "_note": "historical didFinish timings; not comparable to client readiness; see REPORT-1 §8.1 and REPORT-2 §10.2",
         },
     }
     label = args.label or f"coldstart-guest-{args.guest}"

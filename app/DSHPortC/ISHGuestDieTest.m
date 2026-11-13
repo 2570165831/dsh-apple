@@ -18,6 +18,7 @@
 //  test-only kernel build.
 //
 
+#if DEBUG
 #import "ISHGuest.h"
 
 #include <pthread.h>
@@ -90,3 +91,4 @@ void dsh_trigger_die_on_guest_task(void) {
         NSLog(@"dshportc: die test could not start its thread: %d", createErr);
     }
 }
+#endif

@@ -669,7 +669,7 @@ enum MobileWebTuning {
             } catch (error) { /* the observer is a backstop */ }
           }
 
-          // ---- 3b. The keyboard comes up when the draft is what was pressed
+          // ---- 3b. Keep incidental touch focus out of the draft
           //
           // DSH's composer keeps the draft focused on every toolbar press:
           // `keepDraftFocus` runs on `mousedown`, and the "+" button focuses the
@@ -677,28 +677,85 @@ enum MobileWebTuning {
           // On a phone the focus lands inside a user gesture, so iOS raises the
           // keyboard for a tap on Send and it covers the reply.
           //
-          // So a press that did not land on the draft cannot move focus INTO it.
-          // Focus that is already there stays: that is what the toolbar press is
-          // for, and picking from the draft's own menu must not lose the keyboard.
-          // A hardware keyboard raises nothing on screen, so all of this stands
-          // aside for one.
+          // Focus starts allowed for keyboard, pointer and accessibility entry.
+          // A press away from the draft blocks incidental focus only until the
+          // gesture and its deferred editor update have finished. This includes
+          // menus rendered outside the composer card.
           state.hardwareKeyboard = false;
           state.draftFocusBlocked = 0;
-          let pressMayFocusDraft = false;
+          let pressMayFocusDraft = true;
+          let pressFocusReset;
+          let draftFocusPress = null;
+          let draftKeyboardCheck;
           let heightBeforeFocus = window.innerHeight;
           const isDraft = (el) => el instanceof Element && el.matches('[data-composer-input]');
           const draftHasFocus = () => isDraft(document.activeElement);
           const draftMayTakeFocus = () => state.hardwareKeyboard || pressMayFocusDraft;
+          const allowDraftFocus = () => {
+            clearTimeout(pressFocusReset);
+            pressMayFocusDraft = true;
+            draftFocusPress = null;
+            if (!draftHasFocus()) heightBeforeFocus = window.innerHeight;
+          };
+          const finishDraftPress = () => {
+            clearTimeout(pressFocusReset);
+            // Include the compatibility mouse events and deferred editor update.
+            pressFocusReset = setTimeout(allowDraftFocus, 1000);
+          };
           const pressIsOnDraft = (target) => {
             if (!(target instanceof Element)) return false;
             if (target.closest('[data-composer-input], [data-composer-overlay]') !== null) return true;
             return target.closest('[data-composer-card]') !== null
               && target.closest('button, a, input, select, textarea, [role="button"]') === null;
           };
+          const beginDraftPress = (target) => {
+            allowDraftFocus();
+            pressMayFocusDraft = draftHasFocus() || pressIsOnDraft(target);
+            if (!draftHasFocus() && pressMayFocusDraft) {
+              const press = { height: window.innerHeight };
+              draftFocusPress = press;
+              // Only focus delivered during this event can start a measurement.
+              setTimeout(() => { if (draftFocusPress === press) draftFocusPress = null; }, 0);
+            }
+          };
           document.addEventListener('touchstart', (event) => {
-            if (!draftHasFocus()) heightBeforeFocus = window.innerHeight;
-            pressMayFocusDraft = draftHasFocus() || pressIsOnDraft(event.target);
+            if (!event.isTrusted) return;
+            beginDraftPress(event.target);
           }, { capture: true, passive: true });
+          document.addEventListener('touchend', (event) => {
+            if (!event.isTrusted || event.touches.length !== 0) return;
+            if (pressIsOnDraft(event.target)) beginDraftPress(event.target);
+            finishDraftPress();
+          }, { capture: true, passive: true });
+          document.addEventListener('touchcancel', (event) => {
+            if (event.isTrusted) allowDraftFocus();
+          }, { capture: true, passive: true });
+          document.addEventListener('pointerdown', (event) => {
+            if (event.isTrusted && event.pointerType !== 'touch') beginDraftPress(event.target);
+          }, true);
+          document.addEventListener('pointerup', (event) => {
+            if (event.isTrusted && event.pointerType !== 'touch') finishDraftPress();
+          }, true);
+          document.addEventListener('pointercancel', (event) => {
+            if (event.isTrusted && event.pointerType !== 'touch') allowDraftFocus();
+          }, true);
+          document.addEventListener('mousedown', (event) => {
+            if (event.isTrusted && event.detail > 0 && pressIsOnDraft(event.target)) beginDraftPress(event.target);
+          }, true);
+          document.addEventListener('keydown', (event) => {
+            if (!event.isTrusted) return;
+            allowDraftFocus();
+            // A software keyboard needs an editable element to have focus.
+            // Scripted focus without a keyboard must never set this hint.
+            const active = document.activeElement;
+            if (active instanceof HTMLElement && !active.isContentEditable
+                && !active.matches('input, textarea, select')) state.hardwareKeyboard = true;
+          }, true);
+          document.addEventListener('click', (event) => {
+            if (!event.isTrusted || !pressIsOnDraft(event.target)) return;
+            if (event.detail === 0) allowDraftFocus();
+            else beginDraftPress(event.target);
+          }, true);
           // The two ways focus gets there. `focus()` is the one DSH calls, and
           // stopping it here means the keyboard never starts to animate. A Lexical
           // selection update can focus the editor without calling it, so `focusin`
@@ -718,13 +775,23 @@ enum MobileWebTuning {
               event.target.blur();
               return;
             }
-            // An on-screen keyboard shrinks the web view; a hardware one does not.
-            const before = heightBeforeFocus;
-            setTimeout(() => {
-              if (draftHasFocus()) state.hardwareKeyboard = window.innerHeight >= before - 1;
-            }, 900);
+            clearTimeout(draftKeyboardCheck);
+            const press = draftFocusPress;
+            draftFocusPress = null;
+            heightBeforeFocus = press === null ? window.innerHeight : press.height;
+            // Only a direct draft press should raise the software keyboard.
+            // Focus without that gesture says nothing about a hardware keyboard.
+            if (press !== null) {
+              const before = heightBeforeFocus;
+              draftKeyboardCheck = setTimeout(() => {
+                if (draftHasFocus()) state.hardwareKeyboard = window.innerHeight >= before - 1;
+              }, 900);
+            }
           }, true);
-          // The measurement above can land before a slow keyboard has finished.
+          document.addEventListener('focusout', (event) => {
+            if (isDraft(event.target)) clearTimeout(draftKeyboardCheck);
+          }, true);
+          // A smaller viewport can invalidate the hint after a disconnect.
           window.addEventListener('resize', () => {
             if (draftHasFocus() && window.innerHeight < heightBeforeFocus - 1) state.hardwareKeyboard = false;
           });
@@ -733,11 +800,12 @@ enum MobileWebTuning {
           // same button is Stop. Capture phase, so the draft is read before DSH's
           // handler clears it, and the blur waits until that handler has run.
           document.addEventListener('click', (event) => {
-            if (state.hardwareKeyboard || !(event.target instanceof Element)) return;
+            if (!event.isTrusted || event.detail === 0 || state.hardwareKeyboard || !(event.target instanceof Element)) return;
             if (event.target.closest('[data-composer-card] button[class*="primary"]') === null) return;
             const draft = document.querySelector('[data-composer-input]');
             if (draft === null || draft.textContent.trim() === '') return;
             pressMayFocusDraft = false;
+            finishDraftPress();
             setTimeout(() => { if (draftHasFocus()) document.activeElement.blur(); }, 0);
           }, true);
 

@@ -55,6 +55,7 @@ function tree() {
     join(appSupport, 'boot', 'boot-guard.json'),
     join(appSupport, 'diagnostics', '20261101T000000-x', 'SUMMARY.txt'),
     join(root, 'Library', 'Application Support', 'ish-root', '.installed-version'),
+    join(root, 'Library', 'Application Support', 'ish-root-previous', 'ish-root.previous-saved', 'data', 'sentinel'),
     join(root, 'Library', 'Caches', 'dsh-compile-cache', 'x'),
   ];
   for (const file of files) {
@@ -153,7 +154,7 @@ test('every planned path is inside the root and says how', () => {
     assert.equal(entry.relative.startsWith('..'), false);
     assert.equal(entry.relative.includes('..' + sep), false);
     assert.ok(['dir', 'file'].includes(entry.kind));
-    assert.ok(['always', 'conversations', 'settings', 'guest'].includes(entry.tier));
+    assert.ok(['always', 'conversations', 'settings', 'guest', 'guestBackups'].includes(entry.tier));
     assert.ok(entry.reason.length > 5);
   }
 });
@@ -175,6 +176,53 @@ test('the guest image is kept unless it is asked for', () => {
     root: fixture.root, keepConversations: true, keepSettings: true, includeGuestImage: true,
   });
   assert.equal(withPath(dropped, join('Library', 'Application Support', 'ish-root')), true);
+  assert.equal(withPath(dropped, join('Library', 'Application Support', 'ish-root-previous')), false);
+});
+
+test('old guests move only when requested, without moving the current image', () => {
+  const fixture = tree();
+  const relative = join('Library', 'Application Support', 'ish-root-previous');
+  for (const keepConversations of [true, false]) {
+    for (const keepSettings of [true, false]) {
+      const kept = computeResetPlan({ root: fixture.root, keepConversations, keepSettings });
+      assert.equal(withPath(kept, relative), false);
+      assert.ok(kept.keep.some((entry) => entry.relative === relative));
+      const dropped = computeResetPlan({
+        root: fixture.root, keepConversations, keepSettings, includeGuestBackups: true,
+      });
+      assert.equal(withPath(dropped, relative), true);
+      assert.equal(dropped.move.find((entry) => entry.relative === relative).tier, 'guestBackups');
+      assert.equal(dropped.keep.some((entry) => entry.relative === relative), false);
+      assert.equal(withPath(dropped, join('Library', 'Application Support', 'ish-root')), false);
+      const key = `${keepConversations ? 'keep' : 'drop'}-conversations+${keepSettings ? 'keep' : 'drop'}-settings`;
+      assert.deepEqual(relativeCombos({ includeGuestBackups: true })[key],
+        dropped.move.map((entry) => entry.relative).sort());
+    }
+  }
+});
+
+test('old guests needed by an unfinished install cannot be moved', () => {
+  const fixture = tree();
+  writeFileSync(join(fixture.root, 'Library', 'Application Support', 'ish-root.install-backup'),
+    'ish-root.previous-saved');
+  assert.throws(() => computeResetPlan({
+    root: fixture.root, keepConversations: true, keepSettings: true, includeGuestBackups: true,
+  }), { code: 'guest-recovery' });
+  const kept = computeResetPlan({ root: fixture.root, keepConversations: true, keepSettings: true });
+  assert.equal(kept.move.some((entry) => entry.tier === 'guestBackups'), false);
+});
+
+test('a symlinked old-guest directory is left alone', () => {
+  const fixture = tree();
+  const backups = join(fixture.root, 'Library', 'Application Support', 'ish-root-previous');
+  const outside = mkdtempSync(join(base, 'outside-guests-'));
+  rmSync(backups, { recursive: true });
+  symlinkSync(outside, backups);
+  const plan = computeResetPlan({
+    root: fixture.root, keepConversations: true, keepSettings: true, includeGuestBackups: true,
+  });
+  assert.equal(plan.move.some((entry) => entry.tier === 'guestBackups'), false);
+  assert.match(plan.warnings.join('\n'), /symbolic link/);
 });
 
 test('an entry that is not there is reported as missing, not as a move', () => {
@@ -290,7 +338,9 @@ test('describeTiers names what each tier is about', () => {
 test('the plan states which option controls each tier', () => {
   const fixture = tree();
   const plan = computeResetPlan({ root: fixture.root, keepConversations: true, keepSettings: false });
-  assert.deepEqual(plan.options, { keepConversations: true, keepSettings: false, includeGuestImage: false });
+  assert.deepEqual(plan.options, {
+    keepConversations: true, keepSettings: false, includeGuestImage: false, includeGuestBackups: false,
+  });
   assert.equal(plan.summary.move, plan.move.length);
   assert.equal(plan.summary.missing, plan.missing.length);
 });
@@ -301,7 +351,7 @@ test('the plan states which option controls each tier', () => {
 // compares it against the Swift source, which no `node --test` run can read.
 test('relativeTable names every tier entry against the container', () => {
   const table = relativeTable();
-  assert.deepEqual(Object.keys(table).sort(), ['always', 'conversations', 'guest', 'settings']);
+  assert.deepEqual(Object.keys(table).sort(), ['always', 'conversations', 'guest', 'guestBackups', 'settings']);
   for (const [tier, entries] of Object.entries(TIERS)) {
     assert.equal(table[tier].length, entries.length, tier);
     for (const entry of table[tier]) {

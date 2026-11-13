@@ -1,0 +1,3424 @@
+Source package: pcre2@10.43-r1
+Alpine aports revision (installed database c: field): 3a2a5cd9b424eaa37ead2635042d4608413bb4a0
+Recipe: https://raw.githubusercontent.com/alpinelinux/aports/3a2a5cd9b424eaa37ead2635042d4608413bb4a0/main/pcre2/APKBUILD
+Recipe SHA-256: 6a6a96d894d0e87518d3d31cedcd19fe2976e87d4c813704c358d91f86f584ad
+Installed subpackages: pcre2
+
+Sources verified against the exact APKBUILD checksums:
+https://distfiles.alpinelinux.org/distfiles/v3.21/pcre2-10.43.tar.bz2
+SHA-256: e2a53984ff0b07dfdb5ae4486bbb9b21cca8e7df2434096cc9bf1b728c350bcb
+SHA-512: 8ac1520c32e9e5672404aaf6104e23c9ee5c3c28ad28ff101435599d813cbb20e0491a3fd34e012b4411b3e0366a4c6dfa3f02d093acaa6ff0ab25478bb7ade9
+
+Alpine-local sources (immutable revision above):
+https://raw.githubusercontent.com/alpinelinux/aports/3a2a5cd9b424eaa37ead2635042d4608413bb4a0/main/pcre2/pcre2-10.44-Fix-locking-region.patch
+SHA-256: 6489c97799fb8dce347edd29d6017b81abf1041d5ddbf83ab79ec942b9fdb2e7
+https://raw.githubusercontent.com/alpinelinux/aports/3a2a5cd9b424eaa37ead2635042d4608413bb4a0/main/pcre2/pcre2-10.44-Fix-incorrect-compiling.patch
+SHA-256: 2103a7c6791c0d8d9b89be74ff31c2ed54b48a0d31737bdd314be519fa49af7b
+https://raw.githubusercontent.com/alpinelinux/aports/3a2a5cd9b424eaa37ead2635042d4608413bb4a0/main/pcre2/pcre2-10.48-Fix-JIT-STR_END.patch
+SHA-256: b743bfdc0e859bf4e08a12edf3f2a3aa7ea3be14a3b77b656f2c0b699dd7d66d
+https://raw.githubusercontent.com/alpinelinux/aports/3a2a5cd9b424eaa37ead2635042d4608413bb4a0/main/pcre2/pcre2-10.48-Fix-JIT-match-context-reuse.patch
+SHA-256: 0f867e6ec96303aee30f177f91b07aede776f88024a643fada80df6bce20cdc7
+https://raw.githubusercontent.com/alpinelinux/aports/3a2a5cd9b424eaa37ead2635042d4608413bb4a0/main/pcre2/pcre2-10.48-Check-JIT-mode-before-validation.patch
+SHA-256: 1da2a24f0b0acddd4a02f7e8e0fb8111463a53f29a91edfcbb5eff59a9c4e696
+https://raw.githubusercontent.com/alpinelinux/aports/3a2a5cd9b424eaa37ead2635042d4608413bb4a0/main/pcre2/pcre2-10.48-Fix-allocation-byte-sizing.patch
+SHA-256: 1b21104cc1d1c3a30b2703911c770b526b06e5d7b5476325eee80af44d0dfbcc
+https://raw.githubusercontent.com/alpinelinux/aports/3a2a5cd9b424eaa37ead2635042d4608413bb4a0/main/pcre2/pcre2-10.48-Fix-invalid-UTF-backwards-scans.patch
+SHA-256: 66f5130efae985ae1d127153a25f681f0388e78047c0816da05e9fe72737695b
+https://raw.githubusercontent.com/alpinelinux/aports/3a2a5cd9b424eaa37ead2635042d4608413bb4a0/main/pcre2/pcre2-10.48-Fix-compiler-integer-overflows.patch
+SHA-256: d98107ab9f281f385e97de4c1ccd110d5ed03f124f930337c5ef227d5b239e46
+https://raw.githubusercontent.com/alpinelinux/aports/3a2a5cd9b424eaa37ead2635042d4608413bb4a0/main/pcre2/pcre2-10.48-Fix-DFA-workspace-overflows.patch
+SHA-256: f35f2b6135b1b4e771ecc694883354749442d5470e83affdd1c3eb8fe75801a0
+https://raw.githubusercontent.com/alpinelinux/aports/3a2a5cd9b424eaa37ead2635042d4608413bb4a0/main/pcre2/pcre2-10.49-Fix-large-stack-allocation.patch
+SHA-256: e9da7fb9eaa9bb853ffa203fa03e4e0ff5c6c7cf9f863e754bb3c8b2029e3073
+https://raw.githubusercontent.com/alpinelinux/aports/3a2a5cd9b424eaa37ead2635042d4608413bb4a0/main/pcre2/pcre2-10.49-Fix-large-stack-allocation_tests
+SHA-256: 9baa58d8234292b77b56242c6c5c2987851e0572cdb67563515def7e711b7566
+
+The following are verbatim license/copyright/author files and source comment
+notices from these sources. Identical notices are printed once with all paths.
+The source collection can include build/test material beyond the shipped subset.
+This notice collection does not supply corresponding source.
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/LICENCE
+
+PCRE2 LICENCE
+-------------
+
+PCRE2 is a library of functions to support regular expressions whose syntax
+and semantics are as close as possible to those of the Perl 5 language.
+
+Releases 10.00 and above of PCRE2 are distributed under the terms of the "BSD"
+licence, as specified below, with one exemption for certain binary
+redistributions. The documentation for PCRE2, supplied in the "doc" directory,
+is distributed under the same terms as the software itself. The data in the
+testdata directory is not copyrighted and is in the public domain.
+
+The basic library functions are written in C and are freestanding. Also
+included in the distribution is a just-in-time compiler that can be used to
+optimize pattern matching. This is an optional feature that can be omitted when
+the library is built.
+
+
+THE BASIC LIBRARY FUNCTIONS
+---------------------------
+
+Written by:       Philip Hazel
+Email local part: Philip.Hazel
+Email domain:     gmail.com
+
+Retired from University of Cambridge Computing Service,
+Cambridge, England.
+
+Copyright (c) 1997-2024 University of Cambridge
+All rights reserved.
+
+
+PCRE2 JUST-IN-TIME COMPILATION SUPPORT
+--------------------------------------
+
+Written by:       Zoltan Herczeg
+Email local part: hzmester
+Email domain:     freemail.hu
+
+Copyright(c) 2010-2024 Zoltan Herczeg
+All rights reserved.
+
+
+STACK-LESS JUST-IN-TIME COMPILER
+--------------------------------
+
+Written by:       Zoltan Herczeg
+Email local part: hzmester
+Email domain:     freemail.hu
+
+Copyright(c) 2009-2024 Zoltan Herczeg
+All rights reserved.
+
+
+THE "BSD" LICENCE
+-----------------
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notices,
+      this list of conditions and the following disclaimer.
+
+    * Redistributions in binary form must reproduce the above copyright
+      notices, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+
+    * Neither the name of the University of Cambridge nor the names of any
+      contributors may be used to endorse or promote products derived from this
+      software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+
+
+EXEMPTION FOR BINARY LIBRARY-LIKE PACKAGES
+------------------------------------------
+
+The second condition in the BSD licence (covering binary redistributions) does
+not apply all the way down a chain of software. If binary package A includes
+PCRE2, it must respect the condition, but if package B is software that
+includes package A, the condition is not imposed on package B unless it uses
+PCRE2 independently.
+
+End
+
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/Makefile.in
+
+# Copyright (C) 1994-2021 Free Software Foundation, Inc.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/Makefile.in
+
+/*) b='$*';; \
+          *) b=`echo '$@' | sed 's/\.log$$//'`; \
+       esac;; \
+    *) \
+      b='$*';; \
+  esac
+am__test_logs1 = $(TESTS:=.log)
+am__test_logs2 = $(am__test_logs1:@EXEEXT@.log=.log)
+TEST_LOGS = $(am__test_logs2:.test.log=.log)
+TEST_LOG_DRIVER = $(SHELL) $(top_srcdir)/test-driver
+TEST_LOG_COMPILE = $(TEST_LOG_COMPILER) $(AM_TEST_LOG_FLAGS) \
+	$(TEST_LOG_FLAGS)
+am__DIST_COMMON = $(dist_man_MANS) $(srcdir)/Makefile.in \
+	$(srcdir)/libpcre2-16.pc.in $(srcdir)/libpcre2-32.pc.in \
+	$(srcdir)/libpcre2-8.pc.in $(srcdir)/libpcre2-posix.pc.in \
+	$(srcdir)/pcre2-config.in $(top_srcdir)/src/config.h.in \
+	$(top_srcdir)/src/pcre2.h.in AUTHORS COPYING ChangeLog INSTALL \
+	NEWS README ar-lib compile config.guess config.sub depcomp \
+	install-sh ltmain.sh missing test-driver
+DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
+distdir = $(PACKAGE)-$(VERSION)
+top_distdir = $(distdir)
+am__remove_distdir = \
+  if test -d "$(distdir)"; then \
+    find "$(distdir)" -type d ! -perm -200 -exec chmod u+w {} ';' \
+      && rm -rf "$(distdir)" \
+      || { sleep 5 && rm -rf "$(distdir)"; }; \
+  else :; fi
+am__post_remove_distdir = $(am__remove_distdir)
+DIST_ARCHIVES = $(distdir).tar.gz $(distdir).tar.bz2 $(distdir).zip
+GZIP_ENV = --best
+DIST_TARGETS = dist-bzip2 dist-gzip dist-zip
+# Exists only to be overridden by the user if desired.
+AM_DISTCHECK_DVI_TARGET = dvi
+distuninstallcheck_listfiles = find . -type f -print
+am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
+  | sed 's|^\./|$(prefix)/|' | grep -v '$(infodir)/dir$$'
+distcleancheck_listfiles = find . -type f -print
+ACLOCAL = @ACLOCAL@
+AMTAR = @AMTAR@
+AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
+AR = @AR@
+AS = @AS@
+AUTOCONF = @AUTOCONF@
+AUTOHEADER = @AUTOHEADER@
+AUTOMAKE = @AUTOMAKE@
+AWK = @AWK@
+CC = @CC@
+CCDEPMODE = @CCDEPMODE@
+CET_CFLAGS = @CET_CFLAGS@
+CFLAGS = @CFLAGS@
+CPPFLAGS = @CPPFLAGS@
+CSCOPE = @CSCOPE@
+CTAGS = @CTAGS@
+CYGPATH_W = @CYGPATH_W@
+DEFS = @DEFS@
+DEPDIR = @DEPDIR@
+DISTCHECK_CONFIGURE_FLAGS = @DISTCHECK_CONFIGURE_FLAGS@
+DLLTOOL = @DLLTOOL@
+DSYMUTIL = @DSYMUTIL@
+DUMPBIN = @DUMPBIN@
+ECHO_C = @ECHO_C@
+ECHO_N = @ECHO_N@
+ECHO_T = @ECHO_T@
+EGREP = @EGREP@
+ETAGS = @ETAGS@
+EXEEXT = @EXEEXT@
+EXTRA_LIBPCRE2_16_LDFLAGS = @EXTRA_LIBPCRE2_16_LDFLAGS@
+EXTRA_LIBPCRE2_32_LDFLAGS = @EXTRA_LIBPCRE2_32_LDFLAGS@
+EXTRA_LIBPCRE2_8_LDFLAGS = @EXTRA_LIBPCRE2_8_LDFLAGS@
+EXTRA_LIBPCRE2_POSIX_LDFLAGS = @EXTRA_LIBPCRE2_POSIX_LDFLAGS@
+FGREP = @FGREP@
+FILECMD = @FILECMD@
+GCOV_CFLAGS = @GCOV_CFLAGS@
+GCOV_CXXFLAGS = @GCOV_CXXFLAGS@
+GCOV_LIBS = @GCOV_LIBS@
+GENHTML = @GENHTML@
+GREP = @GREP@
+HAVE_VISIBILITY = @HAVE_VISIBILITY@
+INSTALL = @INSTALL@
+INSTALL_DATA = @INSTALL_DATA@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+INSTALL_SCRIPT = @INSTALL_SCRIPT@
+INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
+LCOV = @LCOV@
+LD = @LD@
+LDFLAGS = @LDFLAGS@
+LIBBZ2 = @LIBBZ2@
+LIBOBJS = @LIBOBJS@
+LIBREADLINE = @LIBREADLINE@
+LIBS = @LIBS@
+LIBTOOL = @LIBTOOL@
+LIBZ = @LIBZ@
+LIB_POSTFIX = @LIB_POSTFIX@
+LIPO = @LIPO@
+LN_S = @LN_S@
+LTLIBOBJS = @LTLIBOBJS@
+LT_SYS_LIBRARY_PATH = @LT_SYS_LIBRARY_PATH@
+MAKEINFO = @MAKEINFO@
+MANIFEST_TOOL = @MANIFEST_TOOL@
+MKDIR_P = @MKDIR_P@
+NM = @NM@
+NMEDIT = @NMEDIT@
+OBJDUMP = @OBJDUMP@
+OBJEXT = @OBJEXT@
+OTOOL = @OTOOL@
+OTOOL64 = @OTOOL64@
+PACKAGE = @PACKAGE@
+PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
+PACKAGE_NAME = @PACKAGE_NAME@
+PACKAGE_STRING = @PACKAGE_STRING@
+PACKAGE_TARNAME = @PACKAGE_TARNAME@
+PACKAGE_URL = @PACKAGE_URL@
+PACKAGE_VERSION = @PACKAGE_VERSION@
+PATH_SEPARATOR = @PATH_SEPARATOR@
+PCRE2POSIX_CFLAG = @PCRE2POSIX_CFLAG@
+PCRE2_DATE = @PCRE2_DATE@
+PCRE2_MAJOR = @PCRE2_MAJOR@
+PCRE2_MINOR = @PCRE2_MINOR@
+PCRE2_PRERELEASE = @PCRE2_PRERELEASE@
+PCRE2_STATIC_CFLAG = @PCRE2_STATIC_CFLAG@
+PKG_CONFIG = @PKG_CONFIG@
+PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
+PKG_CONFIG_PATH = @PKG_CONFIG_PATH@
+PTHREAD_CC = @PTHREAD_CC@
+PTHREAD_CFLAGS = @PTHREAD_CFLAGS@
+PTHREAD_LIBS = @PTHREAD_LIBS@
+RANLIB = @RANLIB@
+SED = @SED@
+SET_MAKE = @SET_MAKE@
+SHELL = @SHELL@
+SHTOOL = @SHTOOL@
+STRIP = @STRIP@
+VALGRIND_CFLAGS = @VALGRIND_CFLAGS@
+VALGRIND_LIBS = @VALGRIND_LIBS@
+VERSION = @VERSION@
+VISIBILITY_CFLAGS = @VISIBILITY_CFLAGS@
+VISIBILITY_CXXFLAGS = @VISIBILITY_CXXFLAGS@
+abs_builddir = @abs_builddir@
+abs_srcdir = @abs_srcdir@
+abs_top_builddir = @abs_top_builddir@
+abs_top_srcdir = @abs_top_srcdir@
+ac_ct_AR = @ac_ct_AR@
+ac_ct_CC = @ac_ct_CC@
+ac_ct_DUMPBIN = @ac_ct_DUMPBIN@
+am__include = @am__include@
+am__leading_dot = @am__leading_dot@
+am__quote = @am__quote@
+am__tar = @am__tar@
+am__untar = @am__untar@
+ax_pthread_config = @ax_pthread_config@
+bindir = @bindir@
+build = @build@
+build_alias = @build_alias@
+build_cpu = @build_cpu@
+build_os = @build_os@
+build_vendor = @build_vendor@
+builddir = @builddir@
+datadir = @datadir@
+datarootdir = @datarootdir@
+docdir = @docdir@
+dvidir = @dvidir@
+enable_pcre2_16 = @enable_pcre2_16@
+enable_pcre2_32 = @enable_pcre2_32@
+enable_pcre2_8 = @enable_pcre2_8@
+exec_prefix = @exec_prefix@
+host = @host@
+host_alias = @host_alias@
+host_cpu = @host_cpu@
+host_os = @host_os@
+host_vendor = @host_vendor@
+htmldir = @htmldir@
+includedir = @includedir@
+infodir = @infodir@
+install_sh = @install_sh@
+libdir = @libdir@
+libexecdir = @libexecdir@
+localedir = @localedir@
+localstatedir = @localstatedir@
+mandir = @mandir@
+mkdir_p = @mkdir_p@
+oldincludedir = @oldincludedir@
+pdfdir = @pdfdir@
+prefix = @prefix@
+program_transform_name = @program_transform_name@
+psdir = @psdir@
+runstatedir = @runstatedir@
+sbindir = @sbindir@
+sharedstatedir = @sharedstatedir@
+srcdir = @srcdir@
+sysconfdir = @sysconfdir@
+target_alias = @target_alias@
+top_build_prefix = @top_build_prefix@
+top_builddir = @top_builddir@
+top_srcdir = @top_srcdir@
+AUTOMAKE_OPTIONS = subdir-objects
+ACLOCAL_AMFLAGS = -I m4
+AM_CPPFLAGS = "-I$(srcdir)/src"
+dist_doc_DATA = \
+  AUTHORS \
+  COPYING \
+  ChangeLog \
+  LICENCE \
+  NEWS \
+  README \
+  doc/pcre2.txt \
+  doc/pcre2-config.txt \
+  doc/pcre2grep.txt \
+  doc/pcre2test.txt
+
+dist_html_DATA = \
+  doc/html/NON-AUTOTOOLS-BUILD.txt \
+  doc/html/README.txt \
+  doc/html/index.html \
+  doc/html/pcre2-config.html \
+  doc/html/pcre2.html \
+  doc/html/pcre2_callout_enumerate.html \
+  doc/html/pcre2_code_copy.html \
+  doc/html/pcre2_code_copy_with_tables.html \
+  doc/html/pcre2_code_free.html \
+  doc/html/pcre2_compile.html \
+  doc/html/pcre2_compile_context_copy.html \
+  doc/html/pcre2_compile_context_create.html \
+  doc/html/pcre2_compile_context_free.html \
+  doc/html/pcre2_config.html \
+  doc/html/pcre2_convert_context_copy.html \
+  doc/html/pcre2_convert_context_create.html \
+  doc/html/pcre2_convert_context_free.html \
+  doc/html/pcre2_converted_pattern_free.html \
+  doc/html/pcre2_dfa_match.html \
+  doc/html/pcre2_general_context_copy.html \
+  doc/html/pcre2_general_context_create.html \
+  doc/html/pcre2_general_context_free.html \
+  doc/html/pcre2_get_error_message.html \
+  doc/html/pcre2_get_mark.html \
+  doc/html/pcre2_get_match_data_heapframes_size.html \
+  doc/html/pcre2_get_match_data_size.html \
+  doc/html/pcre2_get_ovector_count.html \
+  doc/html/pcre2_get_ovector_pointer.html \
+  doc/html/pcre2_get_startchar.html \
+  doc/html/pcre2_jit_compile.html \
+  doc/html/pcre2_jit_free_unused_memory.html \
+  doc/html/pcre2_jit_match.html \
+  doc/html/pcre2_jit_stack_assign.html \
+  doc/html/pcre2_jit_stack_create.html \
+  doc/html/pcre2_jit_stack_free.html \
+  doc/html/pcre2_maketables.html \
+  doc/html/pcre2_maketables_free.html \
+  doc/html/pcre2_match.html \
+  doc/html/pcre2_match_context_copy.html \
+  doc/html/pcre2_match_context_create.html \
+  doc/html/pcre2_match_context_free.html \
+  doc/html/pcre2_match_data_create.html \
+  doc/html/pcre2_match_data_create_from_pattern.html \
+  doc/html/pcre2_match_data_free.html \
+  doc/html/pcre2_pattern_convert.html \
+  doc/html/pcre2_pattern_info.html \
+  doc/html/pcre2_serialize_decode.html \
+  doc/html/pcre2_serialize_encode.html \
+  doc/html/pcre2_serialize_free.html \
+  doc/html/pcre2_serialize_get_number_of_codes.html \
+  doc/html/pcre2_set_bsr.html \
+  doc/html/pcre2_set_callout.html \
+  doc/html/pcre2_set_character_tables.html \
+  doc/html/pcre2_set_compile_extra_options.html \
+  doc/html/pcre2_set_compile_recursion_guard.html \
+  doc/html/pcre2_set_depth_limit.html \
+  doc/html/pcre2_set_glob_escape.html \
+  doc/html/pcre2_set_glob_separator.html \
+  doc/html/pcre2_set_heap_limit.html \
+  doc/html/pcre2_set_match_limit.html \
+  doc/html/pcre2_set_max_pattern_length.html \
+  doc/html/pcre2_set_max_varlookbehind.html \
+  doc/html/pcre2_set_offset_limit.html \
+  doc/html/pcre2_set_newline.html \
+  doc/html/pcre2_set_parens_nest_limit.html \
+  doc/html/pcre2_set_recursion_limit.html \
+  doc/html/pcre2_set_recursion_memory_management.html \
+  doc/html/pcre2_set_substitute_callout.html \
+  doc/html/pcre2_substitute.html \
+  doc/html/pcre2_substring_copy_byname.html \
+  doc/html/pcre2_substring_copy_bynumber.html \
+  doc/html/pcre2_substring_free.html \
+  doc/html/pcre2_substring_get_byname.html \
+  doc/html/pcre2_substring_get_bynumber.html \
+  doc/html/pcre2_substring_length_byname.html \
+  doc/html/pcre2_substring_length_bynumber.html \
+  doc/html/pcre2_substring_list_free.html \
+  doc/html/pcre2_substring_list_get.html \
+  doc/html/pcre2_substring_nametable_scan.html \
+  doc/html/pcre2_substring_number_from_name.html \
+  doc/html/pcre2api.html \
+  doc/html/pcre2build.html \
+  doc/html/pcre2callout.html \
+  doc/html/pcre2compat.html \
+  doc/html/pcre2convert.html \
+  doc/html/pcre2demo.html \
+  doc/html/pcre2grep.html \
+  doc/html/pcre2jit.html \
+  doc/html/pcre2limits.html \
+  doc/html/pcre2matching.html \
+  doc/html/pcre2partial.html \
+  doc/html/pcre2pattern.html \
+  doc/html/pcre2perform.html \
+  doc/html/pcre2posix.html \
+  doc/html/pcre2sample.html \
+  doc/html/pcre2serialize.html \
+  doc/html/pcre2syntax.html \
+  doc/html/pcre2test.html \
+  doc/html/pcre2unicode.html
+
+dist_man_MANS = \
+  doc/pcre2-config.1 \
+  doc/pcre2.3 \
+  doc/pcre2_callout_enumerate.3 \
+  doc/pcre2_code_copy.3 \
+  doc/pcre2_code_copy_with_tables.3 \
+  doc/pcre2_code_free.3 \
+  doc/pcre2_compile.3 \
+  doc/pcre2_compile_context_copy.3 \
+  doc/pcre2_compile_context_create.3 \
+  doc/pcre2_compile_context_free.3 \
+  doc/pcre2_config.3 \
+  doc/pcre2_convert_context_copy.3 \
+  doc/pcre2_convert_context_create.3 \
+  doc/pcre2_convert_context_free.3 \
+  doc/pcre2_converted_pattern_free.3 \
+  doc/pcre2_dfa_match.3 \
+  doc/pcre2_general_context_copy.3 \
+  doc/pcre2_general_context_create.3 \
+  doc/pcre2_general_context_free.3 \
+  doc/pcre2_get_error_message.3 \
+  doc/pcre2_get_mark.3 \
+  doc/pcre2_get_match_data_heapframes_size.3 \
+  doc/pcre2_get_match_data_size.3 \
+  doc/pcre2_get_ovector_count.3 \
+  doc/pcre2_get_ovector_pointer.3 \
+  doc/pcre2_get_startchar.3 \
+  doc/pcre2_jit_compile.3 \
+  doc/pcre2_jit_free_unused_memory.3 \
+  doc/pcre2_jit_match.3 \
+  doc/pcre2_jit_stack_assign.3 \
+  doc/pcre2_jit_stack_create.3 \
+  doc/pcre2_jit_stack_free.3 \
+  doc/pcre2_maketables.3 \
+  doc/pcre2_maketables_free.3 \
+  doc/pcre2_match.3 \
+  doc/pcre2_match_context_copy.3 \
+  doc/pcre2_match_context_create.3 \
+  doc/pcre2_match_context_free.3 \
+  doc/pcre2_match_data_create.3 \
+  doc/pcre2_match_data_create_from_pattern.3 \
+  doc/pcre2_match_data_free.3 \
+  doc/pcre2_pattern_convert.3 \
+  doc/pcre2_pattern_info.3 \
+  doc/pcre2_serialize_decode.3 \
+  doc/pcre2_serialize_encode.3 \
+  doc/pcre2_serialize_free.3 \
+  doc/pcre2_serialize_get_number_of_codes.3 \
+  doc/pcre2_set_bsr.3 \
+  doc/pcre2_set_callout.3 \
+  doc/pcre2_set_character_tables.3 \
+  doc/pcre2_set_compile_extra_options.3 \
+  doc/pcre2_set_compile_recursion_guard.3 \
+  doc/pcre2_set_depth_limit.3 \
+  doc/pcre2_set_glob_escape.3 \
+  doc/pcre2_set_glob_separator.3 \
+  doc/pcre2_set_heap_limit.3 \
+  doc/pcre2_set_match_limit.3 \
+  doc/pcre2_set_max_pattern_length.3 \
+  doc/pcre2_set_max_varlookbehind.3 \
+  doc/pcre2_set_offset_limit.3 \
+  doc/pcre2_set_newline.3 \
+  doc/pcre2_set_parens_nest_limit.3 \
+  doc/pcre2_set_recursion_limit.3 \
+  doc/pcre2_set_recursion_memory_management.3 \
+  doc/pcre2_set_substitute_callout.3 \
+  doc/pcre2_substitute.3 \
+  doc/pcre2_substring_copy_byname.3 \
+  doc/pcre2_substring_copy_bynumber.3 \
+  doc/pcre2_substring_free.3 \
+  doc/pcre2_substring_get_byname.3 \
+  doc/pcre2_substring_get_bynumber.3 \
+  doc/pcre2_substring_length_byname.3 \
+  doc/pcre2_substring_length_bynumber.3 \
+  doc/pcre2_substring_list_free.3 \
+  doc/pcre2_substring_list_get.3 \
+  doc/pcre2_substring_nametable_scan.3 \
+  doc/pcre2_substring_number_from_name.3 \
+  doc/pcre2api.3 \
+  doc/pcre2build.3 \
+  doc/pcre2callout.3 \
+  doc/pcre2compat.3 \
+  doc/pcre2convert.3 \
+  doc/pcre2demo.3 \
+  doc/pcre2grep.1 \
+  doc/pcre2jit.3 \
+  doc/pcre2limits.3 \
+  doc/pcre2matching.3 \
+  doc/pcre2partial.3 \
+  doc/pcre2pattern.3 \
+  doc/pcre2perform.3 \
+  doc/pcre2posix.3 \
+  doc/pcre2sample.3 \
+  doc/pcre2serialize.3 \
+  doc/pcre2syntax.3 \
+  doc/pcre2test.1 \
+  doc/pcre2unicode.3
+
+
+# The Libtool libraries to install.  We'll add to this later.
+lib_LTLIBRARIES = $(am__append_2) $(am__append_3) $(am__append_4) \
+	$(am__append_11)
+check_SCRIPTS = 
+dist_noinst_SCRIPTS = RunTest $(am__append_45)
+
+# Additional files to delete on 'make clean', 'make distclean',
+# and 'make maintainer-clean'.
+
+# RunTest and RunGrepTest should clean up after themselves, but just in case
+# they don't, add their working files to CLEANFILES.
+CLEANFILES = src/pcre2_chartables.c testSinput test3input test3output \
+	test3outputA test3outputB testtry teststdout teststderr \
+	teststderrgrep testtemp1grep testtemp2grep testtrygrep \
+	testNinputgrep
+DISTCLEANFILES = src/config.h.in~ $(am__append_49)
+MAINTAINERCLEANFILES = src/pcre2.h.generic src/config.h.generic
+
+# Additional files to bundle with the distribution, over and above what
+# the Autotools include by default.
+
+# These files contain additional m4 macros that are used by autoconf.
+
+# These files contain maintenance information
+
+# These files are used in the preparation of a release
+
+# These files are usable versions of pcre2.h and config.h that are distributed
+# for the benefit of people who are building PCRE2 manually, without the
+# Autotools support.
+
+# The pcre2_ucptables.c file is #included by pcre2_tables.c
+
+# The pcre2_chartables.c.dist file is the default version of
+# pcre2_chartables.c, used unless --enable-rebuild-chartables is specified.
+
+# The JIT compiler lives in a separate directory, but its files are #included
+# when pcre2_jit_compile.c is processed, so they must be distributed.
+
+# Some of the JIT sources are also in separate files that are #included.
+
+# PCRE2 demonstration program. Not built automatically. The point is that the
+# users should build it themselves. So just distribute the source.
+EXTRA_DIST = m4/ax_pthread.m4 m4/pcre2_visibility.m4 \
+	NON-AUTOTOOLS-BUILD HACKING PrepareRelease CheckMan CleanTxt \
+	Detrail 132html doc/index.html.src src/pcre2.h.generic \
+	src/config.h.generic src/pcre2_ucptables.c \
+	src/pcre2_chartables.c.dist src/sljit/sljitConfig.h \
+	src/sljit/sljitConfigCPU.h src/sljit/sljitConfigInternal.h \
+	src/sljit/sljitLir.c src/sljit/sljitLir.h \
+	src/sljit/sljitNativeARM_32.c src/sljit/sljitNativeARM_64.c \
+	src/sljit/sljitNativeARM_T2_32.c \
+	src/sljit/sljitNativeLOONGARCH_64.c \
+	src/sljit/sljitNativeMIPS_32.c src/sljit/sljitNativeMIPS_64.c \
+	src/sljit/sljitNativeMIPS_common.c \
+	src/sljit/sljitNativePPC_32.c src/sljit/sljitNativePPC_64.c \
+	src/sljit/sljitNativePPC_common.c \
+	src/sljit/sljitNativeRISCV_32.c \
+	src/sljit/sljitNativeRISCV_64.c \
+	src/sljit/sljitNativeRISCV_common.c \
+	src/sljit/sljitNativeS390X.c src/sljit/sljitNativeX86_32.c \
+	src/sljit/sljitNativeX86_64.c \
+	src/sljit/sljitNativeX86_common.c src/sljit/sljitUtils.c \
+	src/sljit/allocator_src/sljitExecAllocatorApple.c \
+	src/sljit/allocator_src/sljitExecAllocatorCore.c \
+	src/sljit/allocator_src/sljitExecAllocatorFreeBSD.c \
+	src/sljit/allocator_src/sljitExecAllocatorPosix.c \
+	src/sljit/allocator_src/sljitExecAllocatorWindows.c \
+	src/sljit/allocator_src/sljitProtExecAllocatorNetBSD.c \
+	src/sljit/allocator_src/sljitProtExecAllocatorPosix.c \
+	src/sljit/allocator_src/sljitWXExecAllocatorPosix.c \
+	src/sljit/allocator_src/sljitWXExecAllocatorWindows.c \
+	src/pcre2_jit_match.c src/pcre2_jit_misc.c \
+	src/pcre2_printint.c RunTest.bat $(am__append_44) \
+	testdata/grepbinary testdata/grepfilelist testdata/grepinput \
+	testdata/grepinput3 testdata/grepinput8 \
+	testdata/grepinputC.bz2 testdata/grepinputC.gz \
+	testdata/grepinputM testdata/grepinputv testdata/grepinputx \
+	testdata/greplist testdata/grepnot.bz2 testdata/grepoutput \
+	testdata/grepoutput8 testdata/grepoutputC \
+	testdata/grepoutputCN testdata/grepoutputCNU \
+	testdata/grepoutputCU testdata/grepoutputCbz2 \
+	testdata/grepoutputCgz testdata/grepoutputN \
+	testdata/grepoutputUN testdata/greppatN4 testdata/testbtables \
+	testdata/testinput1 testdata/testinput2 testdata/testinput3 \
+	testdata/testinput4 testdata/testinput5 testdata/testinput6 \
+	testdata/testinput7 testdata/testinput8 testdata/testinput9 \
+	testdata/testinput10 testdata/testinput11 testdata/testinput12 \
+	testdata/testinput13 testdata/testinput14 testdata/testinput15 \
+	testdata/testinput16 testdata/testinput17 testdata/testinput18 \
+	testdata/testinput19 testdata/testinput20 testdata/testinput21 \
+	testdata/testinput22 testdata/testinput23 testdata/testinput24 \
+	testdata/testinput25 testdata/testinput26 \
+	testdata/testinputEBC testdata/testinputheap \
+	testdata/testoutput1 testdata/testoutput2 testdata/testoutput3 \
+	testdata/testoutput3A testdata/testoutput3B \
+	testdata/testoutput4 testdata/testoutput5 testdata/testoutput6 \
+	testdata/testoutput7 testdata/testoutput8-16-2 \
+	testdata/testoutput8-16-3 testdata/testoutput8-16-4 \
+	testdata/testoutput8-32-2 testdata/testoutput8-32-3 \
+	testdata/testoutput8-32-4 testdata/testoutput8-8-2 \
+	testdata/testoutput8-8-3 testdata/testoutput8-8-4 \
+	testdata/testoutput9 testdata/testoutput10 \
+	testdata/testoutput11-16 testdata/testoutput11-32 \
+	testdata/testoutput12-16 testdata/testoutput12-32 \
+	testdata/testoutput13 testdata/testoutput14-16 \
+	testdata/testoutput14-32 testdata/testoutput14-8 \
+	testdata/testoutput15 testdata/testoutput16 \
+	testdata/testoutput17 testdata/testoutput18 \
+	testdata/testoutput19 testdata/testoutput20 \
+	testdata/testoutput21 testdata/testoutput22-16 \
+	testdata/testoutput22-32 testdata/testoutput22-8 \
+	testdata/testoutput23 testdata/testoutput24 \
+	testdata/testoutput25 testdata/testoutput26 \
+	testdata/testoutputEBC testdata/testoutputheap-16 \
+	testdata/testoutputheap-32 testdata/testoutputheap-8 \
+	testdata/valgrind-jit.supp testdata/wintestinput3 \
+	testdata/wintestoutput3 perltest.sh src/pcre2demo.c \
+	cmake/COPYING-CMAKE-SCRIPTS cmake/FindEditline.cmake \
+	cmake/FindPackageHandleStandardArgs.cmake \
+	cmake/FindReadline.cmake cmake/pcre2-config-version.cmake.in \
+	cmake/pcre2-config.cmake.in CMakeLists.txt config-cmake.h.in
+
+# These are the header files we'll install. We do not distribute pcre2.h
+# because it is generated from pcre2.h.in.
+nodist_include_HEADERS = src/pcre2.h
+include_HEADERS = src/pcre2posix.h
+
+# This is the "config" script.
+bin_SCRIPTS = pcre2-config
+@WITH_REBUILD_CHARTABLES_TRUE@pcre2_dftables_SOURCES = src/pcre2_dftables.c
+BUILT_SOURCES = src/pcre2_chartables.c
+NODIST_SOURCES = src/pcre2_chartables.c
+COMMON_SOURCES = \
+  src/pcre2_auto_possess.c \
+  src/pcre2_chkdint.c \
+  src/pcre2_compile.c \
+  src/pcre2_config.c \
+  src/pcre2_context.c \
+  src/pcre2_convert.c \
+  src/pcre2_dfa_match.c \
+  src/pcre2_error.c \
+  src/pcre2_extuni.c \
+  src/pcre2_find_bracket.c \
+  src/pcre2_internal.h \
+  src/pcre2_intmodedep.h \
+  src/pcre2_jit_compile.c \
+  src/pcre2_jit_neon_inc.h \
+  src/pcre2_jit_simd_inc.h \
+  src/pcre2_maketables.c \
+  src/pcre2_match.c \
+  src/pcre2_match_data.c \
+  src/pcre2_newline.c \
+  src/pcre2_ord2utf.c \
+  src/pcre2_pattern_info.c \
+  src/pcre2_script_run.c \
+  src/pcre2_serialize.c \
+  src/pcre2_string_utils.c \
+  src/pcre2_study.c \
+  src/pcre2_substitute.c \
+  src/pcre2_substring.c \
+  src/pcre2_tables.c \
+  src/pcre2_ucd.c \
+  src/pcre2_ucp.h \
+  src/pcre2_valid_utf.c \
+  src/pcre2_xclass.c
+
+@WITH_PCRE2_8_TRUE@libpcre2_8_la_SOURCES = \
+@WITH_PCRE2_8_TRUE@  $(COMMON_SOURCES)
+
+@WITH_PCRE2_8_TRUE@nodist_libpcre2_8_la_SOURCES = \
+@WITH_PCRE2_8_TRUE@  $(NODIST_SOURCES)
+
+@WITH_PCRE2_8_TRUE@libpcre2_8_la_CFLAGS = -DPCRE2_CODE_UNIT_WIDTH=8 \
+@WITH_PCRE2_8_TRUE@	$(VISIBILITY_CFLAGS) $(CET_CFLAGS) \
+@WITH_PCRE2_8_TRUE@	$(AM_CFLAGS) $(am__append_5) \
+@WITH_PCRE2_8_TRUE@	$(am__append_8)
+@WITH_PCRE2_8_TRUE@libpcre2_8_la_LIBADD = 
+@WITH_PCRE2_16_TRUE@libpcre2_16_la_SOURCES = \
+@WITH_PCRE2_16_TRUE@  $(COMMON_SOURCES)
+
+@WITH_PCRE2_16_TRUE@nodist_libpcre2_16_la_SOURCES = \
+@WITH_PCRE2_16_TRUE@  $(NODIST_SOURCES)
+
+@WITH_PCRE2_16_TRUE@libpcre2_16_la_CFLAGS =  \
+@WITH_PCRE2_16_TRUE@	-DPCRE2_CODE_UNIT_WIDTH=16 \
+@WITH_PCRE2_16_TRUE@	$(VISIBILITY_CFLAGS) $(CET_CFLAGS) \
+@WITH_PCRE2_16_TRUE@	$(AM_CFLAGS) $(am__append_6) \
+@WITH_PCRE2_16_TRUE@	$(am__append_9)
+@WITH_PCRE2_16_TRUE@libpcre2_16_la_LIBADD = 
+@WITH_PCRE2_32_TRUE@libpcre2_32_la_SOURCES = \
+@WITH_PCRE2_32_TRUE@  $(COMMON_SOURCES)
+
+@WITH_PCRE2_32_TRUE@nodist_libpcre2_32_la_SOURCES = \
+@WITH_PCRE2_32_TRUE@  $(NODIST_SOURCES)
+
+@WITH_PCRE2_32_TRUE@libpcre2_32_la_CFLAGS =  \
+@WITH_PCRE2_32_TRUE@	-DPCRE2_CODE_UNIT_WIDTH=32 \
+@WITH_PCRE2_32_TRUE@	$(VISIBILITY_CFLAGS) $(CET_CFLAGS) \
+@WITH_PCRE2_32_TRUE@	$(AM_CFLAGS) $(am__append_7) \
+@WITH_PCRE2_32_TRUE@	$(am__append_10)
+@WITH_PCRE2_32_TRUE@libpcre2_32_la_LIBADD = 
+@WITH_PCRE2_8_TRUE@libpcre2_8_la_LDFLAGS = $(EXTRA_LIBPCRE2_8_LDFLAGS)
+@WITH_PCRE2_16_TRUE@libpcre2_16_la_LDFLAGS = $(EXTRA_LIBPCRE2_16_LDFLAGS)
+@WITH_PCRE2_32_TRUE@libpcre2_32_la_LDFLAGS = $(EXTRA_LIBPCRE2_32_LDFLAGS)
+@WITH_PCRE2_8_TRUE@libpcre2_posix_la_SOURCES = src/pcre2posix.c
+@WITH_PCRE2_8_TRUE@libpcre2_posix_la_CFLAGS =  \
+@WITH_PCRE2_8_TRUE@	-DPCRE2_CODE_UNIT_WIDTH=8 \
+@WITH_PCRE2_8_TRUE@	@PCRE2POSIX_CFLAG@ $(VISIBILITY_CFLAGS) \
+@WITH_PCRE2_8_TRUE@	$(AM_CFLAGS) $(am__append_12)
+@WITH_PCRE2_8_TRUE@libpcre2_posix_la_LDFLAGS = $(EXTRA_LIBPCRE2_POSIX_LDFLAGS)
+@WITH_PCRE2_8_TRUE@libpcre2_posix_la_LIBADD = libpcre2-8.la
+@WITH_PCRE2_8_TRUE@pcre2grep_SOURCES = src/pcre2grep.c
+@WITH_PCRE2_8_TRUE@pcre2grep_CFLAGS = $(AM_CFLAGS) $(am__append_14)
+@WITH_PCRE2_8_TRUE@pcre2grep_LDADD = $(LIBZ) $(LIBBZ2) libpcre2-8.la \
+@WITH_PCRE2_8_TRUE@	$(am__append_15)
+@WITH_FUZZ_SUPPORT_TRUE@noinst_LIBRARIES = $(am__append_16) \
+@WITH_FUZZ_SUPPORT_TRUE@	$(am__append_20) $(am__append_24)
+@WITH_FUZZ_SUPPORT_TRUE@@WITH_PCRE2_8_TRUE@_libs_libpcre2_fuzzsupport_a_SOURCES = src/pcre2_fuzzsupport.c
+@WITH_FUZZ_SUPPORT_TRUE@@WITH_PCRE2_8_TRUE@_libs_libpcre2_fuzzsupport_a_CFLAGS = $(AM_CFLAGS)
+@WITH_FUZZ_SUPPORT_TRUE@@WITH_PCRE2_8_TRUE@_libs_libpcre2_fuzzsupport_a_LIBADD = 
+@WITH_FUZZ_SUPPORT_TRUE@@WITH_PCRE2_8_TRUE@pcre2fuzzcheck_8_SOURCES = src/pcre2_fuzzsupport.c
+@WITH_FUZZ_SUPPORT_TRUE@@WITH_PCRE2_8_TRUE@pcre2fuzzcheck_8_CFLAGS =  \
+@WITH_FUZZ_SUPPORT_TRUE@@WITH_PCRE2_8_TRUE@	-DSTANDALONE \
+@WITH_FUZZ_SUPPORT_TRUE@@WITH_PCRE2_8_TRUE@	$(AM_CFLAGS) \
+@WITH_FUZZ_SUPPORT_TRUE@@WITH_PCRE2_8_TRUE@	$(am__append_18)
+@WITH_FUZZ_SUPPORT_TRUE@@WITH_PCRE2_8_TRUE@pcre2fuzzcheck_8_LDADD =  \
+@WITH_FUZZ_SUPPORT_TRUE@@WITH_PCRE2_8_TRUE@	libpcre2-8.la \
+@WITH_FUZZ_SUPPORT_TRUE@@WITH_PCRE2_8_TRUE@	$(am__append_19)
+@WITH_FUZZ_SUPPORT_TRUE@@WITH_PCRE2_16_TRUE@_libs_libpcre2_fuzzsupport_16_a_SOURCES = src/pcre2_fuzzsupport.c
+@WITH_FUZZ_SUPPORT_TRUE@@WITH_PCRE2_16_TRUE@_libs_libpcre2_fuzzsupport_16_a_CFLAGS = $(AM_CFLAGS) -DPCRE2_CODE_UNIT_WIDTH=16
+@WITH_FUZZ_SUPPORT_TRUE@@WITH_PCRE2_16_TRUE@_libs_libpcre2_fuzzsupport_16_a_LIBADD = 
+@WITH_FUZZ_SUPPORT_TRUE@@WITH_PCRE2_16_TRUE@pcre2fuzzcheck_16_SOURCES = src/pcre2_fuzzsupport.c
+@WITH_FUZZ_SUPPORT_TRUE@@WITH_PCRE2_16_TRUE@pcre2fuzzcheck_16_CFLAGS =  \
+@WITH_FUZZ_SUPPORT_TRUE@@WITH_PCRE2_16_TRUE@	-DSTANDALONE \
+@WITH_FUZZ_SUPPORT_TRUE@@WITH_PCRE2_16_TRUE@	$(AM_CFLAGS) \
+@WITH_FUZZ_SUPPORT_TRUE@@WITH_PCRE2_16_TRUE@	-DPCRE2_CODE_UNIT_WIDTH=16 \
+@WITH_FUZZ_SUPPORT_TRUE@@WITH_PCRE2_16_TRUE@	$(am__append_22)
+@WITH_FUZZ_SUPPORT_TRUE@@WITH_PCRE2_16_TRUE@pcre2fuzzcheck_16_LDADD =  \
+@WITH_FUZZ_SUPPORT_TRUE@@WITH_PCRE2_16_TRUE@	libpcre2-16.la \
+@WITH_FUZZ_SUPPORT_TRUE@@WITH_PCRE2_16_TRUE@	$(am__append_23)
+@WITH_FUZZ_SUPPORT_TRUE@@WITH_PCRE2_32_TRUE@_libs_libpcre2_fuzzsupport_32_a_SOURCES = src/pcre2_fuzzsupport.c
+@WITH_FUZZ_SUPPORT_TRUE@@WITH_PCRE2_32_TRUE@_libs_libpcre2_fuzzsupport_32_a_CFLAGS = $(AM_CFLAGS) -DPCRE2_CODE_UNIT_WIDTH=32
+@WITH_FUZZ_SUPPORT_TRUE@@WITH_PCRE2_32_TRUE@_libs_libpcre2_fuzzsupport_32_a_LIBADD = 
+@WITH_FUZZ_SUPPORT_TRUE@@WITH_PCRE2_32_TRUE@pcre2fuzzcheck_32_SOURCES = src/pcre2_fuzzsupport.c
+@WITH_FUZZ_SUPPORT_TRUE@@WITH_PCRE2_32_TRUE@pcre2fuzzcheck_32_CFLAGS =  \
+@WITH_FUZZ_SUPPORT_TRUE@@WITH_PCRE2_32_TRUE@	-DSTANDALONE \
+@WITH_FUZZ_SUPPORT_TRUE@@WITH_PCRE2_32_TRUE@	$(AM_CFLAGS) \
+@WITH_FUZZ_SUPPORT_TRUE@@WITH_PCRE2_32_TRUE@	-DPCRE2_CODE_UNIT_WIDTH=32 \
+@WITH_FUZZ_SUPPORT_TRUE@@WITH_PCRE2_32_TRUE@	$(am__append_26)
+@WITH_FUZZ_SUPPORT_TRUE@@WITH_PCRE2_32_TRUE@pcre2fuzzcheck_32_LDADD =  \
+@WITH_FUZZ_SUPPORT_TRUE@@WITH_PCRE2_32_TRUE@	libpcre2-32.la \
+@WITH_FUZZ_SUPPORT_TRUE@@WITH_PCRE2_32_TRUE@	$(am__append_27)
+@WITH_PCRE2_8_TRUE@pcre2posix_test_SOURCES = src/pcre2posix_test.c
+@WITH_PCRE2_8_TRUE@pcre2posix_test_CFLAGS = $(AM_CFLAGS) @PCRE2POSIX_CFLAG@
+@WITH_PCRE2_8_TRUE@pcre2posix_test_LDADD = libpcre2-posix.la libpcre2-8.la
+@WITH_JIT_TRUE@pcre2_jit_test_SOURCES = src/pcre2_jit_test.c
+@WITH_JIT_TRUE@pcre2_jit_test_CFLAGS = $(AM_CFLAGS) $(am__append_35)
+@WITH_JIT_TRUE@pcre2_jit_test_LDADD = $(am__append_32) \
+@WITH_JIT_TRUE@	$(am__append_33) $(am__append_34) \
+@WITH_JIT_TRUE@	$(am__append_36)
+pcre2test_SOURCES = src/pcre2test.c
+pcre2test_CFLAGS = $(AM_CFLAGS) $(am__append_40) $(am__append_41)
+pcre2test_LDADD = $(LIBREADLINE) $(am__append_37) $(am__append_38) \
+	$(am__append_39) $(am__append_42)
+
+# We have .pc files for pkg-config users.
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = $(am__append_46) $(am__append_47) $(am__append_48)
+
+# gcov/lcov code coverage reporting
+#
+# Coverage reporting targets:
+#
+# coverage: Create a coverage report from 'make check'
+# coverage-baseline: Capture baseline coverage information
+# coverage-reset: This zeros the coverage counters only
+# coverage-report: This creates the coverage report only
+# coverage-clean-report: This removes the generated coverage report
+#   without cleaning the coverage data itself
+# coverage-clean-data: This removes the captured coverage data without
+#   removing the coverage files created at compile time (*.gcno)
+# coverage-clean: This cleans all coverage data including the generated
+#   coverage report.
+@WITH_GCOV_TRUE@COVERAGE_TEST_NAME = $(PACKAGE)
+@WITH_GCOV_TRUE@COVERAGE_NAME = $(PACKAGE)-$(VERSION)
+@WITH_GCOV_TRUE@COVERAGE_OUTPUT_FILE = $(COVERAGE_NAME)-coverage.info
+@WITH_GCOV_TRUE@COVERAGE_OUTPUT_DIR = $(COVERAGE_NAME)-coverage
+@WITH_GCOV_TRUE@COVERAGE_LCOV_EXTRA_FLAGS = 
+@WITH_GCOV_TRUE@COVERAGE_GENHTML_EXTRA_FLAGS = 
+@WITH_GCOV_TRUE@coverage_quiet = $(coverage_quiet_$(V))
+@WITH_GCOV_TRUE@coverage_quiet_ = $(coverage_quiet_$(AM_DEFAULT_VERBOSITY))
+@WITH_GCOV_TRUE@coverage_quiet_0 = --quiet
+all: $(BUILT_SOURCES)
+	$(MAKE) $(AM_MAKEFLAGS) all-am
+
+.SUFFIXES:
+.SUFFIXES: .c .lo .log .o .obj .test .test$(EXEEXT) .trs
+am--refresh: Makefile
+	@:
+$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
+	@for dep in $?; do \
+	  case '$(am__configure_deps)' in \
+	    *$$dep*) \
+	      echo ' cd $(srcdir) && $(AUTOMAKE) --gnu'; \
+	      $(am__cd) $(srcdir) && $(AUTOMAKE) --gnu \
+		&& exit 0; \
+	      exit 1;; \
+	  esac; \
+	done; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu Makefile'; \
+	$(am__cd) $(top_srcdir) && \
+	  $(AUTOMAKE) --gnu Makefile
+Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
+	@case '$?' in \
+	  *config.status*) \
+	    echo ' $(SHELL) ./config.status'; \
+	    $(SHELL) ./config.status;; \
+	  *) \
+	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $@ $(am__maybe_remake_depfiles)'; \
+	    cd $(top_builddir) && $(SHELL) ./config.status $@ $(am__maybe_remake_depfiles);; \
+	esac;
+
+$(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
+	$(SHELL) ./config.status --recheck
+
+$(top_srcdir)/configure:  $(am__configure_deps)
+	$(am__cd) $(srcdir) && $(AUTOCONF)
+$(ACLOCAL_M4):  $(am__aclocal_m4_deps)
+	$(am__cd) $(srcdir) && $(ACLOCAL) $(ACLOCAL_AMFLAGS)
+$(am__aclocal_m4_deps):
+
+src/config.h: src/stamp-h1
+	@test -f $@ || rm -f src/stamp-h1
+	@test -f $@ || $(MAKE) $(AM_MAKEFLAGS) src/stamp-h1
+
+src/stamp-h1: $(top_srcdir)/src/config.h.in $(top_builddir)/config.status
+	@rm -f src/stamp-h1
+	cd $(top_builddir) && $(SHELL) ./config.status src/config.h
+$(top_srcdir)/src/config.h.in:  $(am__configure_deps) 
+	($(am__cd) $(top_srcdir) && $(AUTOHEADER))
+	rm -f src/stamp-h1
+	touch $@
+
+distclean-hdr:
+	-rm -f src/config.h src/stamp-h1
+libpcre2-8.pc: $(top_builddir)/config.status $(srcdir)/libpcre2-8.pc.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+libpcre2-16.pc: $(top_builddir)/config.status $(srcdir)/libpcre2-16.pc.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+libpcre2-32.pc: $(top_builddir)/config.status $(srcdir)/libpcre2-32.pc.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+libpcre2-posix.pc: $(top_builddir)/config.status $(srcdir)/libpcre2-posix.pc.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+pcre2-config: $(top_builddir)/config.status $(srcdir)/pcre2-config.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+src/pcre2.h: $(top_builddir)/config.status $(top_srcdir)/src/pcre2.h.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+install-binPROGRAMS: $(bin_PROGRAMS)
+	@$(NORMAL_INSTALL)
+	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(bindir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(bindir)" || exit 1; \
+	fi; \
+	for p in $$list; do echo "$$p $$p"; done | \
+	sed 's/$(EXEEXT)$$//' | \
+	while read p p1; do if test -f $$p \
+	 || test -f $$p1 \
+	  ; then echo "$$p"; echo "$$p"; else :; fi; \
+	done | \
+	sed -e 'p;s,.*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/cmake/COPYING-CMAKE-SCRIPTS
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+
+1. Redistributions of source code must retain the copyright
+   notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+3. The name of the author may not be used to endorse or promote products 
+   derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/aclocal.m4
+
+# Copyright (C) 1996-2021 Free Software Foundation, Inc.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/aclocal.m4
+
+# Copyright (C) 2002-2021 Free Software Foundation, Inc.
+#
+# This file is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/aclocal.m4
+
+# Copyright (C) 2011-2021 Free Software Foundation, Inc.
+#
+# This file is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/aclocal.m4, pcre2-10.43.tar.bz2::pcre2-10.43/aclocal.m4, pcre2-10.43.tar.bz2::pcre2-10.43/aclocal.m4, pcre2-10.43.tar.bz2::pcre2-10.43/aclocal.m4, pcre2-10.43.tar.bz2::pcre2-10.43/aclocal.m4, pcre2-10.43.tar.bz2::pcre2-10.43/aclocal.m4
+
+# Copyright (C) 2001-2021 Free Software Foundation, Inc.
+#
+# This file is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/aclocal.m4, pcre2-10.43.tar.bz2::pcre2-10.43/aclocal.m4
+
+# Copyright (C) 1997-2021 Free Software Foundation, Inc.
+#
+# This file is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/aclocal.m4, pcre2-10.43.tar.bz2::pcre2-10.43/aclocal.m4, pcre2-10.43.tar.bz2::pcre2-10.43/aclocal.m4
+
+# Copyright (C) 1999-2021 Free Software Foundation, Inc.
+#
+# This file is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/aclocal.m4, pcre2-10.43.tar.bz2::pcre2-10.43/aclocal.m4
+
+# Copyright (C) 1996-2021 Free Software Foundation, Inc.
+#
+# This file is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/aclocal.m4
+
+# Copyright (C) 2003-2021 Free Software Foundation, Inc.
+#
+# This file is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/aclocal.m4
+
+# Copyright (C) 2009-2021 Free Software Foundation, Inc.
+#
+# This file is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/aclocal.m4
+
+# Copyright (C) 2006-2021 Free Software Foundation, Inc.
+#
+# This file is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/aclocal.m4
+
+# Copyright (C) 2004-2021 Free Software Foundation, Inc.
+#
+# This file is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/m4/ltsugar.m4
+
+# ltsugar.m4 -- libtool m4 base layer.                         -*-Autoconf-*-
+#
+# Copyright (C) 2004-2005, 2007-2008, 2011-2019, 2021-2022 Free Software
+# Foundation, Inc.
+# Written by Gary V. Vaughan, 2004
+#
+# This file is free software; the Free Software Foundation gives
+# unlimited permission to copy and/or distribute it, with or without
+# modifications, as long as this notice is preserved.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/m4/libtool.m4
+
+# libtool.m4 - Configure libtool for the host system. -*-Autoconf-*-
+#
+#   Copyright (C) 1996-2001, 2003-2019, 2021-2022 Free Software
+#   Foundation, Inc.
+#   Written by Gordon Matzigkeit, 1996
+#
+# This file is free software; the Free Software Foundation gives
+# unlimited permission to copy and/or distribute it, with or without
+# modifications, as long as this notice is preserved.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/m4/libtool.m4
+
+# Copyright (C) 2014 Free Software Foundation, Inc.
+# This is free software; see the source for copying conditions.  There is NO
+# warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/m4/libtool.m4
+
+# GNU Libtool is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of of the License, or
+# (at your option) any later version.
+#
+# As a special exception to the GNU General Public License, if you
+# distribute this file as part of a program or library that is built
+# using GNU Libtool, you may include this file under the  same
+# distribution terms that you use for the rest of that program.
+#
+# GNU Libtool is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/m4/ltversion.m4
+
+# ltversion.m4 -- version numbers			-*- Autoconf -*-
+#
+#   Copyright (C) 2004, 2011-2019, 2021-2022 Free Software Foundation,
+#   Inc.
+#   Written by Scott James Remnant, 2004
+#
+# This file is free software; the Free Software Foundation gives
+# unlimited permission to copy and/or distribute it, with or without
+# modifications, as long as this notice is preserved.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/m4/ltoptions.m4
+
+# Helper functions for option handling.                    -*- Autoconf -*-
+#
+#   Copyright (C) 2004-2005, 2007-2009, 2011-2019, 2021-2022 Free
+#   Software Foundation, Inc.
+#   Written by Gary V. Vaughan, 2004
+#
+# This file is free software; the Free Software Foundation gives
+# unlimited permission to copy and/or distribute it, with or without
+# modifications, as long as this notice is preserved.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/m4/ax_pthread.m4
+
+# ===========================================================================
+#        http://www.gnu.org/software/autoconf-archive/ax_pthread.html
+# ===========================================================================
+#
+# SYNOPSIS
+#
+#   AX_PTHREAD([ACTION-IF-FOUND[, ACTION-IF-NOT-FOUND]])
+#
+# DESCRIPTION
+#
+#   This macro figures out how to build C programs using POSIX threads. It
+#   sets the PTHREAD_LIBS output variable to the threads library and linker
+#   flags, and the PTHREAD_CFLAGS output variable to any special C compiler
+#   flags that are needed. (The user can also force certain compiler
+#   flags/libs to be tested by setting these environment variables.)
+#
+#   Also sets PTHREAD_CC to any special C compiler that is needed for
+#   multi-threaded programs (defaults to the value of CC otherwise). (This
+#   is necessary on AIX to use the special cc_r compiler alias.)
+#
+#   NOTE: You are assumed to not only compile your program with these flags,
+#   but also link it with them as well. e.g. you should link with
+#   $PTHREAD_CC $CFLAGS $PTHREAD_CFLAGS $LDFLAGS ... $PTHREAD_LIBS $LIBS
+#
+#   If you are only building threads programs, you may wish to use these
+#   variables in your default LIBS, CFLAGS, and CC:
+#
+#     LIBS="$PTHREAD_LIBS $LIBS"
+#     CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
+#     CC="$PTHREAD_CC"
+#
+#   In addition, if the PTHREAD_CREATE_JOINABLE thread-attribute constant
+#   has a nonstandard name, defines PTHREAD_CREATE_JOINABLE to that name
+#   (e.g. PTHREAD_CREATE_UNDETACHED on AIX).
+#
+#   Also HAVE_PTHREAD_PRIO_INHERIT is defined if pthread is found and the
+#   PTHREAD_PRIO_INHERIT symbol is defined when compiling with
+#   PTHREAD_CFLAGS.
+#
+#   ACTION-IF-FOUND is a list of shell commands to run if a threads library
+#   is found, and ACTION-IF-NOT-FOUND is a list of commands to run it if it
+#   is not found. If ACTION-IF-FOUND is not specified, the default action
+#   will define HAVE_PTHREAD.
+#
+#   Please let the authors know if this macro fails on any platform, or if
+#   you have any other suggestions or comments. This macro was based on work
+#   by SGJ on autoconf scripts for FFTW (http://www.fftw.org/) (with help
+#   from M. Frigo), as well as ac_pthread and hb_pthread macros posted by
+#   Alejandro Forero Cuervo to the autoconf macro repository. We are also
+#   grateful for the helpful feedback of numerous users.
+#
+#   Updated for Autoconf 2.68 by Daniel Richard G.
+#
+# LICENSE
+#
+#   Copyright (c) 2008 Steven G. Johnson <stevenj@alum.mit.edu>
+#   Copyright (c) 2011 Daniel Richard G. <skunk@iSKUNK.ORG>
+#
+#   This program is free software: you can redistribute it and/or modify it
+#   under the terms of the GNU General Public License as published by the
+#   Free Software Foundation, either version 3 of the License, or (at your
+#   option) any later version.
+#
+#   This program is distributed in the hope that it will be useful, but
+#   WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+#   Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License along
+#   with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+#   As a special exception, the respective Autoconf Macro's copyright owner
+#   gives unlimited permission to copy, distribute and modify the configure
+#   scripts that are the output of Autoconf when processing the Macro. You
+#   need not follow the terms of the GNU General Public License when using
+#   or distributing such scripts, even though portions of the text of the
+#   Macro appear in them. The GNU General Public License (GPL) does govern
+#   all other use of the material that constitutes the Autoconf Macro.
+#
+#   This special exception to the GPL applies to versions of the Autoconf
+#   Macro released by the Autoconf Archive. When you make and distribute a
+#   modified version of the Autoconf Macro, you may extend this special
+#   exception to the GPL to apply to your modified version as well.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/m4/lt~obsolete.m4
+
+# lt~obsolete.m4 -- aclocal satisfying obsolete definitions.    -*-Autoconf-*-
+#
+#   Copyright (C) 2004-2005, 2007, 2009, 2011-2019, 2021-2022 Free
+#   Software Foundation, Inc.
+#   Written by Scott James Remnant, 2004.
+#
+# This file is free software; the Free Software Foundation gives
+# unlimited permission to copy and/or distribute it, with or without
+# modifications, as long as this notice is preserved.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/COPYING
+
+PCRE2 LICENCE
+
+Please see the file LICENCE in the PCRE2 distribution for licensing details.
+
+End
+
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/src/pcre2posix.h
+
+/* PCRE2 is a library of functions to support regular expressions whose syntax
+and semantics are as close as possible to those of the Perl 5 language. This is
+the public header file to be #included by applications that call PCRE2 via the
+POSIX wrapper interface.
+
+                       Written by Philip Hazel
+     Original API code Copyright (c) 1997-2012 University of Cambridge
+          New API code Copyright (c) 2016-2023 University of Cambridge
+
+-----------------------------------------------------------------------------
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice,
+      this list of conditions and the following disclaimer.
+
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+
+    * Neither the name of the University of Cambridge nor the names of its
+      contributors may be used to endorse or promote products derived from
+      this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+-----------------------------------------------------------------------------
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/src/pcre2_intmodedep.h, pcre2-10.43.tar.bz2::pcre2-10.43/src/pcre2_find_bracket.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/pcre2_compile.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/pcre2_jit_match.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/pcre2_study.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/pcre2_xclass.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/pcre2_dfa_match.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/pcre2_substring.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/pcre2_printint.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/pcre2_context.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/pcre2_error.c
+
+/* PCRE is a library of functions to support regular expressions whose syntax
+and semantics are as close as possible to those of the Perl 5 language.
+
+                       Written by Philip Hazel
+     Original API code Copyright (c) 1997-2012 University of Cambridge
+          New API code Copyright (c) 2016-2023 University of Cambridge
+
+-----------------------------------------------------------------------------
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice,
+      this list of conditions and the following disclaimer.
+
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+
+    * Neither the name of the University of Cambridge nor the names of its
+      contributors may be used to endorse or promote products derived from
+      this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+-----------------------------------------------------------------------------
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/src/pcre2_jit_compile.c
+
+/* PCRE is a library of functions to support regular expressions whose syntax
+and semantics are as close as possible to those of the Perl 5 language.
+
+                       Written by Philip Hazel
+                    This module by Zoltan Herczeg
+     Original API code Copyright (c) 1997-2012 University of Cambridge
+          New API code Copyright (c) 2016-2021 University of Cambridge
+
+-----------------------------------------------------------------------------
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice,
+      this list of conditions and the following disclaimer.
+
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+
+    * Neither the name of the University of Cambridge nor the names of its
+      contributors may be used to endorse or promote products derived from
+      this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+-----------------------------------------------------------------------------
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/src/pcre2_newline.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/pcre2_jit_test.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/pcre2_ord2utf.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/pcre2_jit_misc.c
+
+/* PCRE is a library of functions to support regular expressions whose syntax
+and semantics are as close as possible to those of the Perl 5 language.
+
+                       Written by Philip Hazel
+     Original API code Copyright (c) 1997-2012 University of Cambridge
+         New API code Copyright (c) 2016 University of Cambridge
+
+-----------------------------------------------------------------------------
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice,
+      this list of conditions and the following disclaimer.
+
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+
+    * Neither the name of the University of Cambridge nor the names of its
+      contributors may be used to endorse or promote products derived from
+      this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+-----------------------------------------------------------------------------
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/src/pcre2posix.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/pcre2_substitute.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/pcre2_match_data.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/pcre2_auto_possess.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/pcre2_convert.c
+
+/* PCRE is a library of functions to support regular expressions whose syntax
+and semantics are as close as possible to those of the Perl 5 language.
+
+                       Written by Philip Hazel
+     Original API code Copyright (c) 1997-2012 University of Cambridge
+          New API code Copyright (c) 2016-2022 University of Cambridge
+
+-----------------------------------------------------------------------------
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice,
+      this list of conditions and the following disclaimer.
+
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+
+    * Neither the name of the University of Cambridge nor the names of its
+      contributors may be used to endorse or promote products derived from
+      this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+-----------------------------------------------------------------------------
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/src/pcre2.h.in
+
+/* This is the public header file for the PCRE library, second API, to be
+#included by applications that call PCRE2 functions.
+
+           Copyright (c) 2016-2024 University of Cambridge
+
+-----------------------------------------------------------------------------
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice,
+      this list of conditions and the following disclaimer.
+
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+
+    * Neither the name of the University of Cambridge nor the names of its
+      contributors may be used to endorse or promote products derived from
+      this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+-----------------------------------------------------------------------------
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/src/pcre2posix_test.c
+
+/*
+Written by Philip Hazel, December 2022
+Copyright (c) 2022
+File last edited: December 2022
+
+This program tests the POSIX wrapper to the PCRE2 regular expression library.
+The main PCRE2 test program is pcre2test, which also tests these function
+calls. This little program is needed to test the case where the client includes
+pcre2posix.h but not pcre2.h, mainly to make sure that it builds successfully.
+However, the code is written as a flexible test program to which extra tests
+can be added.
+
+Compile with -lpcre2-posix -lpcre2-8
+
+If run with no options, there is no output on success, and the return code is
+zero. If any test fails there is output to stderr, and the return code is 1.
+
+For testing purposes, the "-v" option causes verification output to be written
+to stdout. */
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/src/pcre2_tables.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/pcre2_script_run.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/pcre2_extuni.c
+
+/* PCRE is a library of functions to support regular expressions whose syntax
+and semantics are as close as possible to those of the Perl 5 language.
+
+                       Written by Philip Hazel
+     Original API code Copyright (c) 1997-2012 University of Cambridge
+          New API code Copyright (c) 2016-2021 University of Cambridge
+
+-----------------------------------------------------------------------------
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice,
+      this list of conditions and the following disclaimer.
+
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+
+    * Neither the name of the University of Cambridge nor the names of its
+      contributors may be used to endorse or promote products derived from
+      this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+-----------------------------------------------------------------------------
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/src/pcre2_chkdint.c
+
+/* PCRE is a library of functions to support regular expressions whose syntax
+and semantics are as close as possible to those of the Perl 5 language.
+
+                     Written by Philip Hazel
+            Copyright (c) 2023 University of Cambridge
+
+-----------------------------------------------------------------------------
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice,
+      this list of conditions and the following disclaimer.
+
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+
+    * Neither the name of the University of Cambridge nor the names of its
+      contributors may be used to endorse or promote products derived from
+      this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+-----------------------------------------------------------------------------
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/src/pcre2_ucptables.c
+
+/* PCRE is a library of functions to support regular expressions whose syntax
+and semantics are as close as possible to those of the Perl 5 language.
+
+                       Written by Philip Hazel
+     Original API code Copyright (c) 1997-2012 University of Cambridge
+          New API code Copyright (c) 2016-2022 University of Cambridge
+
+This module is auto-generated from Unicode data files. DO NOT EDIT MANUALLY!
+Instead, modify the maint/GenerateUcpTables.py script and run it to generate
+a new version of this code.
+
+-----------------------------------------------------------------------------
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice,
+      this list of conditions and the following disclaimer.
+
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+
+    * Neither the name of the University of Cambridge nor the names of its
+      contributors may be used to endorse or promote products derived from
+      this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+-----------------------------------------------------------------------------
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/src/pcre2_ucp.h
+
+/* PCRE is a library of functions to support regular expressions whose syntax
+and semantics are as close as possible to those of the Perl 5 language.
+
+                       Written by Philip Hazel
+     Original API code Copyright (c) 1997-2012 University of Cambridge
+          New API code Copyright (c) 2016-2022 University of Cambridge
+
+This module is auto-generated from Unicode data files. DO NOT EDIT MANUALLY!
+Instead, modify the maint/GenerateUcpHeader.py script and run it to generate
+a new version of this code.
+
+-----------------------------------------------------------------------------
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice,
+      this list of conditions and the following disclaimer.
+
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+
+    * Neither the name of the University of Cambridge nor the names of its
+      contributors may be used to endorse or promote products derived from
+      this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+-----------------------------------------------------------------------------
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/src/pcre2_jit_simd_inc.h
+
+/* PCRE is a library of functions to support regular expressions whose syntax
+and semantics are as close as possible to those of the Perl 5 language.
+
+                       Written by Philip Hazel
+                    This module by Zoltan Herczeg
+     Original API code Copyright (c) 1997-2012 University of Cambridge
+          New API code Copyright (c) 2016-2019 University of Cambridge
+
+-----------------------------------------------------------------------------
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice,
+      this list of conditions and the following disclaimer.
+
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+
+    * Neither the name of the University of Cambridge nor the names of its
+      contributors may be used to endorse or promote products derived from
+      this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+-----------------------------------------------------------------------------
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/src/pcre2_config.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/pcre2_serialize.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/pcre2_valid_utf.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/pcre2_maketables.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/pcre2_dftables.c
+
+/* PCRE is a library of functions to support regular expressions whose syntax
+and semantics are as close as possible to those of the Perl 5 language.
+
+                       Written by Philip Hazel
+     Original API code Copyright (c) 1997-2012 University of Cambridge
+          New API code Copyright (c) 2016-2020 University of Cambridge
+
+-----------------------------------------------------------------------------
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice,
+      this list of conditions and the following disclaimer.
+
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+
+    * Neither the name of the University of Cambridge nor the names of its
+      contributors may be used to endorse or promote products derived from
+      this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+-----------------------------------------------------------------------------
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/src/pcre2_jit_neon_inc.h
+
+/* PCRE is a library of functions to support regular expressions whose syntax
+and semantics are as close as possible to those of the Perl 5 language.
+
+                       Written by Philip Hazel
+            This module by Zoltan Herczeg and Sebastian Pop
+     Original API code Copyright (c) 1997-2012 University of Cambridge
+          New API code Copyright (c) 2016-2019 University of Cambridge
+
+-----------------------------------------------------------------------------
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice,
+      this list of conditions and the following disclaimer.
+
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+
+    * Neither the name of the University of Cambridge nor the names of its
+      contributors may be used to endorse or promote products derived from
+      this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+-----------------------------------------------------------------------------
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/src/sljit/sljitConfigCPU.h, pcre2-10.43.tar.bz2::pcre2-10.43/src/sljit/sljitNativeLOONGARCH_64.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/sljit/sljitConfig.h, pcre2-10.43.tar.bz2::pcre2-10.43/src/sljit/sljitNativeMIPS_64.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/sljit/sljitUtils.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/sljit/sljitNativeRISCV_common.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/sljit/sljitNativeARM_T2_32.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/sljit/sljitNativePPC_64.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/sljit/sljitNativeARM_64.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/sljit/sljitNativeMIPS_common.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/sljit/sljitNativeMIPS_32.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/sljit/sljitNativeS390X.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/sljit/sljitNativeX86_common.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/sljit/sljitNativeARM_32.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/sljit/sljitNativeRISCV_32.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/sljit/sljitLir.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/sljit/sljitLir.h, pcre2-10.43.tar.bz2::pcre2-10.43/src/sljit/allocator_src/sljitProtExecAllocatorNetBSD.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/sljit/allocator_src/sljitProtExecAllocatorPosix.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/sljit/allocator_src/sljitExecAllocatorPosix.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/sljit/allocator_src/sljitExecAllocatorWindows.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/sljit/allocator_src/sljitWXExecAllocatorPosix.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/sljit/allocator_src/sljitWXExecAllocatorWindows.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/sljit/allocator_src/sljitExecAllocatorCore.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/sljit/allocator_src/sljitExecAllocatorApple.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/sljit/allocator_src/sljitExecAllocatorFreeBSD.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/sljit/sljitNativeX86_32.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/sljit/sljitNativePPC_32.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/sljit/sljitNativeRISCV_64.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/sljit/sljitNativeX86_64.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/sljit/sljitNativePPC_common.c, pcre2-10.43.tar.bz2::pcre2-10.43/src/sljit/sljitConfigInternal.h
+
+/*
+ *    Stack-less Just-In-Time compiler
+ *
+ *    Copyright Zoltan Herczeg (hzmester@freemail.hu). All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification, are
+ * permitted provided that the following conditions are met:
+ *
+ *   1. Redistributions of source code must retain the above copyright notice, this list of
+ *      conditions and the following disclaimer.
+ *
+ *   2. Redistributions in binary form must reproduce the above copyright notice, this list
+ *      of conditions and the following disclaimer in the documentation and/or other materials
+ *      provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER(S) AND CONTRIBUTORS ``AS IS'' AND ANY
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT
+ * SHALL THE COPYRIGHT HOLDER(S) OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+ * TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+ * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/src/pcre2_pattern_info.c
+
+/* PCRE is a library of functions to support regular expressions whose syntax
+and semantics are as close as possible to those of the Perl 5 language.
+
+                       Written by Philip Hazel
+     Original API code Copyright (c) 1997-2012 University of Cambridge
+          New API code Copyright (c) 2016-2018 University of Cambridge
+
+-----------------------------------------------------------------------------
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice,
+      this list of conditions and the following disclaimer.
+
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+
+    * Neither the name of the University of Cambridge nor the names of its
+      contributors may be used to endorse or promote products derived from
+      this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+-----------------------------------------------------------------------------
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/src/pcre2_string_utils.c
+
+/* PCRE is a library of functions to support regular expressions whose syntax
+and semantics are as close as possible to those of the Perl 5 language.
+
+                       Written by Philip Hazel
+     Original API code Copyright (c) 1997-2012 University of Cambridge
+          New API code Copyright (c) 2018-2021 University of Cambridge
+
+-----------------------------------------------------------------------------
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice,
+      this list of conditions and the following disclaimer.
+
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+
+    * Neither the name of the University of Cambridge nor the names of its
+      contributors may be used to endorse or promote products derived from
+      this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+-----------------------------------------------------------------------------
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/src/pcre2_ucd.c
+
+/* PCRE is a library of functions to support regular expressions whose syntax
+and semantics are as close as possible to those of the Perl 5 language.
+
+                       Written by Philip Hazel
+     Original API code Copyright (c) 1997-2012 University of Cambridge
+          New API code Copyright (c) 2016-2022 University of Cambridge
+
+This module is auto-generated from Unicode data files. DO NOT EDIT MANUALLY!
+Instead, modify the maint/GenerateUcd.py script and run it to generate
+a new version of this code.
+
+-----------------------------------------------------------------------------
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice,
+      this list of conditions and the following disclaimer.
+
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+
+    * Neither the name of the University of Cambridge nor the names of its
+      contributors may be used to endorse or promote products derived from
+      this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+-----------------------------------------------------------------------------
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/src/pcre2test.c
+
+/* PCRE2 is a library of functions to support regular expressions whose syntax
+and semantics are as close as possible to those of the Perl 5 language. In 2014
+the API was completely revised and '2' was added to the name, because the old
+API, which had lasted for 16 years, could not accommodate new requirements. At
+the same time, this testing program was re-designed because its original
+hacked-up (non-) design had also run out of steam.
+
+                       Written by Philip Hazel
+     Original code Copyright (c) 1997-2012 University of Cambridge
+    Rewritten code Copyright (c) 2016-2024 University of Cambridge
+
+-----------------------------------------------------------------------------
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice,
+      this list of conditions and the following disclaimer.
+
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+
+    * Neither the name of the University of Cambridge nor the names of its
+      contributors may be used to endorse or promote products derived from
+      this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+-----------------------------------------------------------------------------
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/src/pcre2_internal.h
+
+/* PCRE2 is a library of functions to support regular expressions whose syntax
+and semantics are as close as possible to those of the Perl 5 language.
+
+                       Written by Philip Hazel
+     Original API code Copyright (c) 1997-2012 University of Cambridge
+          New API code Copyright (c) 2016-2023 University of Cambridge
+
+-----------------------------------------------------------------------------
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice,
+      this list of conditions and the following disclaimer.
+
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+
+    * Neither the name of the University of Cambridge nor the names of its
+      contributors may be used to endorse or promote products derived from
+      this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+-----------------------------------------------------------------------------
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/src/pcre2grep.c
+
+/* This is a grep program that uses the 8-bit PCRE regular expression library
+via the PCRE2 updated API to do its pattern matching. On Unix-like, Windows,
+and native z/OS systems it can recurse into directories, and in z/OS it can
+handle PDS files.
+
+Note that for native z/OS, in addition to defining the NATIVE_ZOS macro, an
+additional header is required. That header is not included in the main PCRE2
+distribution because other apparatus is needed to compile pcre2grep for z/OS.
+The header can be found in the special z/OS distribution, which is available
+from www.zaconsultants.net or from www.cbttape.org.
+
+           Copyright (c) 1997-2023 University of Cambridge
+
+-----------------------------------------------------------------------------
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice,
+      this list of conditions and the following disclaimer.
+
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+
+    * Neither the name of the University of Cambridge nor the names of its
+      contributors may be used to endorse or promote products derived from
+      this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+-----------------------------------------------------------------------------
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/src/pcre2_match.c
+
+/* PCRE is a library of functions to support regular expressions whose syntax
+and semantics are as close as possible to those of the Perl 5 language.
+
+                       Written by Philip Hazel
+     Original API code Copyright (c) 1997-2012 University of Cambridge
+          New API code Copyright (c) 2015-2024 University of Cambridge
+
+-----------------------------------------------------------------------------
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice,
+      this list of conditions and the following disclaimer.
+
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+
+    * Neither the name of the University of Cambridge nor the names of its
+      contributors may be used to endorse or promote products derived from
+      this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+-----------------------------------------------------------------------------
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/AUTHORS
+
+THE MAIN PCRE2 LIBRARY CODE
+---------------------------
+
+Written by:       Philip Hazel
+Email local part: Philip.Hazel
+Email domain:     gmail.com
+
+Retired from University of Cambridge Computing Service,
+Cambridge, England.
+
+Copyright (c) 1997-2024 University of Cambridge
+All rights reserved
+
+
+PCRE2 JUST-IN-TIME COMPILATION SUPPORT
+--------------------------------------
+
+Written by:       Zoltan Herczeg
+Email local part: hzmester
+Emain domain:     freemail.hu
+
+Copyright(c) 2010-2024 Zoltan Herczeg
+All rights reserved.
+
+
+STACK-LESS JUST-IN-TIME COMPILER
+--------------------------------
+
+Written by:       Zoltan Herczeg
+Email local part: hzmester
+Emain domain:     freemail.hu
+
+Copyright(c) 2009-2024 Zoltan Herczeg
+All rights reserved.
+
+####
+
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/ltmain.sh
+
+# Copyright (C) 1996-2019, 2021-2022 Free Software Foundation, Inc.
+# This is free software; see the source for copying conditions.  There is NO
+# warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/ltmain.sh
+
+# GNU Libtool is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# As a special exception to the GNU General Public License,
+# if you distribute this file as part of a program or library that
+# is built using GNU Libtool, you may include this file under the
+# same distribution terms that you use for the rest of that program.
+#
+# GNU Libtool is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/ltmain.sh
+
+# This is free software.  There is NO warranty; not even for
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#
+# Copyright (C) 2004-2019, 2021 Bootstrap Authors
+#
+# This file is dual licensed under the terms of the MIT license
+# <https://opensource.org/license/MIT>, and GPL version 2 or later
+# <http://www.gnu.org/licenses/gpl-2.0.html>.  You must apply one of
+# these licenses when using or redistributing this software or any of
+# the files within it.  See the URLs above, or the file `LICENSE`
+# included in the Bootstrap distribution for the full license texts.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/ltmain.sh
+
+/*) ;; *) break ;; esac
+
+        # ...otherwise throw away the child directory and loop
+        _G_directory_path=`$ECHO "$_G_directory_path" | $SED -e "$sed_dirname"`
+      done
+      _G_dir_list=`$ECHO "$_G_dir_list" | $SED 's|:*$||'`
+
+      func_mkdir_p_IFS=$IFS; IFS=:
+      for _G_dir in $_G_dir_list; do
+	IFS=$func_mkdir_p_IFS
+        # mkdir can fail with a 'File exist' error if two processes
+        # try to create one of the directories concurrently.  Don't
+        # stop in that case!
+        $MKDIR "$_G_dir" 2>/dev/null || :
+      done
+      IFS=$func_mkdir_p_IFS
+
+      # Bail out if we (or some other process) failed to create a directory.
+      test -d "$_G_directory_path" || \
+        func_fatal_error "Failed to create '$1'"
+    fi
+}
+
+
+# func_mktempdir [BASENAME]
+# -------------------------
+# Make a temporary directory that won't clash with other running
+# libtool processes, and avoids race conditions if possible.  If
+# given, BASENAME is the basename for that directory.
+func_mktempdir ()
+{
+    $debug_cmd
+
+    _G_template=${TMPDIR-/tmp}/${1-$progname}
+
+    if test : = "$opt_dry_run"; then
+      # Return a directory name, but don't create it in dry-run mode
+      _G_tmpdir=$_G_template-$$
+    else
+
+      # If mktemp works, use that first and foremost
+      _G_tmpdir=`mktemp -d "$_G_template-XXXXXXXX" 2>/dev/null`
+
+      if test ! -d "$_G_tmpdir"; then
+        # Failing that, at least try and use $RANDOM to avoid a race
+        _G_tmpdir=$_G_template-${RANDOM-0}$$
+
+        func_mktempdir_umask=`umask`
+        umask 0077
+        $MKDIR "$_G_tmpdir"
+        umask $func_mktempdir_umask
+      fi
+
+      # If we're not in dry-run mode, bomb out on failure
+      test -d "$_G_tmpdir" || \
+        func_fatal_error "cannot create temporary directory '$_G_tmpdir'"
+    fi
+
+    $ECHO "$_G_tmpdir"
+}
+
+
+# func_normal_abspath PATH
+# ------------------------
+# Remove doubled-up and trailing slashes, "." path components,
+# and cancel out any ".." path components in PATH after making
+# it an absolute path.
+func_normal_abspath ()
+{
+    $debug_cmd
+
+    # These SED scripts presuppose an absolute path with a trailing slash.
+    _G_pathcar='s|^/\([^/]*\).*$|\1|'
+    _G_pathcdr='s|^/[^/]*||'
+    _G_removedotparts=':dotsl
+		s|/\./|/|g
+		t dotsl
+		s|/\.$|/|'
+    _G_collapseslashes='s|/\{1,\}|/|g'
+    _G_finalslash='s|/*$|/|'
+
+    # Start from root dir and reassemble the path.
+    func_normal_abspath_result=
+    func_normal_abspath_tpath=$1
+    func_normal_abspath_altnamespace=
+    case $func_normal_abspath_tpath in
+      "")
+        # Empty path, that just means $cwd.
+        func_stripname '' '/' "`pwd`"
+        func_normal_abspath_result=$func_stripname_result
+        return
+        ;;
+      # The next three entries are used to spot a run of precisely
+      # two leading slashes without using negated character classes;
+      # we take advantage of case's first-match behaviour.
+      ///*)
+        # Unusual form of absolute path, do nothing.
+        ;;
+      //*)
+        # Not necessarily an ordinary path; POSIX reserves leading '//'
+        # and for example Cygwin uses it to access remote file shares
+        # over CIFS/SMB, so we conserve a leading double slash if found.
+        func_normal_abspath_altnamespace=/
+        ;;
+      /*)
+        # Absolute path, do nothing.
+        ;;
+      *)
+        # Relative path, prepend $cwd.
+        func_normal_abspath_tpath=`pwd`/$func_normal_abspath_tpath
+        ;;
+    esac
+
+    # Cancel out all the simple stuff to save iterations.  We also want
+    # the path to end with a slash for ease of parsing, so make sure
+    # there is one (and only one) here.
+    func_normal_abspath_tpath=`$ECHO "$func_normal_abspath_tpath" | $SED \
+          -e "$_G_removedotparts" -e "$_G_collapseslashes" -e "$_G_finalslash"`
+    while :; do
+      # Processed it all yet?
+      if test / = "$func_normal_abspath_tpath"; then
+        # If we ascended to the root using ".." the result may be empty now.
+        if test -z "$func_normal_abspath_result"; then
+          func_normal_abspath_result=/
+        fi
+        break
+      fi
+      func_normal_abspath_tcomponent=`$ECHO "$func_normal_abspath_tpath" | $SED \
+          -e "$_G_pathcar"`
+      func_normal_abspath_tpath=`$ECHO "$func_normal_abspath_tpath" | $SED \
+          -e "$_G_pathcdr"`
+      # Figure out what to do with it
+      case $func_normal_abspath_tcomponent in
+        "")
+          # Trailing empty path component, ignore it.
+          ;;
+        ..)
+          # Parent dir; strip last assembled component from result.
+          func_dirname "$func_normal_abspath_result"
+          func_normal_abspath_result=$func_dirname_result
+          ;;
+        *)
+          # Actual path component, append it.
+          func_append func_normal_abspath_result "/$func_normal_abspath_tcomponent"
+          ;;
+      esac
+    done
+    # Restore leading double-slash if one was found on entry.
+    func_normal_abspath_result=$func_normal_abspath_altnamespace$func_normal_abspath_result
+}
+
+
+# func_notquiet ARG...
+# --------------------
+# Echo program name prefixed message only when not in quiet mode.
+func_notquiet ()
+{
+    $debug_cmd
+
+    $opt_quiet || func_echo ${1+"$@"}
+
+    # A bug in bash halts the script if the last line of a function
+    # fails when set -e is in force, so we need another command to
+    # work around that:
+    :
+}
+
+
+# func_relative_path SRCDIR DSTDIR
+# --------------------------------
+# Set func_relative_path_result to the relative path from SRCDIR to DSTDIR.
+func_relative_path ()
+{
+    $debug_cmd
+
+    func_relative_path_result=
+    func_normal_abspath "$1"
+    func_relative_path_tlibdir=$func_normal_abspath_result
+    func_normal_abspath "$2"
+    func_relative_path_tbindir=$func_normal_abspath_result
+
+    # Ascend the tree starting from libdir
+    while :; do
+      # check if we have found a prefix of bindir
+      case $func_relative_path_tbindir in
+        $func_relative_path_tlibdir)
+          # found an exact match
+          func_relative_path_tcancelled=
+          break
+          ;;
+        $func_relative_path_tlibdir*)
+          # found a matching prefix
+          func_stripname "$func_relative_path_tlibdir" '' "$func_relative_path_tbindir"
+          func_relative_path_tcancelled=$func_stripname_result
+          if test -z "$func_relative_path_result"; then
+            func_relative_path_result=.
+          fi
+          break
+          ;;
+        *)
+          func_dirname $func_relative_path_tlibdir
+          func_relative_path_tlibdir=$func_dirname_result
+          if test -z "$func_relative_path_tlibdir"; then
+            # Have to descend all the way to the root!
+            func_relative_path_result=../$func_relative_path_result
+            func_relative_path_tcancelled=$func_relative_path_tbindir
+            break
+          fi
+          func_relative_path_result=../$func_relative_path_result
+          ;;
+      esac
+    done
+
+    # Now calculate path; take care to avoid doubling-up slashes.
+    func_stripname '' '/' "$func_relative_path_result"
+    func_relative_path_result=$func_stripname_result
+    func_stripname '/' '/' "$func_relative_path_tcancelled"
+    if test -n "$func_stripname_result"; then
+      func_append func_relative_path_result "/$func_stripname_result"
+    fi
+
+    # Normalisation. If bindir is libdir, return '.' else relative path.
+    if test -n "$func_relative_path_result"; then
+      func_stripname './' '' "$func_relative_path_result"
+      func_relative_path_result=$func_stripname_result
+    fi
+
+    test -n "$func_relative_path_result" || func_relative_path_result=.
+
+    :
+}
+
+
+# func_quote_portable EVAL ARG
+# ----------------------------
+# Internal function to portably implement func_quote_arg.  Note that we still
+# keep attention to performance here so we as much as possible try to avoid
+# calling sed binary (so far O(N) complexity as long as func_append is O(1)).
+func_quote_portable ()
+{
+    $debug_cmd
+
+    $require_check_ifs_backslash
+
+    func_quote_portable_result=$2
+
+    # one-time-loop (easy break)
+    while true
+    do
+      if $1; then
+        func_quote_portable_result=`$ECHO "$2" | $SED \
+          -e "$sed_double_quote_subst" -e "$sed_double_backslash"`
+        break
+      fi
+
+      # Quote for eval.
+      case $func_quote_portable_result in
+        *[\\\`\"\$]*)
+          # Fallback to sed for $func_check_bs_ifs_broken=:, or when the string
+          # contains the shell wildcard characters.
+          case $check_ifs_backshlash_broken$func_quote_portable_result in
+            :*|*[\[\*\?]*)
+              func_quote_portable_result=`$ECHO "$func_quote_portable_result" \
+                  | $SED "$sed_quote_subst"`
+              break
+              ;;
+          esac
+
+          func_quote_portable_old_IFS=$IFS
+          for _G_char in '\' '`' '"' '$'
+          do
+            # STATE($1) PREV($2) SEPARATOR($3)
+            set start "" ""
+            func_quote_portable_result=dummy"$_G_char$func_quote_portable_result$_G_char"dummy
+            IFS=$_G_char
+            for _G_part in $func_quote_portable_result
+            do
+              case $1 in
+              quote)
+                func_append func_quote_portable_result "$3$2"
+                set quote "$_G_part" "\\$_G_char"
+                ;;
+              start)
+                set first "" ""
+                func_quote_portable_result=
+                ;;
+              first)
+                set quote "$_G_part" ""
+                ;;
+              esac
+            done
+          done
+          IFS=$func_quote_portable_old_IFS
+          ;;
+        *) ;;
+      esac
+      break
+    done
+
+    func_quote_portable_unquoted_result=$func_quote_portable_result
+    case $func_quote_portable_result in
+      # double-quote args containing shell metacharacters to delay
+      # word splitting, command substitution and variable expansion
+      # for a subsequent eval.
+      # many bourne shells cannot handle close brackets correctly
+      # in scan sets, so we specify it separately.
+      *[\[\~\#\^\&\*\(\)\{\}\|\;\<\>\?\'\ \	]*|*]*|"")
+        func_quote_portable_result=\"$func_quote_portable_result\"
+        ;;
+    esac
+}
+
+
+# func_quotefast_eval ARG
+# -----------------------
+# Quote one ARG (internal).  This is equivalent to 'func_quote_arg eval ARG',
+# but optimized for speed.  Result is stored in $func_quotefast_eval.
+if test xyes = `(x=; printf -v x %q yes; echo x"$x") 2>/dev/null`; then
+  printf -v _GL_test_printf_tilde %q '~'
+  if test '\~' = "$_GL_test_printf_tilde"; then
+    func_quotefast_eval ()
+    {
+      printf -v func_quotefast_eval_result %q "$1"
+    }
+  else
+    # Broken older Bash implementations.  Make those faster too if possible.
+    func_quotefast_eval ()
+    {
+      case $1 in
+        '~'*)
+          func_quote_portable false "$1"
+          func_quotefast_eval_result=$func_quote_portable_result
+          ;;
+        *)
+          printf -v func_quotefast_eval_result %q "$1"
+          ;;
+      esac
+    }
+  fi
+else
+  func_quotefast_eval ()
+  {
+    func_quote_portable false "$1"
+    func_quotefast_eval_result=$func_quote_portable_result
+  }
+fi
+
+
+# func_quote_arg MODEs ARG
+# ------------------------
+# Quote one ARG to be evaled later.  MODEs argument may contain zero or more
+# specifiers listed below separated by ',' character.  This function returns two
+# values:
+#   i) func_quote_arg_result
+#      double-quoted (when needed), suitable for a subsequent eval
+#  ii) func_quote_arg_unquoted_result
+#      has all characters that are still active within double
+#      quotes backslashified.  Available only if 'unquoted' is specified.
+#
+# Available modes:
+# ----------------
+# 'eval' (default)
+#       - escape shell special characters
+# 'expand'
+#       - the same as 'eval';  but do not quote variable references
+# 'pretty'
+#       - request aesthetic output, i.e. '"a b"' instead of 'a\ b'.  This might
+#         be used later in func_quote to get output like: 'echo "a b"' instead
+#         of 'echo a\ b'.  This is slower than default on some shells.
+# 'unquoted'
+#       - produce also $func_quote_arg_unquoted_result which does not contain
+#         wrapping double-quotes.
+#
+# Examples for 'func_quote_arg pretty,unquoted string':
+#
+#   string      | *_result              | *_unquoted_result
+#   ------------+-----------------------+-------------------
+#   "           | \"                    | \"
+#   a b         | "a b"                 | a b
+#   "a b"       | "\"a b\""             | \"a b\"
+#   *           | "*"                   | *
+#   z="${x-$y}" | "z=\"\${x-\$y}\""     | z=\"\${x-\$y}\"
+#
+# Examples for 'func_quote_arg pretty,unquoted,expand string':
+#
+#   string        |   *_result          |  *_unquoted_result
+#   --------------+---------------------+--------------------
+#   z="${x-$y}"   | "z=\"${x-$y}\""     | z=\"${x-$y}\"
+func_quote_arg ()
+{
+    _G_quote_expand=false
+    case ,$1, in
+      *,expand,*)
+        _G_quote_expand=:
+        ;;
+    esac
+
+    case ,$1, in
+      *,pretty,*|*,expand,*|*,unquoted,*)
+        func_quote_portable $_G_quote_expand "$2"
+        func_quote_arg_result=$func_quote_portable_result
+        func_quote_arg_unquoted_result=$func_quote_portable_unquoted_result
+        ;;
+      *)
+        # Faster quote-for-eval for some shells.
+        func_quotefast_eval "$2"
+        func_quote_arg_result=$func_quotefast_eval_result
+        ;;
+    esac
+}
+
+
+# func_quote MODEs ARGs...
+# ------------------------
+# Quote all ARGs to be evaled later and join them into single command.  See
+# func_quote_arg's description for more info.
+func_quote ()
+{
+    $debug_cmd
+    _G_func_quote_mode=$1 ; shift
+    func_quote_result=
+    while test 0 -lt $#; do
+      func_quote_arg "$_G_func_quote_mode" "$1"
+      if test -n "$func_quote_result"; then
+        func_append func_quote_result " $func_quote_arg_result"
+      else
+        func_append func_quote_result "$func_quote_arg_result"
+      fi
+      shift
+    done
+}
+
+
+# func_stripname PREFIX SUFFIX NAME
+# ---------------------------------
+# strip PREFIX and SUFFIX from NAME, and store in func_stripname_result.
+# PREFIX and SUFFIX must not contain globbing or regex special
+# characters, hashes, percent signs, but SUFFIX may contain a leading
+# dot (in which case that matches only a dot).
+if test yes = "$_G_HAVE_XSI_OPS"; then
+  eval 'func_stripname ()
+  {
+    $debug_cmd
+
+    # pdksh 5.2.14 does not do ${X%$Y} correctly if both X and Y are
+    # positional parameters, so assign one to ordinary variable first.
+    func_stripname_result=$3
+    func_stripname_result=${func_stripname_result#"$1"}
+    func_stripname_result=${func_stripname_result%"$2"}
+  }'
+else
+  func_stripname ()
+  {
+    $debug_cmd
+
+    case $2 in
+      .*) func_stripname_result=`$ECHO "$3" | $SED -e "s%^$1%%" -e "s%\\\\$2\$%%"`;;
+      *)  func_stripname_result=`$ECHO "$3" | $SED -e "s%^$1%%" -e "s%$2\$%%"`;;
+    esac
+  }
+fi
+
+
+# func_show_eval CMD [FAIL_EXP]
+# -----------------------------
+# Unless opt_quiet is true, then output CMD.  Then, if opt_dryrun is
+# not true, evaluate CMD.  If the evaluation of CMD fails, and FAIL_EXP
+# is given, then evaluate it.
+func_show_eval ()
+{
+    $debug_cmd
+
+    _G_cmd=$1
+    _G_fail_exp=${2-':'}
+
+    func_quote_arg pretty,expand "$_G_cmd"
+    eval "func_notquiet $func_quote_arg_result"
+
+    $opt_dry_run || {
+      eval "$_G_cmd"
+      _G_status=$?
+      if test 0 -ne "$_G_status"; then
+	eval "(exit $_G_status); $_G_fail_exp"
+      fi
+    }
+}
+
+
+# func_show_eval_locale CMD [FAIL_EXP]
+# ------------------------------------
+# Unless opt_quiet is true, then output CMD.  Then, if opt_dryrun is
+# not true, evaluate CMD.  If the evaluation of CMD fails, and FAIL_EXP
+# is given, then evaluate it.  Use the saved locale for evaluation.
+func_show_eval_locale ()
+{
+    $debug_cmd
+
+    _G_cmd=$1
+    _G_fail_exp=${2-':'}
+
+    $opt_quiet || {
+      func_quote_arg expand,pretty "$_G_cmd"
+      eval "func_echo $func_quote_arg_result"
+    }
+
+    $opt_dry_run || {
+      eval "$_G_user_locale
+	    $_G_cmd"
+      _G_status=$?
+      eval "$_G_safe_locale"
+      if test 0 -ne "$_G_status"; then
+	eval "(exit $_G_status); $_G_fail_exp"
+      fi
+    }
+}
+
+
+# func_tr_sh
+# ----------
+# Turn $1 into a string suitable for a shell variable name.
+# Result is stored in $func_tr_sh_result.  All characters
+# not in the set a-zA-Z0-9_ are replaced with '_'. Further,
+# if $1 begins with a digit, a '_' is prepended as well.
+func_tr_sh ()
+{
+    $debug_cmd
+
+    case $1 in
+    [0-9]* | *[!a-zA-Z0-9_]*)
+      func_tr_sh_result=`$ECHO "$1" | $SED -e 's/^\([0-9]\)/_\1/' -e 's/[^a-zA-Z0-9_]/_/g'`
+      ;;
+    * )
+      func_tr_sh_result=$1
+      ;;
+    esac
+}
+
+
+# func_verbose ARG...
+# -------------------
+# Echo program name prefixed message in verbose mode only.
+func_verbose ()
+{
+    $debug_cmd
+
+    $opt_verbose && func_echo "$*"
+
+    :
+}
+
+
+# func_warn_and_continue ARG...
+# -----------------------------
+# Echo program name prefixed warning message to standard error.
+func_warn_and_continue ()
+{
+    $debug_cmd
+
+    $require_term_colors
+
+    func_echo_infix_1 "${tc_red}warning$tc_reset" "$*" >&2
+}
+
+
+# func_warning CATEGORY ARG...
+# ----------------------------
+# Echo program name prefixed warning message to standard error. Warning
+# messages can be filtered according to CATEGORY, where this function
+# elides messages where CATEGORY is not listed in the global variable
+# 'opt_warning_types'.
+func_warning ()
+{
+    $debug_cmd
+
+    # CATEGORY must be in the warning_categories list!
+    case " $warning_categories " in
+      *" $1 "*) ;;
+      *) func_internal_error "invalid warning category '$1'" ;;
+    esac
+
+    _G_category=$1
+    shift
+
+    case " $opt_warning_types " in
+      *" $_G_category "*) $warning_func ${1+"$@"} ;;
+    esac
+}
+
+
+# func_sort_ver VER1 VER2
+# -----------------------
+# 'sort -V' is not generally available.
+# Note this deviates from the version comparison in automake
+# in that it treats 1.5 < 1.5.0, and treats 1.4.4a < 1.4-p3a
+# but this should suffice as we won't be specifying old
+# version formats or redundant trailing .0 in bootstrap.conf.
+# If we did want full compatibility then we should probably
+# use m4_version_compare from autoconf.
+func_sort_ver ()
+{
+    $debug_cmd
+
+    printf '%s\n%s\n' "$1" "$2" \
+      | sort -t. -k 1,1n -k 2,2n -k 3,3n -k 4,4n -k 5,5n -k 6,6n -k 7,7n -k 8,8n -k 9,9n
+}
+
+# func_lt_ver PREV CURR
+# ---------------------
+# Return true if PREV and CURR are in the correct order according to
+# func_sort_ver, otherwise false.  Use it like this:
+#
+#  func_lt_ver "$prev_ver" "$proposed_ver" || func_fatal_error "..."
+func_lt_ver ()
+{
+    $debug_cmd
+
+    test "x$1" = x`func_sort_ver "$1" "$2" | $SED 1q`
+}
+
+
+# Local variables:
+# mode: shell-script
+# sh-indentation: 2
+# eval: (add-hook 'before-save-hook 'time-stamp)
+# time-stamp-pattern: "10/scriptversion=%:y-%02m-%02d.%02H; # UTC"
+# time-stamp-time-zone: "UTC"
+# End:
+#! /bin/sh
+
+# A portable, pluggable option parser for Bourne shell.
+# Written by Gary V. Vaughan, 2010
+
+# This is free software.  There is NO warranty; not even for
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#
+# Copyright (C) 2010-2019, 2021 Bootstrap Authors
+#
+# This file is dual licensed under the terms of the MIT license
+# <https://opensource.org/license/MIT>, and GPL version 2 or later
+# <http://www.gnu.org/licenses/gpl-2.0.html>.  You must apply one of
+# these licenses when using or redistributing this software or any of
+# the files within it.  See the URLs above, or the file `LICENSE`
+# included in the Bootstrap distribution for the full license texts.
+
+# Please report bugs or propose patches to:
+# <https://github.com/gnulib-modules/bootstrap/issues>
+
+# Set a version string for this script.
+scriptversion=2019-02-19.15; # UTC
+
+
+## ------ ##
+## Usage. ##
+## ------ ##
+
+# This file is a library for parsing options in your shell scripts along
+# with assorted other useful supporting features that you can make use
+# of too.
+#
+# For the simplest scripts you might need only:
+#
+#   #!/bin/sh
+#   . relative/path/to/funclib.sh
+#   . relative/path/to/options-parser
+#   scriptversion=1.0
+#   func_options ${1+"$@"}
+#   eval set dummy "$func_options_result"; shift
+#   ...rest of your script...
+#
+# In order for the '--version' option to work, you will need to have a
+# suitably formatted comment like the one at the top of this file
+# starting with '# Written by ' and ending with '# Copyright'.
+#
+# For '-h' and '--help' to work, you will also need a one line
+# description of your script's purpose in a comment directly above the
+# '# Written by ' line, like the one at the top of this file.
+#
+# The default options also support '--debug', which will turn on shell
+# execution tracing (see the comment above debug_cmd below for another
+# use), and '--verbose' and the func_verbose function to allow your script
+# to display verbose messages only when your user has specified
+# '--verbose'.
+#
+# After sourcing this file, you can plug in processing for additional
+# options by amending the variables from the 'Configuration' section
+# below, and following the instructions in the 'Option parsing'
+# section further down.
+
+## -------------- ##
+## Configuration. ##
+## -------------- ##
+
+# You should override these variables in your script after sourcing this
+# file so that they reflect the customisations you have added to the
+# option parser.
+
+# The usage line for option parsing errors and the start of '-h' and
+# '--help' output messages. You can embed shell variables for delayed
+# expansion at the time the message is displayed, but you will need to
+# quote other shell meta-characters carefully to prevent them being
+# expanded when the contents are evaled.
+usage='$progpath [OPTION]...'
+
+# Short help message in response to '-h' and '--help'.  Add to this or
+# override it after sourcing this library to reflect the full set of
+# options your script accepts.
+usage_message="\
+       --debug        enable verbose shell tracing
+   -W, --warnings=CATEGORY
+                      report the warnings falling in CATEGORY [all]
+   -v, --verbose      verbosely report processing
+       --version      print version information and exit
+   -h, --help         print short or long help message and exit
+"
+
+# Additional text appended to 'usage_message' in response to '--help'.
+long_help_message="
+Warning categories include:
+       'all'          show all warnings
+       'none'         turn off all the warnings
+       'error'        warnings are treated as fatal errors"
+
+# Help message printed before fatal option parsing errors.
+fatal_help="Try '\$progname --help' for more information."
+
+
+
+## ------------------------- ##
+## Hook function management. ##
+## ------------------------- ##
+
+# This section contains functions for adding, removing, and running hooks
+# in the main code.  A hook is just a list of function names that can be
+# run in order later on.
+
+# func_hookable FUNC_NAME
+# -----------------------
+# Declare that FUNC_NAME will run hooks added with
+# 'func_add_hook FUNC_NAME ...'.
+func_hookable ()
+{
+    $debug_cmd
+
+    func_append hookable_fns " $1"
+}
+
+
+# func_add_hook FUNC_NAME HOOK_FUNC
+# ---------------------------------
+# Request that FUNC_NAME call HOOK_FUNC before it returns.  FUNC_NAME must
+# first have been declared "hookable" by a call to 'func_hookable'.
+func_add_hook ()
+{
+    $debug_cmd
+
+    case " $hookable_fns " in
+      *" $1 "*) ;;
+      *) func_fatal_error "'$1' does not accept hook functions." ;;
+    esac
+
+    eval func_append ${1}_hooks '" $2"'
+}
+
+
+# func_remove_hook FUNC_NAME HOOK_FUNC
+# ------------------------------------
+# Remove HOOK_FUNC from the list of hook functions to be called by
+# FUNC_NAME.
+func_remove_hook ()
+{
+    $debug_cmd
+
+    eval ${1}_hooks='`$ECHO "\$'$1'_hooks" |$SED "s| '$2'||"`'
+}
+
+
+# func_propagate_result FUNC_NAME_A FUNC_NAME_B
+# ---------------------------------------------
+# If the *_result variable of FUNC_NAME_A _is set_, assign its value to
+# *_result variable of FUNC_NAME_B.
+func_propagate_result ()
+{
+    $debug_cmd
+
+    func_propagate_result_result=:
+    if eval "test \"\${${1}_result+set}\" = set"
+    then
+      eval "${2}_result=\$${1}_result"
+    else
+      func_propagate_result_result=false
+    fi
+}
+
+
+# func_run_hooks FUNC_NAME [ARG]...
+# ---------------------------------
+# Run all hook functions registered to FUNC_NAME.
+# It's assumed that the list of hook functions contains nothing more
+# than a whitespace-delimited list of legal shell function names, and
+# no effort is wasted trying to catch shell meta-characters or preserve
+# whitespace.
+func_run_hooks ()
+{
+    $debug_cmd
+
+    case " $hookable_fns " in
+      *" $1 "*) ;;
+      *) func_fatal_error "'$1' does not support hook functions." ;;
+    esac
+
+    eval _G_hook_fns=\$$1_hooks; shift
+
+    for _G_hook in $_G_hook_fns; do
+      func_unset "${_G_hook}_result"
+      eval $_G_hook '${1+"$@"}'
+      func_propagate_result $_G_hook func_run_hooks
+      if $func_propagate_result_result; then
+        eval set dummy "$func_run_hooks_result"; shift
+      fi
+    done
+}
+
+
+
+## --------------- ##
+## Option parsing. ##
+## --------------- ##
+
+# In order to add your own option parsing hooks, you must accept the
+# full positional parameter list from your hook function.  You may remove
+# or edit any options that you action, and then pass back the remaining
+# unprocessed options in '<hooked_function_name>_result', escaped
+# suitably for 'eval'.
+#
+# The '<hooked_function_name>_result' variable is automatically unset
+# before your hook gets called; for best performance, only set the
+# *_result variable when necessary (i.e. don't call the 'func_quote'
+# function unnecessarily because it can be an expensive operation on some
+# machines).
+#
+# Like this:
+#
+#    my_options_prep ()
+#    {
+#        $debug_cmd
+#
+#        # Extend the existing usage message.
+#        usage_message=$usage_message'
+#      -s, --silent       don'\''t print informational messages
+#    '
+#        # No change in '$@' (ignored completely by this hook).  Leave
+#        # my_options_prep_result variable intact.
+#    }
+#    func_add_hook func_options_prep my_options_prep
+#
+#
+#    my_silent_option ()
+#    {
+#        $debug_cmd
+#
+#        args_changed=false
+#
+#        # Note that, for efficiency, we parse as many options as we can
+#        # recognise in a loop before passing the remainder back to the
+#        # caller on the first unrecognised argument we encounter.
+#        while test $# -gt 0; do
+#          opt=$1; shift
+#          case $opt in
+#            --silent|-s) opt_silent=:
+#                         args_changed=:
+#                         ;;
+#            # Separate non-argument short options:
+#            -s*)         func_split_short_opt "$_G_opt"
+#                         set dummy "$func_split_short_opt_name" \
+#                             "-$func_split_short_opt_arg" ${1+"$@"}
+#                         shift
+#                         args_changed=:
+#                         ;;
+#            *)           # Make sure the first unrecognised option "$_G_opt"
+#                         # is added back to "$@" in case we need it later,
+#                         # if $args_changed was set to 'true'.
+#                         set dummy "$_G_opt" ${1+"$@"}; shift; break ;;
+#          esac
+#        done
+#
+#        # Only call 'func_quote' here if we processed at least one argument.
+#        if $args_changed; then
+#          func_quote eval ${1+"$@"}
+#          my_silent_option_result=$func_quote_result
+#        fi
+#    }
+#    func_add_hook func_parse_options my_silent_option
+#
+#
+#    my_option_validation ()
+#    {
+#        $debug_cmd
+#
+#        $opt_silent && $opt_verbose && func_fatal_help "\
+#    '--silent' and '--verbose' options are mutually exclusive."
+#    }
+#    func_add_hook func_validate_options my_option_validation
+#
+# You'll also need to manually amend $usage_message to reflect the extra
+# options you parse.  It's preferable to append if you can, so that
+# multiple option parsing hooks can be added safely.
+
+
+# func_options_finish [ARG]...
+# ----------------------------
+# Finishing the option parse loop (call 'func_options' hooks ATM).
+func_options_finish ()
+{
+    $debug_cmd
+
+    func_run_hooks func_options ${1+"$@"}
+    func_propagate_result func_run_hooks func_options_finish
+}
+
+
+# func_options [ARG]...
+# ---------------------
+# All the functions called inside func_options are hookable. See the
+# individual implementations for details.
+func_hookable func_options
+func_options ()
+{
+    $debug_cmd
+
+    _G_options_quoted=false
+
+    for my_func in options_prep parse_options validate_options options_finish
+    do
+      func_unset func_${my_func}_result
+      func_unset func_run_hooks_result
+      eval func_$my_func '${1+"$@"}'
+      func_propagate_result func_$my_func func_options
+      if $func_propagate_result_result; then
+        eval set dummy "$func_options_result"; shift
+        _G_options_quoted=:
+      fi
+    done
+
+    $_G_options_quoted || {
+      # As we (func_options) are top-level options-parser function and
+      # nobody quoted "$@" for us yet, we need to do it explicitly for
+      # caller.
+      func_quote eval ${1+"$@"}
+      func_options_result=$func_quote_result
+    }
+}
+
+
+# func_options_prep [ARG]...
+# --------------------------
+# All initialisations required before starting the option parse loop.
+# Note that when calling hook functions, we pass through the list of
+# positional parameters.  If a hook function modifies that list, and
+# needs to propagate that back to rest of this script, then the complete
+# modified list must be put in 'func_run_hooks_result' before returning.
+func_hookable func_options_prep
+func_options_prep ()
+{
+    $debug_cmd
+
+    # Option defaults:
+    opt_verbose=false
+    opt_warning_types=
+
+    func_run_hooks func_options_prep ${1+"$@"}
+    func_propagate_result func_run_hooks func_options_prep
+}
+
+
+# func_parse_options [ARG]...
+# ---------------------------
+# The main option parsing loop.
+func_hookable func_parse_options
+func_parse_options ()
+{
+    $debug_cmd
+
+    _G_parse_options_requote=false
+    # this just eases exit handling
+    while test $# -gt 0; do
+      # Defer to hook functions for initial option parsing, so they
+      # get priority in the event of reusing an option name.
+      func_run_hooks func_parse_options ${1+"$@"}
+      func_propagate_result func_run_hooks func_parse_options
+      if $func_propagate_result_result; then
+        eval set dummy "$func_parse_options_result"; shift
+        # Even though we may have changed "$@", we passed the "$@" array
+        # down into the hook and it quoted it for us (because we are in
+        # this if-branch).  No need to quote it again.
+        _G_parse_options_requote=false
+      fi
+
+      # Break out of the loop if we already parsed every option.
+      test $# -gt 0 || break
+
+      # We expect that one of the options parsed in this function matches
+      # and thus we remove _G_opt from "$@" and need to re-quote.
+      _G_match_parse_options=:
+      _G_opt=$1
+      shift
+      case $_G_opt in
+        --debug|-x)   debug_cmd='set -x'
+                      func_echo "enabling shell trace mode" >&2
+                      $debug_cmd
+                      ;;
+
+        --no-warnings|--no-warning|--no-warn)
+                      set dummy --warnings none ${1+"$@"}
+                      shift
+		      ;;
+
+        --warnings|--warning|-W)
+                      if test $# = 0 && func_missing_arg $_G_opt; then
+                        _G_parse_options_requote=:
+                        break
+                      fi
+                      case " $warning_categories $1" in
+                        *" $1 "*)
+                          # trailing space prevents matching last $1 above
+                          func_append_uniq opt_warning_types " $1"
+                          ;;
+                        *all)
+                          opt_warning_types=$warning_categories
+                          ;;
+                        *none)
+                          opt_warning_types=none
+                          warning_func=:
+                          ;;
+                        *error)
+                          opt_warning_types=$warning_categories
+                          warning_func=func_fatal_error
+                          ;;
+                        *)
+                          func_fatal_error \
+                             "unsupported warning category: '$1'"
+                          ;;
+                      esac
+                      shift
+                      ;;
+
+        --verbose|-v) opt_verbose=: ;;
+        --version)    func_version ;;
+        -\?|-h)       func_usage ;;
+        --help)       func_help ;;
+
+	# Separate optargs to long options (plugins may need this):
+	--*=*)        func_split_equals "$_G_opt"
+	              set dummy "$func_split_equals_lhs" \
+                          "$func_split_equals_rhs" ${1+"$@"}
+                      shift
+                      ;;
+
+       # Separate optargs to short options:
+        -W*)
+                      func_split_short_opt "$_G_opt"
+                      set dummy "$func_split_short_opt_name" \
+                          "$func_split_short_opt_arg" ${1+"$@"}
+                      shift
+                      ;;
+
+        # Separate non-argument short options:
+        -\?*|-h*|-v*|-x*)
+                      func_split_short_opt "$_G_opt"
+                      set dummy "$func_split_short_opt_name" \
+                          "-$func_split_short_opt_arg" ${1+"$@"}
+                      shift
+                      ;;
+
+        --)           _G_parse_options_requote=: ; break ;;
+        -*)           func_fatal_help "unrecognised option: '$_G_opt'" ;;
+        *)            set dummy "$_G_opt" ${1+"$@"}; shift
+                      _G_match_parse_options=false
+                      break
+                      ;;
+      esac
+
+      if $_G_match_parse_options; then
+        _G_parse_options_requote=:
+      fi
+    done
+
+    if $_G_parse_options_requote; then
+      # save modified positional parameters for caller
+      func_quote eval ${1+"$@"}
+      func_parse_options_result=$func_quote_result
+    fi
+}
+
+
+# func_validate_options [ARG]...
+# ------------------------------
+# Perform any sanity checks on option settings and/or unconsumed
+# arguments.
+func_hookable func_validate_options
+func_validate_options ()
+{
+    $debug_cmd
+
+    # Display all warnings if -W was not given.
+    test -n "$opt_warning_types" || opt_warning_types=" $warning_categories"
+
+    func_run_hooks func_validate_options ${1+"$@"}
+    func_propagate_result func_run_hooks func_validate_options
+
+    # Bail if the options were screwed!
+    $exit_cmd $EXIT_FAILURE
+}
+
+
+
+## ----------------- ##
+## Helper functions. ##
+## ----------------- ##
+
+# This section contains the helper functions used by the rest of the
+# hookable option parser framework in ascii-betical order.
+
+
+# func_fatal_help ARG...
+# ----------------------
+# Echo program name prefixed message to standard error, followed by
+# a help hint, and exit.
+func_fatal_help ()
+{
+    $debug_cmd
+
+    eval \$ECHO \""Usage: $usage"\"
+    eval \$ECHO \""$fatal_help"\"
+    func_error ${1+"$@"}
+    exit $EXIT_FAILURE
+}
+
+
+# func_help
+# ---------
+# Echo long help message to standard output and exit.
+func_help ()
+{
+    $debug_cmd
+
+    func_usage_message
+    $ECHO "$long_help_message"
+    exit 0
+}
+
+
+# func_missing_arg ARGNAME
+# ------------------------
+# Echo program name prefixed message to standard error and set global
+# exit_cmd.
+func_missing_arg ()
+{
+    $debug_cmd
+
+    func_error "Missing argument for '$1'."
+    exit_cmd=exit
+}
+
+
+# func_split_equals STRING
+# ------------------------
+# Set func_split_equals_lhs and func_split_equals_rhs shell variables
+# after splitting STRING at the '=' sign.
+test -z "$_G_HAVE_XSI_OPS" \
+    && (eval 'x=a/b/c;
+      test 5aa/bb/cc = "${#x}${x%%/*}${x%/*}${x#*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: pcre2-10.43.tar.bz2::pcre2-10.43/ltmain.sh
+
+# func_version
+# ------------
+# Echo version message to standard output and exit.
+# The version message is extracted from the calling file's header
+# comments, with leading '# ' stripped:
+#   1. First display the progname and version
+#   2. Followed by the header comment line matching  /^# Written by /
+#   3. Then a blank line followed by the first following line matching
+#      /^# Copyright /
+#   4. Immediately followed by any lines between the previous matches,
+#      except lines preceding the intervening completely blank line.
+# For example, see the header comments of this file.
+===== END UPSTREAM NOTICE =====

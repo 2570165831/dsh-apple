@@ -1,0 +1,186 @@
+{
+  "source_version": "0.2.1-rc.2",
+  "target_version": "0.2.1-rc.5",
+  "rc2_comparison": {
+    "clean_files": 63625,
+    "tracked_files": 27605,
+    "changed_files": 14,
+    "added_files": 0,
+    "omitted_files": 36020,
+    "same_original_package_json_and_lockfile": true,
+    "exact_reconstruction_of_all_content_patches": true
+  },
+  "pruning": {
+    "omitted_package_roots": 14,
+    "path_rules": 239,
+    "suffix_rules": [
+      ".d.ts",
+      ".d.cts",
+      ".d.mts",
+      ".map"
+    ],
+    "exact_match_with_rc2_omissions": true
+  },
+  "patches": [
+    {
+      "file": "@deepseek-ai/dsh-api-session-controller/lib/typert.host.js",
+      "patch": "P-11 (HEIC)",
+      "action": "reapply",
+      "upstream_content_changed": false,
+      "clean_rc2_sha256": "0c12316ed398710bcd87520f2332ebb647f0ab5f71cdfe04551c0592b48b2c3c",
+      "patched_rc2_sha256": "54c915119585c26c8cebd282a8e477940a7ab29653fcdfab3bbd6c33c43352d1",
+      "clean_rc5_sha256": "0c12316ed398710bcd87520f2332ebb647f0ab5f71cdfe04551c0592b48b2c3c",
+      "patched_rc5_sha256": "54c915119585c26c8cebd282a8e477940a7ab29653fcdfab3bbd6c33c43352d1"
+    },
+    {
+      "file": "@deepseek-ai/dsh-api-session-controller/lib/typert.remote-client.js",
+      "patch": "P-11 (HEIC)",
+      "action": "reapply",
+      "upstream_content_changed": false,
+      "clean_rc2_sha256": "f8760911d70173fc2e845b74747bda43f9d9e1d09789d78a00522decf853bb5b",
+      "patched_rc2_sha256": "46779613125d9f44c7c6f3a9abf28b95f77b79f1b59faa1bc9c010140190cc4d",
+      "clean_rc5_sha256": "f8760911d70173fc2e845b74747bda43f9d9e1d09789d78a00522decf853bb5b",
+      "patched_rc5_sha256": "46779613125d9f44c7c6f3a9abf28b95f77b79f1b59faa1bc9c010140190cc4d"
+    },
+    {
+      "file": "@deepseek-ai/dsh-app-boot/lib/index.js",
+      "patch": "P-1",
+      "action": "reapply",
+      "upstream_content_changed": false,
+      "clean_rc2_sha256": "5135179ac810e4f626f32ec3bdc3293dc7d2028e8aa92e5e0c006f1a33b78e76",
+      "patched_rc2_sha256": "67516df2558874f4d93d06ecd792f86538d7a0b0c15f479ddb27828150db3b9e",
+      "clean_rc5_sha256": "5135179ac810e4f626f32ec3bdc3293dc7d2028e8aa92e5e0c006f1a33b78e76",
+      "patched_rc5_sha256": "67516df2558874f4d93d06ecd792f86538d7a0b0c15f479ddb27828150db3b9e"
+    },
+    {
+      "file": "@deepseek-ai/dsh-client-ui-conversation/lib/client.js",
+      "patch": "P-11 (HEIC)",
+      "action": "reapply",
+      "upstream_content_changed": true,
+      "clean_rc2_sha256": "8554738cbeeb5218ad1bfa4773ef094363b066d052a1893d7a96797c5bc33a63",
+      "patched_rc2_sha256": "f1fdbf06563cc8072767debdb13c045a8d14d22a5b76e8281fd2127aaa0d8800",
+      "clean_rc5_sha256": "cfbd9fd95b0509f7c93a22a62a67ebc10481c8eda611704ea50c2e195b9a5a69",
+      "patched_rc5_sha256": "57fd0872e1cea92a4d5ff58a9870275f6e5f5a4f357b9aa9f572af25888501aa"
+    },
+    {
+      "file": "@deepseek-ai/dsh-commands/lib/typert.host.js",
+      "patch": "P-11 (HEIC)",
+      "action": "reapply",
+      "upstream_content_changed": false,
+      "clean_rc2_sha256": "c8359570bb029548e574fa398eb9caad00b80da29f92987cafb1de075c0e10ac",
+      "patched_rc2_sha256": "0912b801f0ffb1e8b0de90d6c789177cd8539a4405f97a7561c3a17865d3f1cc",
+      "clean_rc5_sha256": "c8359570bb029548e574fa398eb9caad00b80da29f92987cafb1de075c0e10ac",
+      "patched_rc5_sha256": "0912b801f0ffb1e8b0de90d6c789177cd8539a4405f97a7561c3a17865d3f1cc"
+    },
+    {
+      "file": "@deepseek-ai/dsh-commands/lib/typert.remote-client.js",
+      "patch": "P-11 (HEIC)",
+      "action": "reapply",
+      "upstream_content_changed": false,
+      "clean_rc2_sha256": "f317056b4e54dcaea1f20f125bb091a60dbf2fb5aa46274bda0d646473d810d6",
+      "patched_rc2_sha256": "c532ff9be77a7c829b9308b80c54e81202f145fa6ddf5bb1b4a050aa0c75798c",
+      "clean_rc5_sha256": "f317056b4e54dcaea1f20f125bb091a60dbf2fb5aa46274bda0d646473d810d6",
+      "patched_rc5_sha256": "c532ff9be77a7c829b9308b80c54e81202f145fa6ddf5bb1b4a050aa0c75798c"
+    },
+    {
+      "file": "@deepseek-ai/dsh-llm-deepseek/lib/index.js",
+      "patch": "P-4",
+      "action": "reapply",
+      "upstream_content_changed": true,
+      "clean_rc2_sha256": "eba35025ed1eedda89c51f2da46a3a968f7be1d59719f2ceeadfc4518dff37d6",
+      "patched_rc2_sha256": "3e7eeea5110ff63c49adbe139436518bfea3c90a86c90e8a74f7070e0312e85c",
+      "clean_rc5_sha256": "21fedb71f8d9aafea73b35ee13bc73737a8271d7ffa261697d4208e8563196cb",
+      "patched_rc5_sha256": "48d1b052a51124d862003f0d5332f5538f8a9a091e3b842378003b0d94b1d519"
+    },
+    {
+      "file": "@deepseek-ai/dsh-subagent/lib/typert.host.js",
+      "patch": "P-11 (HEIC)",
+      "action": "reapply",
+      "upstream_content_changed": false,
+      "clean_rc2_sha256": "58e34812ae72879e792ab3df02bc934a1b493a81f753a707e20704ae7f03fb45",
+      "patched_rc2_sha256": "4a9f73058e7f0fe947623d9dfe629636c1566b34cc62725974495d316ceb63a1",
+      "clean_rc5_sha256": "58e34812ae72879e792ab3df02bc934a1b493a81f753a707e20704ae7f03fb45",
+      "patched_rc5_sha256": "4a9f73058e7f0fe947623d9dfe629636c1566b34cc62725974495d316ceb63a1"
+    },
+    {
+      "file": "@deepseek-ai/dsh-subagent/lib/typert.remote-client.js",
+      "patch": "P-11 (HEIC)",
+      "action": "reapply",
+      "upstream_content_changed": false,
+      "clean_rc2_sha256": "e26365131d73ce6459c57cf883a8f2e082d0009bc431e105431fe55c6c461a06",
+      "patched_rc2_sha256": "1dfd07346de91e017f68d15f5b6e0ab7ad749ccddfdb3e9443706138f1b68cb8",
+      "clean_rc5_sha256": "e26365131d73ce6459c57cf883a8f2e082d0009bc431e105431fe55c6c461a06",
+      "patched_rc5_sha256": "1dfd07346de91e017f68d15f5b6e0ab7ad749ccddfdb3e9443706138f1b68cb8"
+    },
+    {
+      "file": "@deepseek-ai/dsh-timeout/lib/index.js",
+      "patch": "P-28",
+      "action": "reapply",
+      "upstream_content_changed": false,
+      "clean_rc2_sha256": "f9a79fd5194bb4d6321e6d2d5b5eb72f99c683452e1defbb75fad52f76aed667",
+      "patched_rc2_sha256": "71684ea8ceaaf8b2ce237f380016496fd0b8ebbe2884866c28562643cf93622f",
+      "clean_rc5_sha256": "f9a79fd5194bb4d6321e6d2d5b5eb72f99c683452e1defbb75fad52f76aed667",
+      "patched_rc5_sha256": "71684ea8ceaaf8b2ce237f380016496fd0b8ebbe2884866c28562643cf93622f"
+    },
+    {
+      "file": "@deepseek-ai/dsh-tool-fs/lib/index.js",
+      "patch": "P-11 (HEIC)",
+      "action": "reapply",
+      "upstream_content_changed": false,
+      "clean_rc2_sha256": "b11d3fa50b9042019a91cc38a6abe35d74ed651374278f95e60b42734e079df1",
+      "patched_rc2_sha256": "b301e3251e218157c5f7febb924c77a66dea43dfdb906693996699f092508e37",
+      "clean_rc5_sha256": "b11d3fa50b9042019a91cc38a6abe35d74ed651374278f95e60b42734e079df1",
+      "patched_rc5_sha256": "b301e3251e218157c5f7febb924c77a66dea43dfdb906693996699f092508e37"
+    },
+    {
+      "file": "@deepseek-ai/dsh-tools/lib/index.js",
+      "patch": "P-4",
+      "action": "reapply",
+      "upstream_content_changed": false,
+      "clean_rc2_sha256": "1e53932e7c4213ea24a7d87f06960b7a7702cb21f8a5741c97242b4a470a442a",
+      "patched_rc2_sha256": "ee0158d4a6e3775923da340d5b653852c6d3e79b4b33e70adbd75b571cad4d3c",
+      "clean_rc5_sha256": "1e53932e7c4213ea24a7d87f06960b7a7702cb21f8a5741c97242b4a470a442a",
+      "patched_rc5_sha256": "ee0158d4a6e3775923da340d5b653852c6d3e79b4b33e70adbd75b571cad4d3c"
+    },
+    {
+      "file": "@deepseek-ai/dsh-tools/lib/types/py-types.js",
+      "patch": "P-4",
+      "action": "reapply",
+      "upstream_content_changed": false,
+      "clean_rc2_sha256": "37fe51ab4acc0a8cb971dc7825173e036e9cc1dd26c57f8541bfd1c77d77ec7e",
+      "patched_rc2_sha256": "760d2e2d58ce03e075249791af43e8479e9b8fcd31dba9a86cb83ed62b79f2f2",
+      "clean_rc5_sha256": "37fe51ab4acc0a8cb971dc7825173e036e9cc1dd26c57f8541bfd1c77d77ec7e",
+      "patched_rc5_sha256": "760d2e2d58ce03e075249791af43e8479e9b8fcd31dba9a86cb83ed62b79f2f2"
+    },
+    {
+      "file": "@js-temporal/polyfill/dist/index.esm.js",
+      "patch": "P-4",
+      "action": "reapply",
+      "upstream_content_changed": false,
+      "clean_rc2_sha256": "21f067c54fa5f532f20a8e85e3d2401a3ae1cf60d85fafea6502f621dc93b167",
+      "patched_rc2_sha256": "ce15fd587c744ffec52247efc0283a148c4e3a98e4c29c448a2f1901c85a8b48",
+      "clean_rc5_sha256": "21f067c54fa5f532f20a8e85e3d2401a3ae1cf60d85fafea6502f621dc93b167",
+      "patched_rc5_sha256": "ce15fd587c744ffec52247efc0283a148c4e3a98e4c29c448a2f1901c85a8b48"
+    },
+    {
+      "file": "@earendil-works/pi-schema/dist/formats/typebox/idn_email.js",
+      "patch": "P-4",
+      "action": "extend for new dependency",
+      "clean_rc5_sha256": "d37ec954d7fbeac7ecbe79ab182491af10a4bcc84507d23e1fb341094bd4ff90",
+      "patched_rc5_sha256": "8a61d4a7acaaf43acd7c3170d6c5258c3e677fb3b4ba70734b595cf063070c65"
+    },
+    {
+      "file": "@earendil-works/pi-schema/dist/formats/typebox/idna/pattern/pattern.js",
+      "patch": "P-4",
+      "action": "extend for new dependency",
+      "clean_rc5_sha256": "80c913857d485b70ccc495b845ec8b6014b19f4f2a6e9f3d55f2f63dd47bf732",
+      "patched_rc5_sha256": "f3f7b96067d1721ce6bc7d4271b7a09837f1382b3739b98c371863dd98207ad5"
+    }
+  ],
+  "documentation_corrections": [
+    "P-2 and P-3 are upstream code already present in clean rc.2; no local patch to retire.",
+    "HEIC output verification must inspect result schemas, not grep all input and output enums together.",
+    "The private repository tracks node_modules; public export fetch script and payload.patch are absent.",
+    "iOS pruning was not registered as a reproducible policy."
+  ]
+}

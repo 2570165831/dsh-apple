@@ -12,8 +12,8 @@
 //  has to survive is Node's. But three of the four facts it needs are facts only
 //  this process has:
 //
-//    * whether the WEB VIEW finished, which is `WKWebView.didFinish` and is not
-//      visible from inside Node at all;
+//    * whether the DSH client mounted an interface in the web view, which is
+//      not visible from inside Node at all;
 //    * whether the app went to the background before it ended, which is
 //      `scenePhase` and is the only way to tell "the user swiped it away" from
 //      "it died";
@@ -26,9 +26,9 @@
 //
 //  THE WATCHDOG'S THRESHOLD
 //  ------------------------
-//  60 seconds. Step 21 measured this device's cold starts at 4.57 / 4.74 / 5.72 s
-//  (median 4.74), so 60 s is more than ten times the observed worst case — a slow
-//  machine or a one-off cold-cache launch is not mistaken for a broken one. It
+//  60 seconds. Step 21's 4.57 / 4.74 / 5.72 s measured document completion,
+//  not client readiness. The timeout now covers plugin loading and mounting too;
+//  those older timings cannot validate the new readiness threshold. It
 //  also has to be shorter than a person's patience, because the point of the
 //  timeout is to turn "nothing is happening" into a screen with a reason and two
 //  buttons on it.
@@ -210,6 +210,9 @@ enum BootGuard {
 
     // MARK: - The background marker
 
+    private static let backgroundLock = NSLock()
+    private static var pendingBackground = false
+
     /// Record that this launch went to the background.
     ///
     /// This is what makes "the user swiped the app away" NOT a failure. The next
@@ -221,10 +224,46 @@ enum BootGuard {
     /// one line, the write is atomic, and the last transition before the process
     /// dies is the one that matters.
     static func noteEnteredBackground() {
+        backgroundLock.lock()
+        defer { backgroundLock.unlock() }
+        guard RuntimePaths.resetFinished else {
+            pendingBackground = true
+            return
+        }
+        writeBackgroundMarker()
+    }
+
+    /// Replay an early background transition at the final runtime path.
+    static func flushBackgroundMarker() {
+        backgroundLock.lock()
+        defer { backgroundLock.unlock() }
+        guard RuntimePaths.resetFinished, pendingBackground else { return }
+        pendingBackground = false
+        writeBackgroundMarker()
+    }
+
+    /// Caller holds backgroundLock.
+    private static func writeBackgroundMarker() {
         do {
             try (launchId + "\n").write(to: RuntimePaths.bootBackgroundFile, atomically: true, encoding: .utf8)
         } catch {
             NSLog("dshportc: could not write boot-background.txt: %@", "\(error)")
+        }
+    }
+
+    /// The first active transition must preserve the previous launch's evidence.
+    static func noteBecameActive() {
+        backgroundLock.lock()
+        defer { backgroundLock.unlock() }
+        pendingBackground = false
+        guard RuntimePaths.resetFinished else { return }
+        let file = RuntimePaths.bootBackgroundFile
+        guard let marker = try? String(contentsOf: file, encoding: .utf8),
+              marker.trimmingCharacters(in: .whitespacesAndNewlines) == launchId else { return }
+        do {
+            try FileManager.default.removeItem(at: file)
+        } catch {
+            NSLog("dshportc: could not clear boot-background.txt: %@", "\(error)")
         }
     }
 

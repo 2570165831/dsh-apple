@@ -1,0 +1,297 @@
+diff --git a/kernel/memory.c b/kernel/memory.c
+--- a/kernel/memory.c
++++ b/kernel/memory.c
+@@ -1043,7 +1043,7 @@
+ // Used by the emulator to avoid deadlocks.
+ static void *mem_ptr_nofault(struct mem *mem, addr_t addr, int type) {
+     struct pt_entry *entry = mem_pt(mem, PAGE(addr));
+-    if (entry == NULL)
++    if (entry == NULL || !(entry->flags & P_RWX))
+         return NULL;
+     if (type == MEM_WRITE && !P_WRITABLE(entry->flags))
+         return NULL;
+@@ -1226,7 +1226,7 @@
+ 
+ check_reservation: ;
+         struct mem_reservation *res = mem_find_reservation(mem, page);
+-        if (res == NULL)
++        if (res == NULL || !(res->flags & P_RWX))
+             return NULL;
+         read_wrunlock(&mem->lock);
+ #ifndef NDEBUG
+@@ -1239,7 +1239,8 @@
+         // acquire spins instead of blocking.
+         write_wrlock(&mem->lock);
+         entry = mem_pt(mem, page);
+-        if (entry == NULL) {
++        res = mem_find_reservation(mem, page);
++        if (entry == NULL && res != NULL && (res->flags & P_RWX)) {
+             // [T-ish-anon-cap-dynamic] This lazy commit-on-fault is the path
+             // large NORESERVE reservations actually materialize through, one
+             // page per TLB miss — during the 2026-08-25 jsonnet compile it
+@@ -1300,6 +1301,9 @@
+     }
+ 
+ have_entry:
++    // Reject PROT_NONE before ptrace can change the flags or copy the page.
++    if (entry != NULL && !(entry->flags & P_RWX))
++        return NULL;
+     // Diagnostic write watchpoint: host-side write acquisitions (user_write,
+     // madvise zeroing, CoW) bypass the guest store gadgets — record them too.
+     if (type == MEM_WRITE || type == MEM_WRITE_PTRACE) {
+@@ -1361,7 +1365,7 @@
+             // Re-fetch entry after lock upgrade — another thread may have
+             // already resolved this CoW while we were waiting for the lock.
+             entry = mem_pt(mem, page);
+-            if (entry != NULL && (entry->flags & P_COW)) {
++            if (entry != NULL && (entry->flags & P_COW) && (entry->flags & P_RWX)) {
+                 void *data = (char *) entry->data->data + entry->offset;
+                 memcpy(copy, data, PAGE_SIZE);
+ #if ANON_MMAP_LIMIT_PAGES > 0
+ diff --git a/kernel/calls.c b/kernel/calls.c
+--- a/kernel/calls.c
++++ b/kernel/calls.c
+@@ -57,6 +57,15 @@
+ }
+ 
+ #ifdef GUEST_ARM64
++// Caller holds mem->lock. Recovery must leave PROT_NONE pages inaccessible.
++static bool gpf_demand_map_ok(struct mem *mem, page_t page, void *UNUSED(ctx)) {
++    struct pt_entry *entry = mem_pt(mem, page);
++    if (entry != NULL)
++        return (entry->flags & P_RWX) != 0;
++    struct mem_reservation *res = mem_find_reservation(mem, page);
++    return res == NULL || (res->flags & P_RWX);
++}
++
+ // [T-ish-precise-fault-pc] Deliver / resume a data fault at the faulting
+ // instruction instead of the start of its block, unless a recovery heuristic
+ // above already moved pc somewhere else.
+@@ -340,8 +349,13 @@
+ #endif
+         read_wrlock(&current->mem->lock);
+         void *ptr = mem_ptr(current->mem, cpu->segfault_addr, cpu->segfault_was_write ? MEM_WRITE : MEM_READ);
++#ifdef GUEST_ARM64
++        bool prot_none = !gpf_demand_map_ok(current->mem, PAGE(cpu->segfault_addr), NULL);
++#endif
+         read_wrunlock(&current->mem->lock);
+ #ifdef GUEST_ARM64
++        if (ptr == NULL && prot_none)
++            goto gpf_sigsegv;
+         // Demand-map unmapped pages near existing heap mappings. On native
+         // Linux, heap regions are contiguous so stray accesses land on
+         // adjacent allocations (no SIGSEGV). In iSH, mmap can leave
+@@ -473,15 +487,17 @@
+                 }
+                 if (has_neighbor) {
+                     write_wrlock(&current->mem->lock);
++                    if (!gpf_demand_map_ok(current->mem, fault_page, NULL)) {
++                        prot_none = true;
++                        write_wrunlock(&current->mem->lock);
++                        goto gpf_sigsegv;
++                    }
+                     struct pt_entry *existing = mem_pt(current->mem, fault_page);
+                     unsigned flags = cpu->segfault_was_write
+                         ? (P_READ | P_WRITE) : P_READ;
+                     if (existing == NULL) {
+-                        // [T-ish-cluster-commit] Commit the whole host page —
+-                        // V8 cage writes walk forward through a region, so the
+-                        // neighbours are about to fault too. No same_flags
+-                        // predicate: this path is not reservation-scoped, and
+-                        // the helper already refuses mapped neighbours.
++                        // [T-ish-cluster-commit] Commit the whole host page
++                        // when possible, without pulling in PROT_NONE neighbours.
+                         // Accounting: pt_unmap decrements for EVERY
+                         // P_ANONYMOUS page, so anything mapped here must be
+                         // charged or the counter drifts negative on teardown.
+@@ -492,7 +508,7 @@
+                         // crash, and it is bounded by the neighbour check.
+                         pages_t got = 0;
+                         int err = pt_map_cluster(current->mem, fault_page, flags,
+-                                                 NULL, NULL, &got);
++                                                 gpf_demand_map_ok, NULL, &got);
+ #if ANON_MMAP_LIMIT_PAGES > 0
+                         if (err >= 0 && got > 0)
+                             atomic_fetch_add(&anon_page_count, (long)got);
+@@ -1097,6 +1113,9 @@
+             }
+ #endif
+ 
++#ifdef GUEST_ARM64
++            gpf_sigsegv:;
++#endif
+             struct siginfo_ info = {
+                 .code = mem_segv_reason(current->mem, cpu->segfault_addr),
+                 .fault.addr = cpu->segfault_addr,
+@@ -1106,6 +1125,8 @@
+                 dump_maps();
+             }
+ #ifdef GUEST_ARM64
++            if (prot_none)
++                info.code = SEGV_ACCERR_;
+             gpf_use_precise_pc(cpu);
+ #endif
+             deliver_signal(current, SIGSEGV_, info);
+diff --git a/tests/regress/run.sh b/tests/regress/run.sh
+--- a/tests/regress/run.sh
++++ b/tests/regress/run.sh
+@@ -109,6 +109,17 @@
+     "$ISH" "$MOUNT_FLAG" "$ROOTFS" /tmp/regress_syscall ${FAKEFS_PATH:+"$FAKEFS_PATH"} || status=1
+ 
+     echo
++    echo "########## PROT_NONE copies and faults ##########"
++    if "$CC_GUEST" -static -O0 -Wall -o "$GUEST_ROOT/tmp/regress_prot_none" \
++            tests/regress/regress_prot_none.c; then
++        "$ISH" "$MOUNT_FLAG" "$ROOTFS" /tmp/regress_prot_none || status=1
++        rm -f "$GUEST_ROOT/tmp/regress_prot_none"
++    else
++        echo "failed to build regress_prot_none" >&2
++        status=1
++    fi
++
++    echo
+     echo "########## FMOV immediate decode ##########"
+     if "$CC_GUEST" -static -O0 -Wall -o "$GUEST_ROOT/tmp/regress_fmov_imm" \
+             tests/regress/regress_fmov_imm.c tests/regress/regress_fmov_imm.S; then
+diff --git a/tests/regress/README.md b/tests/regress/README.md
+--- a/tests/regress/README.md
++++ b/tests/regress/README.md
+@@ -5,6 +5,7 @@
+ 
+ | Fix | What broke before it | Covered by |
+ | --- | --- | --- |
++| P2:ISH-019 `PROT_NONE` | `write`/`writev` and `/proc/self/mem` copies accepted host `PROT_NONE` pointers and could crash the app. Rejecting an uncommitted reservation must also bypass GPF recovery so direct reads and writes still raise `SIGSEGV`, including beside a mapped page. | `regress_prot_none.c` |
+ | #30 `O_DIRECTORY` flag value | `O_DIRECTORY_` carried the x86 value `1<<16` instead of aarch64's `0x4000`, so the `ENOTDIR` check never fired and `O_DIRECT` (`1<<16` on arm64) was misread as `O_DIRECTORY`. GNU `cp` over an existing file failed with `cannot create regular file '<dst>/<src>': Not a directory`. | `regress_syscall.c`, `regress_cp.sh` |
+ | #30 `O_NOFOLLOW` | Translated to the host `open()`, but `generic_openat()` resolves the last path component first, so the flag was a no-op and `open(symlink, O_NOFOLLOW)` returned an fd to the target. | `regress_syscall.c` |
+ | #31 fakefs `stat`/`fstat` | The hook-routed branch of `fakefs_stat()` never set `dev` (nor `nlink`/`blksize`), so `stat()` and `fstat()` disagreed on `st_dev` for one file. GNU `cp` reads that as `skipping file '...', as it was replaced while being copied`. | `regress_syscall.c`, `regress_cp.sh` |
+diff --git a/tests/regress/regress_prot_none.c b/tests/regress/regress_prot_none.c
+new file mode 100644
+--- /dev/null
++++ b/tests/regress/regress_prot_none.c
+@@ -0,0 +1,103 @@
++// PROT_NONE copies must fail without crashing the host.
++// Direct accesses, including lazy reservations, must raise SIGSEGV.
++// Build: aarch64-linux-musl-gcc -static -O0 -o regress_prot_none regress_prot_none.c
++#define _GNU_SOURCE
++#include <assert.h>
++#include <errno.h>
++#include <fcntl.h>
++#include <setjmp.h>
++#include <signal.h>
++#include <stdint.h>
++#include <stdio.h>
++#include <sys/mman.h>
++#include <sys/uio.h>
++#include <unistd.h>
++
++static sigjmp_buf fault_env;
++static volatile sig_atomic_t expecting_fault;
++static volatile sig_atomic_t fault_code;
++
++static void on_segv(int sig, siginfo_t *info, void *context) {
++    (void) context;
++    if (!expecting_fault)
++        _exit(128 + sig);
++    expecting_fault = 0;
++    fault_code = info->si_code;
++    siglongjmp(fault_env, 1);
++}
++
++static void check_fault(volatile char *p, int write_access) {
++    if (sigsetjmp(fault_env, 1) == 0) {
++        expecting_fault = 1;
++        if (write_access)
++            *p = 'x';
++        else
++            (void) *p;
++        expecting_fault = 0;
++        assert(0 && "PROT_NONE access did not raise SIGSEGV");
++    }
++    assert(fault_code == SEGV_ACCERR);
++}
++
++static void check_none(int fd, int memfd, char *p) {
++    errno = 0;
++    assert(write(fd, p, 1) == -1 && errno == EFAULT);
++    struct iovec iov = {.iov_base = p, .iov_len = 1};
++    errno = 0;
++    assert(writev(fd, &iov, 1) == -1 && errno == EFAULT);
++    char byte = 'x';
++    off_t off = (off_t)(uintptr_t)p;
++    // procfs currently reports a generic error for rejected debug copies.
++    assert(pread(memfd, &byte, 1, off) == -1);
++    assert(pwrite(memfd, &byte, 1, off) == -1);
++    errno = 0;
++    assert(write(fd, p, 1) == -1 && errno == EFAULT);
++}
++
++int main(void) {
++    struct sigaction action = {.sa_sigaction = on_segv, .sa_flags = SA_SIGINFO};
++    assert(sigemptyset(&action.sa_mask) == 0);
++    assert(sigaction(SIGSEGV, &action, NULL) == 0);
++    int fd = open("/dev/null", O_WRONLY);
++    int memfd = open("/proc/self/mem", O_RDWR);
++    assert(fd >= 0 && memfd >= 0);
++    long page_size = sysconf(_SC_PAGESIZE);
++    assert(page_size > 0);
++    size_t sizes[] = {128 * 1024 * 1024, (size_t)page_size};
++    for (unsigned i = 0; i < sizeof(sizes) / sizeof(sizes[0]); i++) {
++        char *p = mmap(NULL, sizes[i], PROT_NONE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
++        assert(p != MAP_FAILED);
++        // Fault before syscall copies; lazy reads and writes use separate pages.
++        check_fault(p + sizes[i] - page_size, 1);
++        check_fault(p, 0);
++        check_none(fd, memfd, p);
++        assert(mprotect(p, page_size, PROT_READ | PROT_WRITE) == 0);
++        p[0] = 'a';
++        assert(write(fd, p, 1) == 1);
++        if (sizes[i] > (size_t)page_size) {
++            // A mapped neighbour must not make untouched guard pages accessible.
++            check_fault(p + page_size, 0);
++            check_fault(p + page_size * 2, 1);
++            check_none(fd, memfd, p + page_size);
++        }
++        assert(mprotect(p, page_size, PROT_NONE) == 0);
++        check_fault(p, 0);
++        check_fault(p, 1);
++        check_none(fd, memfd, p);
++        assert(mprotect(p, page_size, PROT_READ) == 0);
++        assert(p[0] == 'a' && write(fd, p, 1) == 1);
++        assert(munmap(p, sizes[i]) == 0);
++    }
++
++    char *p = mmap(NULL, page_size * 2, PROT_READ | PROT_WRITE,
++            MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
++    assert(p != MAP_FAILED);
++    assert(mprotect(p + page_size, page_size, PROT_NONE) == 0);
++    errno = 0;
++    assert(write(fd, p + page_size - 1, 2) == -1 && errno == EFAULT);
++    assert(munmap(p, page_size * 2) == 0);
++    assert(close(memfd) == 0);
++    assert(close(fd) == 0);
++    puts("PASS PROT_NONE copies and faults");
++    return 0;
++}
+diff --git a/kernel/exec.c b/kernel/exec.c
+--- a/kernel/exec.c
++++ b/kernel/exec.c
+@@ -298,7 +298,9 @@
+     if (vdso_page == BAD_PAGE)
+         goto beyond_hope;
+     vdso_page += 1;
+-    if ((err = pt_map(current->mem, vdso_page, vdso_pages, (void *) vdso_data, 0, 0)) < 0)
++    // dsh-apple: the vDSO is read and executed by the guest, like Linux's r-x
++    // mapping. Flags of 0 now mean PROT_NONE to the memory checks.
++    if ((err = pt_map(current->mem, vdso_page, vdso_pages, (void *) vdso_data, 0, P_READ | P_EXEC)) < 0)
+         goto beyond_hope;
+     mem_pt(current->mem, vdso_page)->data->name = "[vdso]";
+     current->mm->vdso = vdso_page << PAGE_BITS;
+@@ -310,7 +312,7 @@
+     page_t vvar_page = pt_find_hole(current->mem, VVAR_PAGES);
+     if (vvar_page == BAD_PAGE)
+         goto beyond_hope;
+-    if ((err = pt_map_nothing(current->mem, vvar_page, VVAR_PAGES, 0)) < 0)
++    if ((err = pt_map_nothing(current->mem, vvar_page, VVAR_PAGES, P_READ)) < 0)
+         goto beyond_hope;
+     mem_pt(current->mem, vvar_page)->data->name = "[vvar]";
+ 

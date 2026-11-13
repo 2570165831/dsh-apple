@@ -1,0 +1,44 @@
+Package: standardwebhooks@1.1.1
+Published package: https://registry.npmjs.org/standardwebhooks/-/standardwebhooks-1.1.1.tgz
+npm tarball integrity (verified): sha512-bCbX9ZEyFkWPsRz7Bl3NuQUJohmwGSev/yhr7vhaGPlc4AfIrspIRa6cPTBuI1ItmrTDJ4d/S2hCsfe4+vQGnQ==
+Upstream revision: b4d2c14fc5b4ccff3ff271e3b087dff812254c59
+Source archive: https://codeload.github.com/standard-webhooks/standard-webhooks/tar.gz/b4d2c14fc5b4ccff3ff271e3b087dff812254c59
+Source archive SHA-256: 6543b0f8db7eed216fa67856e1d6607cadd87e3a50bd4d6481403694c315f3de
+Version evidence: package.json at this revision matches standardwebhooks@1.1.1.
+License texts and original notices follow verbatim.
+
+===== BEGIN UPSTREAM TEXT =====
+Source: https://github.com/standard-webhooks/standard-webhooks/blob/b4d2c14fc5b4ccff3ff271e3b087dff812254c59/libraries/LICENSE
+Path: libraries/LICENSE
+
+The MIT License
+
+Copyright (c) 2023 Svix (https://www.svix.com)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+===== END UPSTREAM TEXT =====
+
+===== BEGIN UPSTREAM TEXT =====
+Source: https://github.com/standard-webhooks/standard-webhooks/blob/b4d2c14fc5b4ccff3ff271e3b087dff812254c59/libraries/javascript/src/timing_safe_equal.ts
+Path: libraries/javascript/src/timing_safe_equal.ts
+
+// Copyright 2018-2022 the Deno authors. All rights reserved. MIT license.
+// https://github.com/denoland/deno_std/blob/main/crypto/timing_safe_equal.ts
+===== END UPSTREAM TEXT =====

@@ -31,6 +31,7 @@ enum BootPhase: String {
     case nodeRunning
     case serverListening
     case webViewLoading
+    case documentLoaded
     case webViewReady
     case failed
 }
@@ -62,6 +63,10 @@ struct BootStatus: Codable {
     var node: NodeReport
     /// Present when a phase failed; the raw message, no rewriting.
     var error: String?
+    /// Node stopped or parked after a fatal exit; navigation cannot revive it.
+    var runtimeFatal: Bool?
+    /// First client startup error, retained for diagnostics if readiness times out.
+    var clientStartupError: String?
     /// Present when the guest came up degraded (bind mount or channel failed).
     /// Separate from `error` because the web UI still works in that case.
     var guestError: String?
@@ -113,9 +118,8 @@ final class NodeRunner {
     private let queue = DispatchQueue(label: "local.dshportc.node", qos: .userInitiated)
     private let logQueue = DispatchQueue(label: "local.dshportc.log")
     private var logListeners: [(String) -> Void] = []
-    private var lineBuffer = ""
 
-    private(set) var status = BootStatus(
+    private let statusStore = LockedValue(BootStatus(
         phase: BootPhase.starting.rawValue,
         detail: "",
         webURL: "",
@@ -123,7 +127,9 @@ final class NodeRunner {
         node: NodeReport(),
         error: nil,
         guestError: nil
-    )
+    ))
+
+    var statusSnapshot: BootStatus { statusStore.snapshot }
 
     /// The authenticated loopback URL, once DSH prints it.
     private(set) var authenticatedURL: URL?
@@ -269,14 +275,7 @@ final class NodeRunner {
             // needs the URL, but the token must not end up in a screenshot or a
             // pasted log line.
             let safe = NodeRunner.redact(line)
-            FileHandle(forWritingAtPath: "")?.closeFile()
-            if let handle = try? FileHandle(forWritingTo: self.logFileURL) {
-                handle.seekToEndOfFile()
-                handle.write(Data((safe + "\n").utf8))
-                try? handle.close()
-            } else {
-                try? (safe + "\n").data(using: .utf8)?.write(to: self.logFileURL)
-            }
+            try? BootLogFile.append(Data((safe + "\n").utf8), to: self.logFileURL)
             for listener in self.logListeners { listener(safe) }
         }
     }
@@ -300,13 +299,20 @@ final class NodeRunner {
 
     private func writeStatus(_ mutate: @escaping (inout BootStatus) -> Void) {
         queue.async {
-            mutate(&self.status)
-            self.status.secondsSinceLaunch = Date().timeIntervalSince(self.launchDate)
-            let encoder = JSONEncoder()
-            encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-            if let data = try? encoder.encode(self.status) {
-                try? data.write(to: self.statusFileURL, options: .atomic)
-            }
+            self.persistStatus(mutate)
+        }
+    }
+
+    /// Caller is on the boot queue. Copy under the lock, then write without it.
+    private func persistStatus(_ mutate: (inout BootStatus) -> Void) {
+        let snapshot = statusStore.update { status in
+            mutate(&status)
+            status.secondsSinceLaunch = Date().timeIntervalSince(launchDate)
+        }
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        if let data = try? encoder.encode(snapshot) {
+            try? data.write(to: statusFileURL, options: .atomic)
         }
     }
 
@@ -324,18 +330,6 @@ final class NodeRunner {
             NSLog("dshportc: could not remove legacy file from Documents: %@", leftover)
         }
 
-        emit("dshportc: boot pipeline started")
-        if !legacyLeftovers.isEmpty {
-            emit("dshportc: WARNING legacy files still in Documents: " + legacyLeftovers.joined(separator: ", "))
-        }
-        try? FileManager.default.removeItem(at: logFileURL)
-        writeStatus {
-            $0.detail = "boot pipeline started"
-            $0.launchId = BootGuard.launchId
-            $0.bootGuard = BootGuard.report()
-        }
-        emit("dshportc: launch id " + BootGuard.launchId)
-
         // STEP 19, and the order of these two calls is the whole crash-safety
         // argument (see `ResetRunner`): an interrupted reset is finished FIRST, so
         // the app is in one known state before anything else looks at the
@@ -348,16 +342,32 @@ final class NodeRunner {
         // and new data the reset exists to prevent. The records stay on disk and
         // the next launch carries on from them.
         var resetFailure: String?
+        var resetNotes: [String] = []
         if let resumed = ResetRunner.finishInterruptedIfAny() {
-            emit("dshportc: " + resumed.note)
+            resetNotes.append(resumed.note)
             if !resumed.ok { resetFailure = resumed.reason }
         }
         // A half-finished earlier reset holds any new request back, rather than
         // stacking a second reset on top of it.
         if resetFailure == nil, let applied = ResetRunner.applyPendingIfAny() {
-            emit("dshportc: " + applied.note)
+            resetNotes.append(applied.note)
             if !applied.ok { resetFailure = applied.reason }
         }
+
+        RuntimePaths.finishReset(success: resetFailure == nil)
+        BootGuard.flushBackgroundMarker()
+        try? FileManager.default.removeItem(at: logFileURL)
+        emit("dshportc: boot pipeline started")
+        if !legacyLeftovers.isEmpty {
+            emit("dshportc: WARNING legacy files still in Documents: " + legacyLeftovers.joined(separator: ", "))
+        }
+        writeStatus {
+            $0.detail = "boot pipeline started"
+            $0.launchId = BootGuard.launchId
+            $0.bootGuard = BootGuard.report()
+        }
+        emit("dshportc: launch id " + BootGuard.launchId)
+        for note in resetNotes { emit("dshportc: " + note) }
         // Step 19B's device evidence for the one delete in this step. Same function
         // the panel's confirmed button calls, so what this measures and what a user
         // gets cannot differ. Nothing else in the app calls it.
@@ -368,8 +378,8 @@ final class NodeRunner {
             emit("dshportc: staging holds \(ResetRunner.stagingSize()) bytes after the purge")
         }
         if let message = resetFailure {
-            // Same shape as the other pre-Node failures: the status names the
-            // reason for the failure screen, and the guard counts this launch.
+            // Reads and writes stay under reset-staging/launch-<id>, including
+            // the failure screen's diagnostics. Do not recreate moved paths.
             // No watchdog and no guest: nothing is going to start.
             emit("dshportc: FAILED \(message)")
             writeStatus {
@@ -387,10 +397,7 @@ final class NodeRunner {
         // "nothing has happened for a minute" is the same problem wherever it
         // happens. `noteWebViewReady` and `noteFailure` both cancel it.
         BootGuard.startWatchdog {
-            let runner = NodeRunner.shared
-            runner.emit("dshportc: FAILED the page did not become ready within "
-                + "\(Int(BootGuard.pageReadyTimeout))s")
-            runner.noteFailure("页面在 \(Int(BootGuard.pageReadyTimeout)) 秒内没有就绪")
+            NodeRunner.shared.noteReadinessTimeout()
         }
 
         // Bring the guest up first when it is asked for: the channel's URL and
@@ -1018,47 +1025,51 @@ final class NodeRunner {
             }
             let status = node_start(arguments.count, arguments.pointer)
             self.emit("dshportc: node_start returned \(status)")
-            BootGuard.cancelWatchdog()
-            self.writeStatus {
-                $0.phase = BootPhase.failed.rawValue
-                $0.detail = "node_start returned \(status)"
-                $0.error = "node_start returned \(status)"
-            }
-            // Step 19, failure source A. `recordOutcome` is write-once per launch
-            // and that is load-bearing here: `node_start` returns when the server
-            // STOPS, which can be hours after a perfectly good boot. Without the
-            // once flag this line would turn a success into a failure.
-            BootGuard.recordOutcome(
-                kind: "failure",
-                reason: "node_start returned \(status)",
-                phase: BootPhase.failed.rawValue
-            )
+            self.noteFailure("node_start returned \(status)", runtimeFatal: true)
         }
         thread.name = "node"
         thread.stackSize = 8 << 20
         thread.start()
 
-        stdoutPipe.startReading { [weak self] chunk in
-            self?.consume(chunk)
+        stdoutPipe.startReading(onDiscard: { [weak self] limit in
+            self?.emit("dshportc: discarded a pipe line exceeding \(limit) bytes")
+        }) { [weak self] line in
+            self?.consume(line)
         }
     }
 
     /// Parse DSH's own output stream.
-    private func consume(_ chunk: String) {
+    private func consume(_ line: String) {
         logQueue.async {
-            self.lineBuffer += chunk
-            while let newline = self.lineBuffer.firstIndex(of: "\n") {
-                let line = String(self.lineBuffer[..<newline])
-                self.lineBuffer = String(self.lineBuffer[self.lineBuffer.index(after: newline)...])
-                self.handleLine(line)
-            }
+            self.handleLine(line)
         }
     }
 
     private func handleLine(_ line: String) {
         let trimmed = line.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
-        emit("node| " + trimmed)
+        // Bridge payloads can carry conversation text even with notifications off.
+        // Dispatch the original below without putting it in the log.
+        if trimmed.hasPrefix("DSHPORTC_NOTIFY") {
+            // Keep the compact, ordered turn-start metadata the acceptance reader uses.
+            if trimmed.hasPrefix("DSHPORTC_NOTIFY "),
+               let data = String(trimmed.dropFirst("DSHPORTC_NOTIFY ".count)).data(using: .utf8),
+               let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+               object["kind"] as? String == "turn-start",
+               let sessionId = object["sessionId"] as? String, !sessionId.isEmpty,
+               let metadata = try? JSONSerialization.data(
+                   withJSONObject: ["kind": "turn-start", "sessionId": sessionId], options: [.sortedKeys]
+               ),
+               let json = String(data: metadata, encoding: .utf8) {
+                emit("node| DSHPORTC_NOTIFY " + json)
+            } else {
+                emit("node| DSHPORTC_NOTIFY <payload omitted>")
+            }
+        } else if trimmed.hasPrefix("DSHPORTC_BUSY") {
+            emit("node| DSHPORTC_BUSY <payload omitted>")
+        } else {
+            emit("node| " + trimmed)
+        }
 
         // The runtime facts line the app asks Node to print at startup.
         if trimmed.hasPrefix("DSHPORTC_RUNTIME ") {
@@ -1104,7 +1115,7 @@ final class NodeRunner {
 
         // `ios-app-entry.mjs` caught a failing exit and parked Node.
         if trimmed.hasPrefix("DSHPORTC_FATAL ") {
-            noteFailure(String(trimmed.dropFirst("DSHPORTC_FATAL ".count)))
+            noteFailure(String(trimmed.dropFirst("DSHPORTC_FATAL ".count)), runtimeFatal: true)
             return
         }
 
@@ -1120,6 +1131,7 @@ final class NodeRunner {
         try? raw.data(using: .utf8)?.write(to: sessionURLFileURL, options: .atomic)
         authenticatedURL = url
         writeStatus {
+            guard $0.phase != BootPhase.failed.rawValue, $0.runtimeFatal != true else { return }
             $0.phase = BootPhase.serverListening.rawValue
             $0.detail = "server announced its URL"
             $0.webURL = NodeRunner.redact(raw)
@@ -1196,41 +1208,87 @@ final class NodeRunner {
     // MARK: - Web view progress
 
     func noteWebViewLoading() {
-        writeStatus { $0.phase = BootPhase.webViewLoading.rawValue; $0.detail = "WKWebView loading" }
+        writeStatus {
+            guard $0.phase != BootPhase.failed.rawValue, $0.runtimeFatal != true else { return }
+            $0.phase = BootPhase.webViewLoading.rawValue
+            $0.detail = "WKWebView loading"
+            $0.clientStartupError = nil
+        }
     }
 
-    func noteWebViewReady() {
+    func noteDocumentLoaded() {
         writeStatus {
-            $0.phase = BootPhase.webViewReady.rawValue
-            $0.detail = "WKWebView finished first paint"
+            guard $0.phase != BootPhase.failed.rawValue, $0.runtimeFatal != true else { return }
+            $0.phase = BootPhase.documentLoaded.rawValue
+            $0.detail = "WKWebView document loaded; waiting for DSH"
         }
-        emit("dshportc: webview ready after \(String(format: "%.2f", Date().timeIntervalSince(launchDate)))s")
-        // Step 19: this is the launch SUCCEEDING, and on iOS it is the only
-        // signal that can say so — `didFinish` happens in this process, and Node
-        // cannot see it. `level: page` because a page that painted is stronger
-        // evidence than a server that printed a URL.
-        BootGuard.cancelWatchdog()
-        BootGuard.recordOutcome(
-            kind: "success",
-            reason: "the page came up",
-            phase: BootPhase.webViewReady.rawValue,
-            level: "page"
-        )
     }
 
-    func noteFailure(_ message: String) {
-        emit("dshportc: FAILED \(message)")
+    func noteClientStartupError(_ message: String) {
         writeStatus {
-            $0.phase = BootPhase.failed.rawValue
-            $0.detail = message
-            $0.error = message
+            guard $0.clientStartupError == nil else { return }
+            let safe = NodeRunner.redact(message)
+            $0.clientStartupError = safe
+            self.emit("dshportc: client startup diagnostic: " + safe)
         }
-        // Failure sources B (the watchdog), and whatever the web view reports.
-        // The once-only flag keeps the FIRST reason: a watchdog that fires at 60 s
-        // and a `didFail` that arrives at 61 s describe one launch, and the first
-        // one is the one the user saw.
-        BootGuard.cancelWatchdog()
-        BootGuard.recordOutcome(kind: "failure", reason: message, phase: BootPhase.failed.rawValue)
+    }
+
+    private func noteReadinessTimeout() {
+        queue.async {
+            let status = self.statusSnapshot
+            guard status.phase != BootPhase.failed.rawValue,
+                  status.phase != BootPhase.webViewReady.rawValue else { return }
+            var message = "页面在 \(Int(BootGuard.pageReadyTimeout)) 秒内没有就绪"
+            if let error = status.clientStartupError { message += "；客户端错误：" + error }
+            self.fail(message)
+        }
+    }
+
+    @discardableResult
+    func noteWebViewReady() -> Bool {
+        // Success and failure settle on the same queue. A delayed callback
+        // cannot supersede a watchdog or fatal exit that already failed.
+        queue.sync {
+            let status = self.statusSnapshot
+            guard status.phase != BootPhase.failed.rawValue,
+                  status.error == nil, status.runtimeFatal != true else { return false }
+            self.persistStatus {
+                $0.phase = BootPhase.webViewReady.rawValue
+                $0.detail = "DSH interface ready"
+            }
+            self.emit("dshportc: webview ready after \(String(format: "%.2f", Date().timeIntervalSince(self.launchDate)))s")
+            BootGuard.cancelWatchdog()
+            BootGuard.recordOutcome(
+                kind: "success",
+                reason: "the DSH interface came up",
+                phase: BootPhase.webViewReady.rawValue,
+                level: "page"
+            )
+            return true
+        }
+    }
+
+    func noteFailure(_ message: String, runtimeFatal: Bool = false) {
+        queue.async { self.fail(message, runtimeFatal: runtimeFatal) }
+    }
+
+    /// Caller is on the boot queue. Keep the first failure reason, but retain a
+    /// later fatal exit even when a watchdog already failed this launch.
+    private func fail(_ message: String, runtimeFatal: Bool = false) {
+        let firstFailure = statusSnapshot.phase != BootPhase.failed.rawValue
+        persistStatus {
+            if runtimeFatal { $0.runtimeFatal = true }
+            if firstFailure {
+                $0.phase = BootPhase.failed.rawValue
+                $0.detail = message
+                $0.error = message
+            }
+        }
+        if firstFailure {
+            emit("dshportc: FAILED \(message)")
+            BootGuard.cancelWatchdog()
+            BootGuard.recordOutcome(kind: "failure", reason: message, phase: BootPhase.failed.rawValue)
+        }
     }
 
     /// Record that the app went to the background, so the next launch can tell a
@@ -1245,6 +1303,7 @@ final class NodeRunner {
     /// Back in the foreground: a launch still waiting for its page gets a full
     /// timeout again.
     func noteBecameActive() {
+        BootGuard.noteBecameActive()
         BootGuard.resumeWatchdog()
     }
 
@@ -1340,7 +1399,7 @@ final class Argv {
     }
 }
 
-/// Redirects the process's fd 1 and 2 into a pipe and hands the app the bytes.
+/// Redirects the process's fd 1 and 2 into a pipe and hands the app decoded lines.
 ///
 /// DSH prints the launch token once, to stdout, and never again; without this
 /// the app has no way to load the UI. `dup2` is what makes it work for writes
@@ -1362,19 +1421,24 @@ final class PipeOutputStream {
         setvbuf(stdout, nil, _IOLBF, 0)
     }
 
-    func startReading(handler: @escaping (String) -> Void) {
+    func startReading(onDiscard: @escaping (Int) -> Void, handler: @escaping (String) -> Void) {
         let descriptor = readDescriptor
         queue.async {
             let bufferSize = 16 * 1024
             let buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: bufferSize)
             defer { buffer.deallocate() }
+            var lines = PipeLineBuffer()
             while true {
                 let read = Darwin.read(descriptor, buffer, bufferSize)
-                if read <= 0 { break }
-                let data = Data(bytes: buffer, count: read)
-                if let text = String(data: data, encoding: .utf8) {
-                    handler(text)
+                if read < 0 {
+                    if errno == EINTR { continue }
+                    break
                 }
+                if read == 0 {
+                    lines.finish(handler: handler)
+                    break
+                }
+                lines.append(Data(bytes: buffer, count: read), onDiscard: onDiscard, handler: handler)
             }
         }
     }

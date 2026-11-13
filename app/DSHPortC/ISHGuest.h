@@ -99,6 +99,12 @@ typedef void (^ISHGuestChunkBlock)(NSData *data, BOOL isStdErr);
 @property (nonatomic, copy, nullable) NSString *execID;
 @end
 
+typedef NS_ENUM(NSInteger, ISHGuestCancelState) {
+    ISHGuestCancelStateUnknown = 0,
+    ISHGuestCancelStateRunning,
+    ISHGuestCancelStatePending,
+};
+
 /// A running (or finished) exec, as the channel sees it.
 @interface ISHGuestExecResult : ISHGuestResult
 @property (nonatomic, copy) NSString *execID;
@@ -156,7 +162,9 @@ typedef void (^ISHGuestChunkBlock)(NSData *data, BOOL isStdErr);
           lineBlock:(nullable ISHGuestLineBlock)lineBlock
          completion:(void (^)(ISHGuestExecResult *result))completion;
 
-/// Cancel a running exec by id. Returns NO if that exec is not the running one.
+/// Cancel an exec by id, including one still waiting on the guest queue.
+/// Pending means it cannot start; running means termination was requested.
+/// Unknown does not prove a request on another connection has arrived yet.
 ///
 /// Cancellation is a two-step teardown owned by this side, not a single
 /// `kill(2)`:
@@ -169,7 +177,7 @@ typedef void (^ISHGuestChunkBlock)(NSData *data, BOOL isStdErr);
 ///
 /// PID 1 is never signalled: the guest's init owns the whole filesystem
 /// namespace, and killing it takes the guest down with no way back.
-- (BOOL)cancelExecWithID:(NSString *)execID;
+- (ISHGuestCancelState)cancelExecWithID:(NSString *)execID;
 
 /// Resolve a bare command name against a PATH inside the guest, the way
 /// `execvp` would: return the first candidate that exists, is a regular file,
@@ -226,10 +234,11 @@ typedef void (^ISHGuestChunkBlock)(NSData *data, BOOL isStdErr);
 @property (nonatomic, readonly, copy, nullable) NSString *boundWorkspaceGuestPath;
 @property (nonatomic, readonly, copy, nullable) NSString *boundWorkspaceHostPath;
 
-/// Deliberately trip the kernel's die() to prove the app survives it. Used by
-/// the acceptance test; kept in the shipping binary because the alternative is
-/// a fault-injection path nobody has exercised since it was written.
+#if DEBUG
+/// Deliberately trip the kernel's die() to prove the app survives it.
+/// Available only in Debug builds for acceptance testing.
 - (BOOL)triggerKernelDieForTesting;
+#endif
 
 /// Reset the guest: kill every process, unmount, and delete the imported
 /// rootfs. Used by the measurement script to time a first-import.

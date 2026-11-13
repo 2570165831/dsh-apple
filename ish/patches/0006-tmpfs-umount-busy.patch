@@ -1,0 +1,90 @@
+diff --git a/fs/mount.c b/fs/mount.c
+--- a/fs/mount.c
++++ b/fs/mount.c
+@@ -135,8 +135,11 @@
+     if (mount->refcount != 0)
+         return _EBUSY;
+ 
+-    if (mount->fs->umount)
+-        mount->fs->umount(mount);
++    if (mount->fs->umount) {
++        int err = mount->fs->umount(mount);
++        if (err < 0)
++            return err;
++    }
+     list_remove(&mount->mounts);
+     path_cache_invalidate();
+     free((void *) mount->info);
+diff --git a/fs/tmp.c b/fs/tmp.c
+--- a/fs/tmp.c
++++ b/fs/tmp.c
+@@ -241,11 +241,8 @@
+ #endif
+ 
+ static int tmpfs_umount(struct mount *UNUSED(mount)) {
+-    // big fat fuckin TODO
+-    // struct tmp_inode *root = mount->data;
+-    // tmpfs_unmount_tree(root);
+-    TODO("tmpfs umount");
+-    return 0;
++    // Keep the mount alive until directory tree cleanup is implemented.
++    return _EBUSY;
+ }
+ 
+ static struct fd *tmpfs_open(struct mount *mount, const char *path, int flags, int mode) {
+diff --git a/tests/regress/regress_tmpfs_umount.c b/tests/regress/regress_tmpfs_umount.c
+new file mode 100644
+--- /dev/null
++++ b/tests/regress/regress_tmpfs_umount.c
+@@ -0,0 +1,51 @@
++// Failed tmpfs unmounts must leave the mount and its data alive.
++// Run in a fresh iSH process with a disposable rootfs: the mount stays busy.
++// Build: aarch64-linux-musl-gcc -static -O0 -o regress_tmpfs_umount regress_tmpfs_umount.c
++#define _GNU_SOURCE
++#include <assert.h>
++#include <errno.h>
++#include <fcntl.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++#include <sys/mount.h>
++#include <sys/vfs.h>
++#include <unistd.h>
++
++int main(void) {
++    char dir[] = "/tmp/ish-tmpfs-XXXXXX";
++    assert(mkdtemp(dir) != NULL);
++    assert(mount("tmpfs", dir, "tmpfs", 0, "") == 0);
++    errno = 0;
++    assert(umount2(dir, 0) == -1 && errno == EBUSY);
++    char path[128];
++    snprintf(path, sizeof(path), "%s/keep", dir);
++    int fd = open(path, O_CREAT | O_EXCL | O_RDWR, 0600);
++    assert(fd >= 0);
++    assert(write(fd, "ok", 2) == 2);
++    errno = 0;
++    assert(umount2(dir, 0) == -1 && errno == EBUSY);
++    assert(close(fd) == 0);
++
++    for (int i = 0; i < 2; i++) {
++        errno = 0;
++        assert(umount2(dir, 0) == -1 && errno == EBUSY);
++        struct statfs st;
++        assert(statfs(dir, &st) == 0 && st.f_type == 0x01021994);
++        fd = open(path, O_RDONLY);
++        assert(fd >= 0);
++        char buf[2];
++        assert(read(fd, buf, sizeof(buf)) == sizeof(buf));
++        assert(memcmp(buf, "ok", sizeof(buf)) == 0);
++        assert(close(fd) == 0);
++    }
++
++    // Filesystems without an unmount callback must still unmount normally.
++    char proc[] = "/tmp/ish-proc-XXXXXX";
++    assert(mkdtemp(proc) != NULL);
++    assert(mount("proc", proc, "proc", 0, "") == 0);
++    assert(umount2(proc, 0) == 0);
++    assert(rmdir(proc) == 0);
++    printf("PASS tmpfs unmount (retained at %s)\n", dir);
++    return 0;
++}

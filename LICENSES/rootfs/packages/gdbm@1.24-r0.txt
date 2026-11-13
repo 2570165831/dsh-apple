@@ -1,0 +1,2902 @@
+Source package: gdbm@1.24-r0
+Alpine aports revision (installed database c: field): cf76e1b436494c60e0c188400007dbf78bbff5f0
+Recipe: https://raw.githubusercontent.com/alpinelinux/aports/cf76e1b436494c60e0c188400007dbf78bbff5f0/main/gdbm/APKBUILD
+Recipe SHA-256: a629b43fc3944be147018e16750b67e6be1845567f61506d64a35e2a3ec74d7b
+Installed subpackages: gdbm
+
+Sources verified against the exact APKBUILD checksums:
+https://distfiles.alpinelinux.org/distfiles/v3.21/gdbm-1.24.tar.gz
+SHA-256: 695e9827fdf763513f133910bc7e6cfdb9187943a4fec943e57449723d2b8dbf
+SHA-512: 401ff8c707079f21da1ac1d6f4714a87f224b6f41943078487dc891be49f51fd1ac7a32fd599aae0fad185f2c6ba7432616d328fd6aaab068eb54db9562ff7fa
+
+Alpine-local sources (immutable revision above):
+
+The following are verbatim license/copyright/author files and source comment
+notices from these sources. Identical notices are printed once with all paths.
+The source collection can include build/test material beyond the shipped subset.
+This notice collection does not supply corresponding source.
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/Makefile.am, gdbm-1.24.tar.gz::gdbm-1.24/doc/Makefile.am, gdbm-1.24.tar.gz::gdbm-1.24/doc/Makefile.in, gdbm-1.24.tar.gz::gdbm-1.24/compat/Makefile.am, gdbm-1.24.tar.gz::gdbm-1.24/compat/Makefile.in, gdbm-1.24.tar.gz::gdbm-1.24/Makefile.in
+
+# This file is part of GDBM.                                   -*- Makefile -*-
+# Copyright (C) 2007-2024 Free Software Foundation, Inc.
+#
+# GDBM is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3, or (at your option)
+# any later version.
+#
+# GDBM is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with GDBM. If not, see <http://www.gnu.org/licenses/>. */
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/doc/gendocs.pl
+
+# This file is part of GNU Pies.
+# Copyright (C) 2020-2021 Sergey Poznyakoff
+#
+# GNU Pies is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3, or (at your option)
+# any later version.
+#
+# GNU Pies is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with GNU Pies.  If not, see <http://www.gnu.org/licenses/>.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/doc/Makefile.in, gdbm-1.24.tar.gz::gdbm-1.24/tools/Makefile.in, gdbm-1.24.tar.gz::gdbm-1.24/compat/Makefile.in, gdbm-1.24.tar.gz::gdbm-1.24/Makefile.in, gdbm-1.24.tar.gz::gdbm-1.24/tests/gdbmtool/Makefile.in, gdbm-1.24.tar.gz::gdbm-1.24/tests/Makefile.in, gdbm-1.24.tar.gz::gdbm-1.24/src/Makefile.in
+
+# Copyright (C) 1994-2021 Free Software Foundation, Inc.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/tools/gdbmshell.c, gdbm-1.24.tar.gz::gdbm-1.24/tools/util.c, gdbm-1.24.tar.gz::gdbm-1.24/tools/gdbmtool.h, gdbm-1.24.tar.gz::gdbm-1.24/tools/lex.c, gdbm-1.24.tar.gz::gdbm-1.24/tools/gram.c, gdbm-1.24.tar.gz::gdbm-1.24/tools/var.c, gdbm-1.24.tar.gz::gdbm-1.24/tools/gdbmtool.c, gdbm-1.24.tar.gz::gdbm-1.24/tools/datconv.c, gdbm-1.24.tar.gz::gdbm-1.24/compat/dbmseq.c, gdbm-1.24.tar.gz::gdbm-1.24/src/systems.h, gdbm-1.24.tar.gz::gdbm-1.24/src/hash.c, gdbm-1.24.tar.gz::gdbm-1.24/src/findkey.c, gdbm-1.24.tar.gz::gdbm-1.24/src/falloc.c
+
+/* This file is part of GDBM, the GNU data base manager.
+   Copyright (C) 1990-2024 Free Software Foundation, Inc.
+
+   GDBM is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 3, or (at your option)
+   any later version.
+
+   GDBM is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with GDBM. If not, see <http://www.gnu.org/licenses/>.    */
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/tools/input-std.c, gdbm-1.24.tar.gz::gdbm-1.24/tools/input-rl.c
+
+/* This file is part of GDBM, the GNU data base manager.
+   Copyright (C) 2016-2024 Free Software Foundation, Inc.
+
+   GDBM is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 3, or (at your option)
+   any later version.
+
+   GDBM is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with GDBM. If not, see <http://www.gnu.org/licenses/>.    */
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/tools/wordwrap.c, gdbm-1.24.tar.gz::gdbm-1.24/tools/err.c, gdbm-1.24.tar.gz::gdbm-1.24/tools/parseopt.c, gdbm-1.24.tar.gz::gdbm-1.24/tools/gdbmapp.h, gdbm-1.24.tar.gz::gdbm-1.24/tools/gdbm_dump.c, gdbm-1.24.tar.gz::gdbm-1.24/tools/mem.c, gdbm-1.24.tar.gz::gdbm-1.24/tools/progname.c, gdbm-1.24.tar.gz::gdbm-1.24/tools/gdbm_load.c, gdbm-1.24.tar.gz::gdbm-1.24/src/gdbmload.c, gdbm-1.24.tar.gz::gdbm-1.24/src/fullio.c, gdbm-1.24.tar.gz::gdbm-1.24/src/gdbmdump.c, gdbm-1.24.tar.gz::gdbm-1.24/src/base64.c
+
+/* This file is part of GDBM, the GNU data base manager.
+   Copyright (C) 2011-2024 Free Software Foundation, Inc.
+
+   GDBM is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 3, or (at your option)
+   any later version.
+
+   GDBM is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with GDBM. If not, see <http://www.gnu.org/licenses/>.   */
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/tools/Makefile.am, gdbm-1.24.tar.gz::gdbm-1.24/tools/Makefile.in, gdbm-1.24.tar.gz::gdbm-1.24/src/Makefile.am, gdbm-1.24.tar.gz::gdbm-1.24/src/Makefile.in
+
+# This file is part of GDBM.                                   -*- Makefile -*-
+# Copyright (C) 2007-2024 Free Software Foundation, Inc.
+#
+# GDBM is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3, or (at your option)
+# any later version.
+#
+# GDBM is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with GDBM. If not, see <http://www.gnu.org/licenses/>. 
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/tools/input-file.c, gdbm-1.24.tar.gz::gdbm-1.24/tools/input-null.c, gdbm-1.24.tar.gz::gdbm-1.24/tools/input-argv.c
+
+/* This file is part of GDBM, the GNU data base manager.
+   Copyright (C) 2018-2024 Free Software Foundation, Inc.
+
+   GDBM is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 3, or (at your option)
+   any later version.
+
+   GDBM is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with GDBM. If not, see <http://www.gnu.org/licenses/>.    */
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/tools/parseopt.c
+
+/* Do *not* mark this string for translation.  First %s is a copyright
+     symbol suitable for this locale, and second %s are the copyright
+     years.  */
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/tools/parseopt.c
+
+/* TRANSLATORS: Translate "(C)" to the copyright symbol
+     (C-in-a-circle), if this symbol is available in the user's
+     locale.  Otherwise, do not translate "(C)"; leave it as-is.  */
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/tools/gram.h
+
+/* Bison interface for Yacc-like parsers in C
+
+   Copyright (C) 1984, 1989-1990, 2000-2015 Free Software Foundation, Inc.
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/tools/gram.h, gdbm-1.24.tar.gz::gdbm-1.24/tools/gram.c
+
+/* As a special exception, you may create a larger work that contains
+   part or all of the Bison parser skeleton and distribute that work
+   under terms of your choice, so long as that work isn't itself a
+   parser generator using the skeleton or a modified version thereof
+   as a parser skeleton.  Alternatively, if you modify or redistribute
+   the parser skeleton itself, you may (at your option) remove this
+   special exception, which will cause the skeleton and the resulting
+   Bison output files to be licensed under the GNU General Public
+   License without this special exception.
+
+   This special exception was added by the Free Software Foundation in
+   version 2.2 of Bison.  */
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/tools/gram.c
+
+/* Bison implementation for Yacc-like parsers in C
+
+   Copyright (C) 1984, 1989-1990, 2000-2015 Free Software Foundation, Inc.
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/compat/delete.c, gdbm-1.24.tar.gz::gdbm-1.24/compat/seq.c, gdbm-1.24.tar.gz::gdbm-1.24/compat/dbmdirfno.c, gdbm-1.24.tar.gz::gdbm-1.24/compat/store.c, gdbm-1.24.tar.gz::gdbm-1.24/compat/dbm-priv.h, gdbm-1.24.tar.gz::gdbm-1.24/compat/dbmstore.c, gdbm-1.24.tar.gz::gdbm-1.24/compat/fetch.c, gdbm-1.24.tar.gz::gdbm-1.24/compat/dbmfetch.c, gdbm-1.24.tar.gz::gdbm-1.24/compat/dbminit.c, gdbm-1.24.tar.gz::gdbm-1.24/compat/dbmpagfno.c, gdbm-1.24.tar.gz::gdbm-1.24/compat/dbmopen.c, gdbm-1.24.tar.gz::gdbm-1.24/compat/dbmclose.c, gdbm-1.24.tar.gz::gdbm-1.24/src/gdbmclose.c, gdbm-1.24.tar.gz::gdbm-1.24/src/bucket.c, gdbm-1.24.tar.gz::gdbm-1.24/src/gdbmdefs.h, gdbm-1.24.tar.gz::gdbm-1.24/src/gdbmsync.c, gdbm-1.24.tar.gz::gdbm-1.24/src/gdbmseq.c, gdbm-1.24.tar.gz::gdbm-1.24/src/gdbmopen.c, gdbm-1.24.tar.gz::gdbm-1.24/src/gdbmstore.c, gdbm-1.24.tar.gz::gdbm-1.24/src/proto.h, gdbm-1.24.tar.gz::gdbm-1.24/src/version.c, gdbm-1.24.tar.gz::gdbm-1.24/src/update.c, gdbm-1.24.tar.gz::gdbm-1.24/src/gdbmdelete.c, gdbm-1.24.tar.gz::gdbm-1.24/src/gdbmfetch.c, gdbm-1.24.tar.gz::gdbm-1.24/src/gdbmconst.h, gdbm-1.24.tar.gz::gdbm-1.24/src/gdbmreorg.c
+
+/* This file is part of GDBM, the GNU data base manager.
+   Copyright (C) 1990-2024 Free Software Foundation, Inc.
+
+   GDBM is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 3, or (at your option)
+   any later version.
+
+   GDBM is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with GDBM. If not, see <http://www.gnu.org/licenses/>.   */
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/compat/dbm.h, gdbm-1.24.tar.gz::gdbm-1.24/compat/ndbm.h
+
+/*  This file is part of GDBM, the GNU data base manager, by Philip A. Nelson.
+    Copyright (C) 1990-2024 Free Software Foundation, Inc.
+
+    GDBM is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2, or (at your option)
+    any later version.
+
+    GDBM is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with GDBM. If not, see <http://www.gnu.org/licenses/>.
+
+    You may contact the author by:
+       e-mail:  phil@cs.wwu.edu
+      us-mail:  Philip A. Nelson
+                Computer Science Department
+                Western Washington University
+                Bellingham, WA 98226
+       
+*************************************************************************/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/compat/dbmdelete.c
+
+/* This file is part of GDBM, the GNU data base manager.
+   Copyright (C) 1990-2024 Free Software Foundation, Inc.
+
+   GDBM is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 3, or (at your option)
+   any later version.
+
+   GDBM is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with GDBM. If not, see <http://www.gnu.org/licenses/>.  */
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/compat/dbmrdonly.c, gdbm-1.24.tar.gz::gdbm-1.24/src/gdbmsetopt.c, gdbm-1.24.tar.gz::gdbm-1.24/src/gdbmerrno.c, gdbm-1.24.tar.gz::gdbm-1.24/src/gdbmcount.c
+
+/* This file is part of GDBM, the GNU data base manager.
+   Copyright (C) 1993-2024 Free Software Foundation, Inc.
+
+   GDBM is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 3, or (at your option)
+   any later version.
+
+   GDBM is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with GDBM. If not, see <http://www.gnu.org/licenses/>.   */
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/compat/dbmerr.c
+
+/* This file is part of GDBM, the GNU data base manager.
+   Copyright (C) 2011-2024 Free Software Foundation, Inc.
+
+   GDBM is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 3, or (at your option)
+   any later version.
+
+   GDBM is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with GDBM. If not, see <http://www.gnu.org/licenses/>.    */
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/compat/close.c, gdbm-1.24.tar.gz::gdbm-1.24/src/gdbmexists.c
+
+/* This file is part of GDBM, the GNU data base manager.
+   Copyright (C) 1993-2024 Free Software Foundation, Inc.
+
+   GDBM is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 3, or (at your option)
+   any later version.
+
+   GDBM is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with GDBM. If not, see <http://www.gnu.org/licenses/>.    */
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/po/POTFILES.in
+
+# List of GDBM source files which contain translatable strings.
+# Copyright (C) 2011-2024 Free Software Foundation, Inc.
+#
+# GDBM is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3, or (at your option)
+# any later version.
+#
+# GDBM is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with GDBM. If not, see <http://www.gnu.org/licenses/>.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/po/Makefile.in.in
+
+# Makefile for PO directory in any package using GNU gettext.
+# Copyright (C) 1995-2000 Ulrich Drepper <drepper@gnu.ai.mit.edu>
+# Copyright (C) 2000-2020 Free Software Foundation, Inc.
+#
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.
+#
+# Origin: gettext-0.21
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/po/Makefile.in.in
+
+/* 2>/dev/null; \
+	       fi; \
+	     } | grep -v 'libtool:' >/dev/null; then \
+	     package_gnu=yes; \
+	   else \
+	     package_gnu=no; \
+	   fi; \
+	}; \
+	if test "$$package_gnu" = "yes"; then \
+	  package_prefix='GNU '; \
+	else \
+	  package_prefix=''; \
+	fi; \
+	if test -n '$(MSGID_BUGS_ADDRESS)' || test '$(PACKAGE_BUGREPORT)' = '@'PACKAGE_BUGREPORT'@'; then \
+	  msgid_bugs_address='$(MSGID_BUGS_ADDRESS)'; \
+	else \
+	  msgid_bugs_address='$(PACKAGE_BUGREPORT)'; \
+	fi; \
+	case `$(XGETTEXT) --version | sed 1q | sed -e 's,^[^0-9]*,,'` in \
+	  '' | 0.[0-9] | 0.[0-9].* | 0.1[0-5] | 0.1[0-5].* | 0.16 | 0.16.[0-1]*) \
+	    $(XGETTEXT) --default-domain=$(DOMAIN) --directory=$(top_srcdir) \
+	      --add-comments=TRANSLATORS: \
+	      --files-from=$(srcdir)/POTFILES.in \
+	      --copyright-holder='$(COPYRIGHT_HOLDER)' \
+	      --msgid-bugs-address="$$msgid_bugs_address" \
+	      $(XGETTEXT_OPTIONS) @XGETTEXT_EXTRA_OPTIONS@ \
+	    ;; \
+	  *) \
+	    $(XGETTEXT) --default-domain=$(DOMAIN) --directory=$(top_srcdir) \
+	      --add-comments=TRANSLATORS: \
+	      --files-from=$(srcdir)/POTFILES.in \
+	      --copyright-holder='$(COPYRIGHT_HOLDER)' \
+	      --package-name="$${package_prefix}@PACKAGE@" \
+	      --package-version='@VERSION@' \
+	      --msgid-bugs-address="$$msgid_bugs_address" \
+	      $(XGETTEXT_OPTIONS) @XGETTEXT_EXTRA_OPTIONS@ \
+	    ;; \
+	esac
+	test ! -f $(DOMAIN).po || { \
+	  if test -f $(srcdir)/$(DOMAIN).pot-header; then \
+	    sed -e '1,/^#$$/d' < $(DOMAIN).po > $(DOMAIN).1po && \
+	    cat $(srcdir)/$(DOMAIN).pot-header $(DOMAIN).1po > $(DOMAIN).po && \
+	    rm -f $(DOMAIN).1po \
+	    || exit 1; \
+	  fi; \
+	  if test -f $(srcdir)/$(DOMAIN).pot; then \
+	    sed -f remove-potcdate.sed < $(srcdir)/$(DOMAIN).pot > $(DOMAIN).1po && \
+	    sed -f remove-potcdate.sed < $(DOMAIN).po > $(DOMAIN).2po && \
+	    if cmp $(DOMAIN).1po $(DOMAIN).2po >/dev/null 2>&1; then \
+	      rm -f $(DOMAIN).1po $(DOMAIN).2po $(DOMAIN).po; \
+	    else \
+	      rm -f $(DOMAIN).1po $(DOMAIN).2po $(srcdir)/$(DOMAIN).pot && \
+	      mv $(DOMAIN).po $(srcdir)/$(DOMAIN).pot; \
+	    fi; \
+	  else \
+	    mv $(DOMAIN).po $(srcdir)/$(DOMAIN).pot; \
+	  fi; \
+	}
+
+# This rule has no dependencies: we don't need to update $(DOMAIN).pot at
+# every "make" invocation, only create it when it is missing.
+# Only "make $(DOMAIN).pot-update" or "make dist" will force an update.
+$(srcdir)/$(DOMAIN).pot:
+	$(MAKE) $(DOMAIN).pot-update
+
+# This target rebuilds a PO file if $(DOMAIN).pot has changed.
+# Note that a PO file is not touched if it doesn't need to be changed.
+$(POFILES): $(POFILESDEPS)
+	@test -f $(srcdir)/$(DOMAIN).pot || $(MAKE) $(srcdir)/$(DOMAIN).pot
+	@lang=`echo $@ | sed -e 's,.*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/AUTHORS
+
+Philip A. Nelson	<phil@cs.wwu.edu>
+Jason Downs		<downsj@downsj.com>
+Sergey Poznyakoff	<gray@gnu.org.ua>
+
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/m4/libtool.m4
+
+# libtool.m4 - Configure libtool for the host system. -*-Autoconf-*-
+#
+#   Copyright (C) 1996-2001, 2003-2015 Free Software Foundation, Inc.
+#   Written by Gordon Matzigkeit, 1996
+#
+# This file is free software; the Free Software Foundation gives
+# unlimited permission to copy and/or distribute it, with or without
+# modifications, as long as this notice is preserved.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/m4/libtool.m4
+
+# Copyright (C) 2014 Free Software Foundation, Inc.
+# This is free software; see the source for copying conditions.  There is NO
+# warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/m4/libtool.m4
+
+# GNU Libtool is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of of the License, or
+# (at your option) any later version.
+#
+# As a special exception to the GNU General Public License, if you
+# distribute this file as part of a program or library that is built
+# using GNU Libtool, you may include this file under the  same
+# distribution terms that you use for the rest of that program.
+#
+# GNU Libtool is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/m4/lt~obsolete.m4
+
+# lt~obsolete.m4 -- aclocal satisfying obsolete definitions.    -*-Autoconf-*-
+#
+#   Copyright (C) 2004-2005, 2007, 2009, 2011-2015 Free Software
+#   Foundation, Inc.
+#   Written by Scott James Remnant, 2004.
+#
+# This file is free software; the Free Software Foundation gives
+# unlimited permission to copy and/or distribute it, with or without
+# modifications, as long as this notice is preserved.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/m4/ltversion.m4
+
+# ltversion.m4 -- version numbers			-*- Autoconf -*-
+#
+#   Copyright (C) 2004, 2011-2015 Free Software Foundation, Inc.
+#   Written by Scott James Remnant, 2004
+#
+# This file is free software; the Free Software Foundation gives
+# unlimited permission to copy and/or distribute it, with or without
+# modifications, as long as this notice is preserved.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/m4/ltsugar.m4
+
+# ltsugar.m4 -- libtool m4 base layer.                         -*-Autoconf-*-
+#
+# Copyright (C) 2004-2005, 2007-2008, 2011-2015 Free Software
+# Foundation, Inc.
+# Written by Gary V. Vaughan, 2004
+#
+# This file is free software; the Free Software Foundation gives
+# unlimited permission to copy and/or distribute it, with or without
+# modifications, as long as this notice is preserved.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/m4/ltoptions.m4
+
+# Helper functions for option handling.                    -*- Autoconf -*-
+#
+#   Copyright (C) 2004-2005, 2007-2009, 2011-2015 Free Software
+#   Foundation, Inc.
+#   Written by Gary V. Vaughan, 2004
+#
+# This file is free software; the Free Software Foundation gives
+# unlimited permission to copy and/or distribute it, with or without
+# modifications, as long as this notice is preserved.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/tests/num2word.c, gdbm-1.24.tar.gz::gdbm-1.24/tests/gtver.c, gdbm-1.24.tar.gz::gdbm-1.24/tests/g_open_ce.c, gdbm-1.24.tar.gz::gdbm-1.24/tests/d_creat_ce.c, gdbm-1.24.tar.gz::gdbm-1.24/tests/gtdump.c, gdbm-1.24.tar.gz::gdbm-1.24/tests/gtopt.c, gdbm-1.24.tar.gz::gdbm-1.24/tests/dtdump.c, gdbm-1.24.tar.gz::gdbm-1.24/tests/gtload.c, gdbm-1.24.tar.gz::gdbm-1.24/tests/g_reorg_ce.c, gdbm-1.24.tar.gz::gdbm-1.24/tests/gtfetch.c, gdbm-1.24.tar.gz::gdbm-1.24/tests/progname.h, gdbm-1.24.tar.gz::gdbm-1.24/tests/fdop.c, gdbm-1.24.tar.gz::gdbm-1.24/tests/gtdel.c, gdbm-1.24.tar.gz::gdbm-1.24/tests/dtfetch.c, gdbm-1.24.tar.gz::gdbm-1.24/tests/dtdel.c, gdbm-1.24.tar.gz::gdbm-1.24/tests/dtload.c
+
+/* This file is part of GDBM test suite.
+   Copyright (C) 2011-2024 Free Software Foundation, Inc.
+
+   GDBM is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 2, or (at your option)
+   any later version.
+
+   GDBM is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with GDBM. If not, see <http://www.gnu.org/licenses/>.
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/tests/closerr.c
+
+/* This file is part of GDBM test suite.
+   Copyright (C) 2018-2024 Free Software Foundation, Inc.
+
+   GDBM is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 2, or (at your option)
+   any later version.
+
+   GDBM is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with GDBM. If not, see <http://www.gnu.org/licenses/>.
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/tests/gtrecover.c
+
+/* This file is part of GDBM test suite.
+   Copyright (C) 2016-2024 Free Software Foundation, Inc.
+
+   GDBM is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 2, or (at your option)
+   any later version.
+
+   GDBM is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with GDBM. If not, see <http://www.gnu.org/licenses/>.
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/tests/gtcacheopt.c
+
+/*
+  NAME
+    gtcacheopt - test GDBM_GETCACHESIZE and GDBM_SETCACHESIZE options.
+
+  SYNOPSIS
+    gtcacheopt [-v]
+
+  DESCRIPTION
+    Reducing the cache size should retain most recently used elements
+    and ensure correct rehashing.
+
+    Operation:
+
+    1) Create new database.
+    2) Generate at least 10 full buckets,
+    3) Check GDBM_GETCACHESIZE.
+    4) Get cache statistics for the first 8 most recently
+       used cache elements.
+    5) Set cache size to 8.
+    6) Retrieve each of the bucket pointed to by stats obtained in 4.
+    7) Verify that (6) retrieved buckets from cache.
+
+  OPTIONS
+     -v   Verbosely print what's being done.
+
+  EXIT CODE
+     0    success
+     1    failure
+     2    usage error
+     
+  LICENSE
+    This file is part of GDBM test suite.
+    Copyright (C) 2021-2024 Free Software Foundation, Inc.
+
+    GDBM is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2, or (at your option)
+    any later version.
+
+    GDBM is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with GDBM. If not, see <http://www.gnu.org/licenses/>.  
+ */
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/tests/Makefile.am, gdbm-1.24.tar.gz::gdbm-1.24/tests/Makefile.in
+
+# This file is part of GDBM.                                   -*- autoconf -*-
+# Copyright (C) 2011-2024 Free Software Foundation, Inc.
+#
+# GDBM is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2, or (at your option)
+# any later version.
+#
+# GDBM is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with GDBM. If not, see <http://www.gnu.org/licenses/>. */
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/tests/gtconv.c
+
+/*
+  NAME
+    gtconv - test GDBM database conversion to extended format.
+
+  SYNOPSIS
+    gtconv [-v]
+
+  DESCRIPTION
+    When converting a traditional GDBM database to extended (numsync)
+    format, the size of the master av_table shrinks.  Consequently,
+    if it is full or nearly full, the entries near its end that
+    don't fit into the new size are returned to the per-bucket
+    available pools using _gdbm_free (see _gdbm_convert_to_numsync).
+    
+    This test program verifies that all main av_table entries are
+    preserved during format upgrade.
+
+    Operation:
+
+    1) Create a database with the minimal possible block size, to ensure
+       the mimimal size of the av_table array
+    2) Set the GDBM_SETCENTFREE option, so all released entries are
+       returned to the main av_table.
+    3) Populate the database with a sufficient number of entries.
+    4) Keep deleting entries until main av_table becomes full.
+    5) Save a copy of all avail_elems (both master and per-block),
+       sorted by av_adr.
+    6) Convert the database to the GDBM_NUMSYNC format.
+    7) Get a copy of all avail_elems similar to (5)
+    8) Compare arrays obtained in 5 and 7.
+    
+    The array obtained in step 7 is normally one entry longer than the
+    one from step 5.  The comparison in 8 ignores such extra entries.
+
+  OPTIONS
+     -v   Verbosely print what's being done.
+          Repeated twice, dumps listings of av_table arrays received in
+	  steps 5 and 7.
+
+  EXIT CODE
+     0    success
+     1    failure
+     2    usage error
+    77    unable to fill the av_table in step 4.
+	  
+  LICENSE
+    This file is part of GDBM test suite.
+    Copyright (C) 2021-2024 Free Software Foundation, Inc.
+
+    GDBM is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2, or (at your option)
+    any later version.
+
+    GDBM is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with GDBM. If not, see <http://www.gnu.org/licenses/>.
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/tests/t_wordwrap.c
+
+/* This file is part of GDBM test suite.
+   Copyright (C) 2021-2024 Free Software Foundation, Inc.
+
+   GDBM is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 2, or (at your option)
+   any later version.
+
+   GDBM is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with GDBM. If not, see <http://www.gnu.org/licenses/>.
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/tests/atlocal.in
+
+# @configure_input@                                     -*- shell-script -*-
+# Copyright (C) 2011-2024 Free Software Foundation, Inc.
+#
+# GDBM is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2, or (at your option)
+# any later version.
+#
+# GDBM is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with GDBM. If not, see <http://www.gnu.org/licenses/>. */
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/tests/t_dumpload.c
+
+/* This file is part of GDBM test suite.
+   Copyright (C) 2022-2024 Free Software Foundation, Inc.
+
+   GDBM is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 2, or (at your option)
+   any later version.
+
+   GDBM is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with GDBM. If not, see <http://www.gnu.org/licenses/>.
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/COPYING
+
+		    GNU GENERAL PUBLIC LICENSE
+		       Version 3, 29 June 2007
+
+ Copyright (C) 2007, 2011 Free Software Foundation, Inc. <http://fsf.org/>
+ Everyone is permitted to copy and distribute verbatim copies
+ of this license document, but changing it is not allowed.
+
+			    Preamble
+
+  The GNU General Public License is a free, copyleft license for
+software and other kinds of works.
+
+  The licenses for most software and other practical works are designed
+to take away your freedom to share and change the works.  By contrast,
+the GNU General Public License is intended to guarantee your freedom to
+share and change all versions of a program--to make sure it remains free
+software for all its users.  We, the Free Software Foundation, use the
+GNU General Public License for most of our software; it applies also to
+any other work released this way by its authors.  You can apply it to
+your programs, too.
+
+  When we speak of free software, we are referring to freedom, not
+price.  Our General Public Licenses are designed to make sure that you
+have the freedom to distribute copies of free software (and charge for
+them if you wish), that you receive source code or can get it if you
+want it, that you can change the software or use pieces of it in new
+free programs, and that you know you can do these things.
+
+  To protect your rights, we need to prevent others from denying you
+these rights or asking you to surrender the rights.  Therefore, you have
+certain responsibilities if you distribute copies of the software, or if
+you modify it: responsibilities to respect the freedom of others.
+
+  For example, if you distribute copies of such a program, whether
+gratis or for a fee, you must pass on to the recipients the same
+freedoms that you received.  You must make sure that they, too, receive
+or can get the source code.  And you must show them these terms so they
+know their rights.
+
+  Developers that use the GNU GPL protect your rights with two steps:
+(1) assert copyright on the software, and (2) offer you this License
+giving you legal permission to copy, distribute and/or modify it.
+
+  For the developers' and authors' protection, the GPL clearly explains
+that there is no warranty for this free software.  For both users' and
+authors' sake, the GPL requires that modified versions be marked as
+changed, so that their problems will not be attributed erroneously to
+authors of previous versions.
+
+  Some devices are designed to deny users access to install or run
+modified versions of the software inside them, although the manufacturer
+can do so.  This is fundamentally incompatible with the aim of
+protecting users' freedom to change the software.  The systematic
+pattern of such abuse occurs in the area of products for individuals to
+use, which is precisely where it is most unacceptable.  Therefore, we
+have designed this version of the GPL to prohibit the practice for those
+products.  If such problems arise substantially in other domains, we
+stand ready to extend this provision to those domains in future versions
+of the GPL, as needed to protect the freedom of users.
+
+  Finally, every program is threatened constantly by software patents.
+States should not allow patents to restrict development and use of
+software on general-purpose computers, but in those that do, we wish to
+avoid the special danger that patents applied to a free program could
+make it effectively proprietary.  To prevent this, the GPL assures that
+patents cannot be used to render the program non-free.
+
+  The precise terms and conditions for copying, distribution and
+modification follow.
+
+		       TERMS AND CONDITIONS
+
+  0. Definitions.
+
+  "This License" refers to version 3 of the GNU General Public License.
+
+  "Copyright" also means copyright-like laws that apply to other kinds of
+works, such as semiconductor masks.
+ 
+  "The Program" refers to any copyrightable work licensed under this
+License.  Each licensee is addressed as "you".  "Licensees" and
+"recipients" may be individuals or organizations.
+
+  To "modify" a work means to copy from or adapt all or part of the work
+in a fashion requiring copyright permission, other than the making of an
+exact copy.  The resulting work is called a "modified version" of the
+earlier work or a work "based on" the earlier work.
+
+  A "covered work" means either the unmodified Program or a work based
+on the Program.
+
+  To "propagate" a work means to do anything with it that, without
+permission, would make you directly or secondarily liable for
+infringement under applicable copyright law, except executing it on a
+computer or modifying a private copy.  Propagation includes copying,
+distribution (with or without modification), making available to the
+public, and in some countries other activities as well.
+
+  To "convey" a work means any kind of propagation that enables other
+parties to make or receive copies.  Mere interaction with a user through
+a computer network, with no transfer of a copy, is not conveying.
+
+  An interactive user interface displays "Appropriate Legal Notices"
+to the extent that it includes a convenient and prominently visible
+feature that (1) displays an appropriate copyright notice, and (2)
+tells the user that there is no warranty for the work (except to the
+extent that warranties are provided), that licensees may convey the
+work under this License, and how to view a copy of this License.  If
+the interface presents a list of user commands or options, such as a
+menu, a prominent item in the list meets this criterion.
+
+  1. Source Code.
+
+  The "source code" for a work means the preferred form of the work
+for making modifications to it.  "Object code" means any non-source
+form of a work.
+
+  A "Standard Interface" means an interface that either is an official
+standard defined by a recognized standards body, or, in the case of
+interfaces specified for a particular programming language, one that
+is widely used among developers working in that language.
+
+  The "System Libraries" of an executable work include anything, other
+than the work as a whole, that (a) is included in the normal form of
+packaging a Major Component, but which is not part of that Major
+Component, and (b) serves only to enable use of the work with that
+Major Component, or to implement a Standard Interface for which an
+implementation is available to the public in source code form.  A
+"Major Component", in this context, means a major essential component
+(kernel, window system, and so on) of the specific operating system
+(if any) on which the executable work runs, or a compiler used to
+produce the work, or an object code interpreter used to run it.
+
+  The "Corresponding Source" for a work in object code form means all
+the source code needed to generate, install, and (for an executable
+work) run the object code and to modify the work, including scripts to
+control those activities.  However, it does not include the work's
+System Libraries, or general-purpose tools or generally available free
+programs which are used unmodified in performing those activities but
+which are not part of the work.  For example, Corresponding Source
+includes interface definition files associated with source files for
+the work, and the source code for shared libraries and dynamically
+linked subprograms that the work is specifically designed to require,
+such as by intimate data communication or control flow between those
+subprograms and other parts of the work.
+
+  The Corresponding Source need not include anything that users
+can regenerate automatically from other parts of the Corresponding
+Source.
+
+  The Corresponding Source for a work in source code form is that
+same work.
+
+  2. Basic Permissions.
+
+  All rights granted under this License are granted for the term of
+copyright on the Program, and are irrevocable provided the stated
+conditions are met.  This License explicitly affirms your unlimited
+permission to run the unmodified Program.  The output from running a
+covered work is covered by this License only if the output, given its
+content, constitutes a covered work.  This License acknowledges your
+rights of fair use or other equivalent, as provided by copyright law.
+
+  You may make, run and propagate covered works that you do not
+convey, without conditions so long as your license otherwise remains
+in force.  You may convey covered works to others for the sole purpose
+of having them make modifications exclusively for you, or provide you
+with facilities for running those works, provided that you comply with
+the terms of this License in conveying all material for which you do
+not control copyright.  Those thus making or running the covered works
+for you must do so exclusively on your behalf, under your direction
+and control, on terms that prohibit them from making any copies of
+your copyrighted material outside their relationship with you.
+
+  Conveying under any other circumstances is permitted solely under
+the conditions stated below.  Sublicensing is not allowed; section 10
+makes it unnecessary.
+
+  3. Protecting Users' Legal Rights From Anti-Circumvention Law.
+
+  No covered work shall be deemed part of an effective technological
+measure under any applicable law fulfilling obligations under article
+11 of the WIPO copyright treaty adopted on 20 December 1996, or
+similar laws prohibiting or restricting circumvention of such
+measures.
+
+  When you convey a covered work, you waive any legal power to forbid
+circumvention of technological measures to the extent such circumvention
+is effected by exercising rights under this License with respect to
+the covered work, and you disclaim any intention to limit operation or
+modification of the work as a means of enforcing, against the work's
+users, your or third parties' legal rights to forbid circumvention of
+technological measures.
+
+  4. Conveying Verbatim Copies.
+
+  You may convey verbatim copies of the Program's source code as you
+receive it, in any medium, provided that you conspicuously and
+appropriately publish on each copy an appropriate copyright notice;
+keep intact all notices stating that this License and any
+non-permissive terms added in accord with section 7 apply to the code;
+keep intact all notices of the absence of any warranty; and give all
+recipients a copy of this License along with the Program.
+
+  You may charge any price or no price for each copy that you convey,
+and you may offer support or warranty protection for a fee.
+
+  5. Conveying Modified Source Versions.
+
+  You may convey a work based on the Program, or the modifications to
+produce it from the Program, in the form of source code under the
+terms of section 4, provided that you also meet all of these conditions:
+
+    a) The work must carry prominent notices stating that you modified
+    it, and giving a relevant date.
+
+    b) The work must carry prominent notices stating that it is
+    released under this License and any conditions added under section
+    7.  This requirement modifies the requirement in section 4 to
+    "keep intact all notices".
+
+    c) You must license the entire work, as a whole, under this
+    License to anyone who comes into possession of a copy.  This
+    License will therefore apply, along with any applicable section 7
+    additional terms, to the whole of the work, and all its parts,
+    regardless of how they are packaged.  This License gives no
+    permission to license the work in any other way, but it does not
+    invalidate such permission if you have separately received it.
+
+    d) If the work has interactive user interfaces, each must display
+    Appropriate Legal Notices; however, if the Program has interactive
+    interfaces that do not display Appropriate Legal Notices, your
+    work need not make them do so.
+
+  A compilation of a covered work with other separate and independent
+works, which are not by their nature extensions of the covered work,
+and which are not combined with it such as to form a larger program,
+in or on a volume of a storage or distribution medium, is called an
+"aggregate" if the compilation and its resulting copyright are not
+used to limit the access or legal rights of the compilation's users
+beyond what the individual works permit.  Inclusion of a covered work
+in an aggregate does not cause this License to apply to the other
+parts of the aggregate.
+
+  6. Conveying Non-Source Forms.
+
+  You may convey a covered work in object code form under the terms
+of sections 4 and 5, provided that you also convey the
+machine-readable Corresponding Source under the terms of this License,
+in one of these ways:
+
+    a) Convey the object code in, or embodied in, a physical product
+    (including a physical distribution medium), accompanied by the
+    Corresponding Source fixed on a durable physical medium
+    customarily used for software interchange.
+
+    b) Convey the object code in, or embodied in, a physical product
+    (including a physical distribution medium), accompanied by a
+    written offer, valid for at least three years and valid for as
+    long as you offer spare parts or customer support for that product
+    model, to give anyone who possesses the object code either (1) a
+    copy of the Corresponding Source for all the software in the
+    product that is covered by this License, on a durable physical
+    medium customarily used for software interchange, for a price no
+    more than your reasonable cost of physically performing this
+    conveying of source, or (2) access to copy the
+    Corresponding Source from a network server at no charge.
+
+    c) Convey individual copies of the object code with a copy of the
+    written offer to provide the Corresponding Source.  This
+    alternative is allowed only occasionally and noncommercially, and
+    only if you received the object code with such an offer, in accord
+    with subsection 6b.
+
+    d) Convey the object code by offering access from a designated
+    place (gratis or for a charge), and offer equivalent access to the
+    Corresponding Source in the same way through the same place at no
+    further charge.  You need not require recipients to copy the
+    Corresponding Source along with the object code.  If the place to
+    copy the object code is a network server, the Corresponding Source
+    may be on a different server (operated by you or a third party)
+    that supports equivalent copying facilities, provided you maintain
+    clear directions next to the object code saying where to find the
+    Corresponding Source.  Regardless of what server hosts the
+    Corresponding Source, you remain obligated to ensure that it is
+    available for as long as needed to satisfy these requirements.
+
+    e) Convey the object code using peer-to-peer transmission, provided
+    you inform other peers where the object code and Corresponding
+    Source of the work are being offered to the general public at no
+    charge under subsection 6d.
+
+  A separable portion of the object code, whose source code is excluded
+from the Corresponding Source as a System Library, need not be
+included in conveying the object code work.
+
+  A "User Product" is either (1) a "consumer product", which means any
+tangible personal property which is normally used for personal, family,
+or household purposes, or (2) anything designed or sold for incorporation
+into a dwelling.  In determining whether a product is a consumer product,
+doubtful cases shall be resolved in favor of coverage.  For a particular
+product received by a particular user, "normally used" refers to a
+typical or common use of that class of product, regardless of the status
+of the particular user or of the way in which the particular user
+actually uses, or expects or is expected to use, the product.  A product
+is a consumer product regardless of whether the product has substantial
+commercial, industrial or non-consumer uses, unless such uses represent
+the only significant mode of use of the product.
+
+  "Installation Information" for a User Product means any methods,
+procedures, authorization keys, or other information required to install
+and execute modified versions of a covered work in that User Product from
+a modified version of its Corresponding Source.  The information must
+suffice to ensure that the continued functioning of the modified object
+code is in no case prevented or interfered with solely because
+modification has been made.
+
+  If you convey an object code work under this section in, or with, or
+specifically for use in, a User Product, and the conveying occurs as
+part of a transaction in which the right of possession and use of the
+User Product is transferred to the recipient in perpetuity or for a
+fixed term (regardless of how the transaction is characterized), the
+Corresponding Source conveyed under this section must be accompanied
+by the Installation Information.  But this requirement does not apply
+if neither you nor any third party retains the ability to install
+modified object code on the User Product (for example, the work has
+been installed in ROM).
+
+  The requirement to provide Installation Information does not include a
+requirement to continue to provide support service, warranty, or updates
+for a work that has been modified or installed by the recipient, or for
+the User Product in which it has been modified or installed.  Access to a
+network may be denied when the modification itself materially and
+adversely affects the operation of the network or violates the rules and
+protocols for communication across the network.
+
+  Corresponding Source conveyed, and Installation Information provided,
+in accord with this section must be in a format that is publicly
+documented (and with an implementation available to the public in
+source code form), and must require no special password or key for
+unpacking, reading or copying.
+
+  7. Additional Terms.
+
+  "Additional permissions" are terms that supplement the terms of this
+License by making exceptions from one or more of its conditions.
+Additional permissions that are applicable to the entire Program shall
+be treated as though they were included in this License, to the extent
+that they are valid under applicable law.  If additional permissions
+apply only to part of the Program, that part may be used separately
+under those permissions, but the entire Program remains governed by
+this License without regard to the additional permissions.
+
+  When you convey a copy of a covered work, you may at your option
+remove any additional permissions from that copy, or from any part of
+it.  (Additional permissions may be written to require their own
+removal in certain cases when you modify the work.)  You may place
+additional permissions on material, added by you to a covered work,
+for which you have or can give appropriate copyright permission.
+
+  Notwithstanding any other provision of this License, for material you
+add to a covered work, you may (if authorized by the copyright holders of
+that material) supplement the terms of this License with terms:
+
+    a) Disclaiming warranty or limiting liability differently from the
+    terms of sections 15 and 16 of this License; or
+
+    b) Requiring preservation of specified reasonable legal notices or
+    author attributions in that material or in the Appropriate Legal
+    Notices displayed by works containing it; or
+
+    c) Prohibiting misrepresentation of the origin of that material, or
+    requiring that modified versions of such material be marked in
+    reasonable ways as different from the original version; or
+
+    d) Limiting the use for publicity purposes of names of licensors or
+    authors of the material; or
+
+    e) Declining to grant rights under trademark law for use of some
+    trade names, trademarks, or service marks; or
+
+    f) Requiring indemnification of licensors and authors of that
+    material by anyone who conveys the material (or modified versions of
+    it) with contractual assumptions of liability to the recipient, for
+    any liability that these contractual assumptions directly impose on
+    those licensors and authors.
+
+  All other non-permissive additional terms are considered "further
+restrictions" within the meaning of section 10.  If the Program as you
+received it, or any part of it, contains a notice stating that it is
+governed by this License along with a term that is a further
+restriction, you may remove that term.  If a license document contains
+a further restriction but permits relicensing or conveying under this
+License, you may add to a covered work material governed by the terms
+of that license document, provided that the further restriction does
+not survive such relicensing or conveying.
+
+  If you add terms to a covered work in accord with this section, you
+must place, in the relevant source files, a statement of the
+additional terms that apply to those files, or a notice indicating
+where to find the applicable terms.
+
+  Additional terms, permissive or non-permissive, may be stated in the
+form of a separately written license, or stated as exceptions;
+the above requirements apply either way.
+
+  8. Termination.
+
+  You may not propagate or modify a covered work except as expressly
+provided under this License.  Any attempt otherwise to propagate or
+modify it is void, and will automatically terminate your rights under
+this License (including any patent licenses granted under the third
+paragraph of section 11).
+
+  However, if you cease all violation of this License, then your
+license from a particular copyright holder is reinstated (a)
+provisionally, unless and until the copyright holder explicitly and
+finally terminates your license, and (b) permanently, if the copyright
+holder fails to notify you of the violation by some reasonable means
+prior to 60 days after the cessation.
+
+  Moreover, your license from a particular copyright holder is
+reinstated permanently if the copyright holder notifies you of the
+violation by some reasonable means, this is the first time you have
+received notice of violation of this License (for any work) from that
+copyright holder, and you cure the violation prior to 30 days after
+your receipt of the notice.
+
+  Termination of your rights under this section does not terminate the
+licenses of parties who have received copies or rights from you under
+this License.  If your rights have been terminated and not permanently
+reinstated, you do not qualify to receive new licenses for the same
+material under section 10.
+
+  9. Acceptance Not Required for Having Copies.
+
+  You are not required to accept this License in order to receive or
+run a copy of the Program.  Ancillary propagation of a covered work
+occurring solely as a consequence of using peer-to-peer transmission
+to receive a copy likewise does not require acceptance.  However,
+nothing other than this License grants you permission to propagate or
+modify any covered work.  These actions infringe copyright if you do
+not accept this License.  Therefore, by modifying or propagating a
+covered work, you indicate your acceptance of this License to do so.
+
+  10. Automatic Licensing of Downstream Recipients.
+
+  Each time you convey a covered work, the recipient automatically
+receives a license from the original licensors, to run, modify and
+propagate that work, subject to this License.  You are not responsible
+for enforcing compliance by third parties with this License.
+
+  An "entity transaction" is a transaction transferring control of an
+organization, or substantially all assets of one, or subdividing an
+organization, or merging organizations.  If propagation of a covered
+work results from an entity transaction, each party to that
+transaction who receives a copy of the work also receives whatever
+licenses to the work the party's predecessor in interest had or could
+give under the previous paragraph, plus a right to possession of the
+Corresponding Source of the work from the predecessor in interest, if
+the predecessor has it or can get it with reasonable efforts.
+
+  You may not impose any further restrictions on the exercise of the
+rights granted or affirmed under this License.  For example, you may
+not impose a license fee, royalty, or other charge for exercise of
+rights granted under this License, and you may not initiate litigation
+(including a cross-claim or counterclaim in a lawsuit) alleging that
+any patent claim is infringed by making, using, selling, offering for
+sale, or importing the Program or any portion of it.
+
+  11. Patents.
+
+  A "contributor" is a copyright holder who authorizes use under this
+License of the Program or a work on which the Program is based.  The
+work thus licensed is called the contributor's "contributor version".
+
+  A contributor's "essential patent claims" are all patent claims
+owned or controlled by the contributor, whether already acquired or
+hereafter acquired, that would be infringed by some manner, permitted
+by this License, of making, using, or selling its contributor version,
+but do not include claims that would be infringed only as a
+consequence of further modification of the contributor version.  For
+purposes of this definition, "control" includes the right to grant
+patent sublicenses in a manner consistent with the requirements of
+this License.
+
+  Each contributor grants you a non-exclusive, worldwide, royalty-free
+patent license under the contributor's essential patent claims, to
+make, use, sell, offer for sale, import and otherwise run, modify and
+propagate the contents of its contributor version.
+
+  In the following three paragraphs, a "patent license" is any express
+agreement or commitment, however denominated, not to enforce a patent
+(such as an express permission to practice a patent or covenant not to
+sue for patent infringement).  To "grant" such a patent license to a
+party means to make such an agreement or commitment not to enforce a
+patent against the party.
+
+  If you convey a covered work, knowingly relying on a patent license,
+and the Corresponding Source of the work is not available for anyone
+to copy, free of charge and under the terms of this License, through a
+publicly available network server or other readily accessible means,
+then you must either (1) cause the Corresponding Source to be so
+available, or (2) arrange to deprive yourself of the benefit of the
+patent license for this particular work, or (3) arrange, in a manner
+consistent with the requirements of this License, to extend the patent
+license to downstream recipients.  "Knowingly relying" means you have
+actual knowledge that, but for the patent license, your conveying the
+covered work in a country, or your recipient's use of the covered work
+in a country, would infringe one or more identifiable patents in that
+country that you have reason to believe are valid.
+  
+  If, pursuant to or in connection with a single transaction or
+arrangement, you convey, or propagate by procuring conveyance of, a
+covered work, and grant a patent license to some of the parties
+receiving the covered work authorizing them to use, propagate, modify
+or convey a specific copy of the covered work, then the patent license
+you grant is automatically extended to all recipients of the covered
+work and works based on it.
+
+  A patent license is "discriminatory" if it does not include within
+the scope of its coverage, prohibits the exercise of, or is
+conditioned on the non-exercise of one or more of the rights that are
+specifically granted under this License.  You may not convey a covered
+work if you are a party to an arrangement with a third party that is
+in the business of distributing software, under which you make payment
+to the third party based on the extent of your activity of conveying
+the work, and under which the third party grants, to any of the
+parties who would receive the covered work from you, a discriminatory
+patent license (a) in connection with copies of the covered work
+conveyed by you (or copies made from those copies), or (b) primarily
+for and in connection with specific products or compilations that
+contain the covered work, unless you entered into that arrangement,
+or that patent license was granted, prior to 28 March 2007.
+
+  Nothing in this License shall be construed as excluding or limiting
+any implied license or other defenses to infringement that may
+otherwise be available to you under applicable patent law.
+
+  12. No Surrender of Others' Freedom.
+
+  If conditions are imposed on you (whether by court order, agreement or
+otherwise) that contradict the conditions of this License, they do not
+excuse you from the conditions of this License.  If you cannot convey a
+covered work so as to satisfy simultaneously your obligations under this
+License and any other pertinent obligations, then as a consequence you may
+not convey it at all.  For example, if you agree to terms that obligate you
+to collect a royalty for further conveying from those to whom you convey
+the Program, the only way you could satisfy both those terms and this
+License would be to refrain entirely from conveying the Program.
+
+  13. Use with the GNU Affero General Public License.
+
+  Notwithstanding any other provision of this License, you have
+permission to link or combine any covered work with a work licensed
+under version 3 of the GNU Affero General Public License into a single
+combined work, and to convey the resulting work.  The terms of this
+License will continue to apply to the part which is the covered work,
+but the special requirements of the GNU Affero General Public License,
+section 13, concerning interaction through a network will apply to the
+combination as such.
+
+  14. Revised Versions of this License.
+
+  The Free Software Foundation may publish revised and/or new versions of
+the GNU General Public License from time to time.  Such new versions will
+be similar in spirit to the present version, but may differ in detail to
+address new problems or concerns.
+
+  Each version is given a distinguishing version number.  If the
+Program specifies that a certain numbered version of the GNU General
+Public License "or any later version" applies to it, you have the
+option of following the terms and conditions either of that numbered
+version or of any later version published by the Free Software
+Foundation.  If the Program does not specify a version number of the
+GNU General Public License, you may choose any version ever published
+by the Free Software Foundation.
+
+  If the Program specifies that a proxy can decide which future
+versions of the GNU General Public License can be used, that proxy's
+public statement of acceptance of a version permanently authorizes you
+to choose that version for the Program.
+
+  Later license versions may give you additional or different
+permissions.  However, no additional obligations are imposed on any
+author or copyright holder as a result of your choosing to follow a
+later version.
+
+  15. Disclaimer of Warranty.
+
+  THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY
+APPLICABLE LAW.  EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT
+HOLDERS AND/OR OTHER PARTIES PROVIDE THE PROGRAM "AS IS" WITHOUT WARRANTY
+OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO,
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+PURPOSE.  THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM
+IS WITH YOU.  SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF
+ALL NECESSARY SERVICING, REPAIR OR CORRECTION.
+
+  16. Limitation of Liability.
+
+  IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING
+WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MODIFIES AND/OR CONVEYS
+THE PROGRAM AS PERMITTED ABOVE, BE LIABLE TO YOU FOR DAMAGES, INCLUDING ANY
+GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE
+USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED TO LOSS OF
+DATA OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD
+PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER PROGRAMS),
+EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF
+SUCH DAMAGES.
+
+  17. Interpretation of Sections 15 and 16.
+
+  If the disclaimer of warranty and limitation of liability provided
+above cannot be given local legal effect according to their terms,
+reviewing courts shall apply local law that most closely approximates
+an absolute waiver of all civil liability in connection with the
+Program, unless a warranty or assumption of liability accompanies a
+copy of the Program in return for a fee.
+
+		     END OF TERMS AND CONDITIONS
+
+	    How to Apply These Terms to Your New Programs
+
+  If you develop a new program, and you want it to be of the greatest
+possible use to the public, the best way to achieve this is to make it
+free software which everyone can redistribute and change under these terms.
+
+  To do so, attach the following notices to the program.  It is safest
+to attach them to the start of each source file to most effectively
+state the exclusion of warranty; and each file should have at least
+the "copyright" line and a pointer to where the full notice is found.
+
+    <one line to give the program's name and a brief idea of what it does.>
+    Copyright (C) <year>  <name of author>
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+Also add information on how to contact you by electronic and paper mail.
+
+  If the program does terminal interaction, make it output a short
+notice like this when it starts in an interactive mode:
+
+    <program>  Copyright (C) <year>  <name of author>
+    This program comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
+    This is free software, and you are welcome to redistribute it
+    under certain conditions; type `show c' for details.
+
+The hypothetical commands `show w' and `show c' should show the appropriate
+parts of the General Public License.  Of course, your program's commands
+might be different; for a GUI interface, you would use an "about box".
+
+  You should also get your employer (if you work as a programmer) or school,
+if any, to sign a "copyright disclaimer" for the program, if necessary.
+For more information on this, and how to apply and follow the GNU GPL, see
+<http://www.gnu.org/licenses/>.
+
+  The GNU General Public License does not permit incorporating your program
+into proprietary programs.  If your program is a subroutine library, you
+may consider it more useful to permit linking proprietary applications with
+the library.  If this is what you want to do, use the GNU Lesser General
+Public License instead of this License.  But first, please read
+<http://www.gnu.org/philosophy/why-not-lgpl.html>.
+
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/configure.ac
+
+# This file is part of GDBM.                                   -*- autoconf -*-
+# Copyright (C) 2007-2024 Free Software Foundation, Inc.
+#
+# GDBM is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2, or (at your option)
+# any later version.
+#
+# GDBM is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with GDBM. If not, see <http://www.gnu.org/licenses/>. */
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/aclocal.m4
+
+# Copyright (C) 1996-2021 Free Software Foundation, Inc.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/aclocal.m4
+
+# Copyright (C) 2002-2021 Free Software Foundation, Inc.
+#
+# This file is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/aclocal.m4, gdbm-1.24.tar.gz::gdbm-1.24/aclocal.m4, gdbm-1.24.tar.gz::gdbm-1.24/aclocal.m4, gdbm-1.24.tar.gz::gdbm-1.24/aclocal.m4, gdbm-1.24.tar.gz::gdbm-1.24/aclocal.m4, gdbm-1.24.tar.gz::gdbm-1.24/aclocal.m4
+
+# Copyright (C) 2001-2021 Free Software Foundation, Inc.
+#
+# This file is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/aclocal.m4, gdbm-1.24.tar.gz::gdbm-1.24/aclocal.m4
+
+# Copyright (C) 1997-2021 Free Software Foundation, Inc.
+#
+# This file is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/aclocal.m4, gdbm-1.24.tar.gz::gdbm-1.24/aclocal.m4, gdbm-1.24.tar.gz::gdbm-1.24/aclocal.m4
+
+# Copyright (C) 1999-2021 Free Software Foundation, Inc.
+#
+# This file is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/aclocal.m4, gdbm-1.24.tar.gz::gdbm-1.24/aclocal.m4
+
+# Copyright (C) 1996-2021 Free Software Foundation, Inc.
+#
+# This file is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/aclocal.m4
+
+# Copyright (C) 2003-2021 Free Software Foundation, Inc.
+#
+# This file is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/aclocal.m4
+
+# Copyright (C) 2009-2021 Free Software Foundation, Inc.
+#
+# This file is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/aclocal.m4
+
+# Copyright (C) 2006-2021 Free Software Foundation, Inc.
+#
+# This file is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/aclocal.m4
+
+# Copyright (C) 2004-2021 Free Software Foundation, Inc.
+#
+# This file is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/build-aux/ltmain.sh
+
+# Copyright (C) 1996-2015 Free Software Foundation, Inc.
+# This is free software; see the source for copying conditions.  There is NO
+# warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/build-aux/ltmain.sh
+
+# GNU Libtool is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# As a special exception to the GNU General Public License,
+# if you distribute this file as part of a program or library that
+# is built using GNU Libtool, you may include this file under the
+# same distribution terms that you use for the rest of that program.
+#
+# GNU Libtool is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/build-aux/ltmain.sh
+
+# Copyright (C) 2004-2015 Free Software Foundation, Inc.
+# This is free software; see the source for copying conditions.  There is NO
+# warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/build-aux/ltmain.sh
+
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/build-aux/ltmain.sh
+
+# As a special exception to the GNU General Public License, if you distribute
+# this file as part of a program or library that is built using GNU Libtool,
+# you may include this file under the same distribution terms that you use
+# for the rest of that program.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/build-aux/ltmain.sh
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNES FOR A PARTICULAR PURPOSE. See the GNU
+# General Public License for more details.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/build-aux/ltmain.sh
+
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/build-aux/ltmain.sh
+
+/*) ;; *) break ;; esac
+
+        # ...otherwise throw away the child directory and loop
+        _G_directory_path=`$ECHO "$_G_directory_path" | $SED -e "$sed_dirname"`
+      done
+      _G_dir_list=`$ECHO "$_G_dir_list" | $SED 's|:*$||'`
+
+      func_mkdir_p_IFS=$IFS; IFS=:
+      for _G_dir in $_G_dir_list; do
+	IFS=$func_mkdir_p_IFS
+        # mkdir can fail with a 'File exist' error if two processes
+        # try to create one of the directories concurrently.  Don't
+        # stop in that case!
+        $MKDIR "$_G_dir" 2>/dev/null || :
+      done
+      IFS=$func_mkdir_p_IFS
+
+      # Bail out if we (or some other process) failed to create a directory.
+      test -d "$_G_directory_path" || \
+        func_fatal_error "Failed to create '$1'"
+    fi
+}
+
+
+# func_mktempdir [BASENAME]
+# -------------------------
+# Make a temporary directory that won't clash with other running
+# libtool processes, and avoids race conditions if possible.  If
+# given, BASENAME is the basename for that directory.
+func_mktempdir ()
+{
+    $debug_cmd
+
+    _G_template=${TMPDIR-/tmp}/${1-$progname}
+
+    if test : = "$opt_dry_run"; then
+      # Return a directory name, but don't create it in dry-run mode
+      _G_tmpdir=$_G_template-$$
+    else
+
+      # If mktemp works, use that first and foremost
+      _G_tmpdir=`mktemp -d "$_G_template-XXXXXXXX" 2>/dev/null`
+
+      if test ! -d "$_G_tmpdir"; then
+        # Failing that, at least try and use $RANDOM to avoid a race
+        _G_tmpdir=$_G_template-${RANDOM-0}$$
+
+        func_mktempdir_umask=`umask`
+        umask 0077
+        $MKDIR "$_G_tmpdir"
+        umask $func_mktempdir_umask
+      fi
+
+      # If we're not in dry-run mode, bomb out on failure
+      test -d "$_G_tmpdir" || \
+        func_fatal_error "cannot create temporary directory '$_G_tmpdir'"
+    fi
+
+    $ECHO "$_G_tmpdir"
+}
+
+
+# func_normal_abspath PATH
+# ------------------------
+# Remove doubled-up and trailing slashes, "." path components,
+# and cancel out any ".." path components in PATH after making
+# it an absolute path.
+func_normal_abspath ()
+{
+    $debug_cmd
+
+    # These SED scripts presuppose an absolute path with a trailing slash.
+    _G_pathcar='s|^/\([^/]*\).*$|\1|'
+    _G_pathcdr='s|^/[^/]*||'
+    _G_removedotparts=':dotsl
+		s|/\./|/|g
+		t dotsl
+		s|/\.$|/|'
+    _G_collapseslashes='s|/\{1,\}|/|g'
+    _G_finalslash='s|/*$|/|'
+
+    # Start from root dir and reassemble the path.
+    func_normal_abspath_result=
+    func_normal_abspath_tpath=$1
+    func_normal_abspath_altnamespace=
+    case $func_normal_abspath_tpath in
+      "")
+        # Empty path, that just means $cwd.
+        func_stripname '' '/' "`pwd`"
+        func_normal_abspath_result=$func_stripname_result
+        return
+        ;;
+      # The next three entries are used to spot a run of precisely
+      # two leading slashes without using negated character classes;
+      # we take advantage of case's first-match behaviour.
+      ///*)
+        # Unusual form of absolute path, do nothing.
+        ;;
+      //*)
+        # Not necessarily an ordinary path; POSIX reserves leading '//'
+        # and for example Cygwin uses it to access remote file shares
+        # over CIFS/SMB, so we conserve a leading double slash if found.
+        func_normal_abspath_altnamespace=/
+        ;;
+      /*)
+        # Absolute path, do nothing.
+        ;;
+      *)
+        # Relative path, prepend $cwd.
+        func_normal_abspath_tpath=`pwd`/$func_normal_abspath_tpath
+        ;;
+    esac
+
+    # Cancel out all the simple stuff to save iterations.  We also want
+    # the path to end with a slash for ease of parsing, so make sure
+    # there is one (and only one) here.
+    func_normal_abspath_tpath=`$ECHO "$func_normal_abspath_tpath" | $SED \
+          -e "$_G_removedotparts" -e "$_G_collapseslashes" -e "$_G_finalslash"`
+    while :; do
+      # Processed it all yet?
+      if test / = "$func_normal_abspath_tpath"; then
+        # If we ascended to the root using ".." the result may be empty now.
+        if test -z "$func_normal_abspath_result"; then
+          func_normal_abspath_result=/
+        fi
+        break
+      fi
+      func_normal_abspath_tcomponent=`$ECHO "$func_normal_abspath_tpath" | $SED \
+          -e "$_G_pathcar"`
+      func_normal_abspath_tpath=`$ECHO "$func_normal_abspath_tpath" | $SED \
+          -e "$_G_pathcdr"`
+      # Figure out what to do with it
+      case $func_normal_abspath_tcomponent in
+        "")
+          # Trailing empty path component, ignore it.
+          ;;
+        ..)
+          # Parent dir; strip last assembled component from result.
+          func_dirname "$func_normal_abspath_result"
+          func_normal_abspath_result=$func_dirname_result
+          ;;
+        *)
+          # Actual path component, append it.
+          func_append func_normal_abspath_result "/$func_normal_abspath_tcomponent"
+          ;;
+      esac
+    done
+    # Restore leading double-slash if one was found on entry.
+    func_normal_abspath_result=$func_normal_abspath_altnamespace$func_normal_abspath_result
+}
+
+
+# func_notquiet ARG...
+# --------------------
+# Echo program name prefixed message only when not in quiet mode.
+func_notquiet ()
+{
+    $debug_cmd
+
+    $opt_quiet || func_echo ${1+"$@"}
+
+    # A bug in bash halts the script if the last line of a function
+    # fails when set -e is in force, so we need another command to
+    # work around that:
+    :
+}
+
+
+# func_relative_path SRCDIR DSTDIR
+# --------------------------------
+# Set func_relative_path_result to the relative path from SRCDIR to DSTDIR.
+func_relative_path ()
+{
+    $debug_cmd
+
+    func_relative_path_result=
+    func_normal_abspath "$1"
+    func_relative_path_tlibdir=$func_normal_abspath_result
+    func_normal_abspath "$2"
+    func_relative_path_tbindir=$func_normal_abspath_result
+
+    # Ascend the tree starting from libdir
+    while :; do
+      # check if we have found a prefix of bindir
+      case $func_relative_path_tbindir in
+        $func_relative_path_tlibdir)
+          # found an exact match
+          func_relative_path_tcancelled=
+          break
+          ;;
+        $func_relative_path_tlibdir*)
+          # found a matching prefix
+          func_stripname "$func_relative_path_tlibdir" '' "$func_relative_path_tbindir"
+          func_relative_path_tcancelled=$func_stripname_result
+          if test -z "$func_relative_path_result"; then
+            func_relative_path_result=.
+          fi
+          break
+          ;;
+        *)
+          func_dirname $func_relative_path_tlibdir
+          func_relative_path_tlibdir=$func_dirname_result
+          if test -z "$func_relative_path_tlibdir"; then
+            # Have to descend all the way to the root!
+            func_relative_path_result=../$func_relative_path_result
+            func_relative_path_tcancelled=$func_relative_path_tbindir
+            break
+          fi
+          func_relative_path_result=../$func_relative_path_result
+          ;;
+      esac
+    done
+
+    # Now calculate path; take care to avoid doubling-up slashes.
+    func_stripname '' '/' "$func_relative_path_result"
+    func_relative_path_result=$func_stripname_result
+    func_stripname '/' '/' "$func_relative_path_tcancelled"
+    if test -n "$func_stripname_result"; then
+      func_append func_relative_path_result "/$func_stripname_result"
+    fi
+
+    # Normalisation. If bindir is libdir, return '.' else relative path.
+    if test -n "$func_relative_path_result"; then
+      func_stripname './' '' "$func_relative_path_result"
+      func_relative_path_result=$func_stripname_result
+    fi
+
+    test -n "$func_relative_path_result" || func_relative_path_result=.
+
+    :
+}
+
+
+# func_quote_for_eval ARG...
+# --------------------------
+# Aesthetically quote ARGs to be evaled later.
+# This function returns two values:
+#   i) func_quote_for_eval_result
+#      double-quoted, suitable for a subsequent eval
+#  ii) func_quote_for_eval_unquoted_result
+#      has all characters that are still active within double
+#      quotes backslashified.
+func_quote_for_eval ()
+{
+    $debug_cmd
+
+    func_quote_for_eval_unquoted_result=
+    func_quote_for_eval_result=
+    while test 0 -lt $#; do
+      case $1 in
+        *[\\\`\"\$]*)
+	  _G_unquoted_arg=`printf '%s\n' "$1" |$SED "$sed_quote_subst"` ;;
+        *)
+          _G_unquoted_arg=$1 ;;
+      esac
+      if test -n "$func_quote_for_eval_unquoted_result"; then
+	func_append func_quote_for_eval_unquoted_result " $_G_unquoted_arg"
+      else
+        func_append func_quote_for_eval_unquoted_result "$_G_unquoted_arg"
+      fi
+
+      case $_G_unquoted_arg in
+        # Double-quote args containing shell metacharacters to delay
+        # word splitting, command substitution and variable expansion
+        # for a subsequent eval.
+        # Many Bourne shells cannot handle close brackets correctly
+        # in scan sets, so we specify it separately.
+        *[\[\~\#\^\&\*\(\)\{\}\|\;\<\>\?\'\ \	]*|*]*|"")
+          _G_quoted_arg=\"$_G_unquoted_arg\"
+          ;;
+        *)
+          _G_quoted_arg=$_G_unquoted_arg
+	  ;;
+      esac
+
+      if test -n "$func_quote_for_eval_result"; then
+	func_append func_quote_for_eval_result " $_G_quoted_arg"
+      else
+        func_append func_quote_for_eval_result "$_G_quoted_arg"
+      fi
+      shift
+    done
+}
+
+
+# func_quote_for_expand ARG
+# -------------------------
+# Aesthetically quote ARG to be evaled later; same as above,
+# but do not quote variable references.
+func_quote_for_expand ()
+{
+    $debug_cmd
+
+    case $1 in
+      *[\\\`\"]*)
+	_G_arg=`$ECHO "$1" | $SED \
+	    -e "$sed_double_quote_subst" -e "$sed_double_backslash"` ;;
+      *)
+        _G_arg=$1 ;;
+    esac
+
+    case $_G_arg in
+      # Double-quote args containing shell metacharacters to delay
+      # word splitting and command substitution for a subsequent eval.
+      # Many Bourne shells cannot handle close brackets correctly
+      # in scan sets, so we specify it separately.
+      *[\[\~\#\^\&\*\(\)\{\}\|\;\<\>\?\'\ \	]*|*]*|"")
+        _G_arg=\"$_G_arg\"
+        ;;
+    esac
+
+    func_quote_for_expand_result=$_G_arg
+}
+
+
+# func_stripname PREFIX SUFFIX NAME
+# ---------------------------------
+# strip PREFIX and SUFFIX from NAME, and store in func_stripname_result.
+# PREFIX and SUFFIX must not contain globbing or regex special
+# characters, hashes, percent signs, but SUFFIX may contain a leading
+# dot (in which case that matches only a dot).
+if test yes = "$_G_HAVE_XSI_OPS"; then
+  eval 'func_stripname ()
+  {
+    $debug_cmd
+
+    # pdksh 5.2.14 does not do ${X%$Y} correctly if both X and Y are
+    # positional parameters, so assign one to ordinary variable first.
+    func_stripname_result=$3
+    func_stripname_result=${func_stripname_result#"$1"}
+    func_stripname_result=${func_stripname_result%"$2"}
+  }'
+else
+  func_stripname ()
+  {
+    $debug_cmd
+
+    case $2 in
+      .*) func_stripname_result=`$ECHO "$3" | $SED -e "s%^$1%%" -e "s%\\\\$2\$%%"`;;
+      *)  func_stripname_result=`$ECHO "$3" | $SED -e "s%^$1%%" -e "s%$2\$%%"`;;
+    esac
+  }
+fi
+
+
+# func_show_eval CMD [FAIL_EXP]
+# -----------------------------
+# Unless opt_quiet is true, then output CMD.  Then, if opt_dryrun is
+# not true, evaluate CMD.  If the evaluation of CMD fails, and FAIL_EXP
+# is given, then evaluate it.
+func_show_eval ()
+{
+    $debug_cmd
+
+    _G_cmd=$1
+    _G_fail_exp=${2-':'}
+
+    func_quote_for_expand "$_G_cmd"
+    eval "func_notquiet $func_quote_for_expand_result"
+
+    $opt_dry_run || {
+      eval "$_G_cmd"
+      _G_status=$?
+      if test 0 -ne "$_G_status"; then
+	eval "(exit $_G_status); $_G_fail_exp"
+      fi
+    }
+}
+
+
+# func_show_eval_locale CMD [FAIL_EXP]
+# ------------------------------------
+# Unless opt_quiet is true, then output CMD.  Then, if opt_dryrun is
+# not true, evaluate CMD.  If the evaluation of CMD fails, and FAIL_EXP
+# is given, then evaluate it.  Use the saved locale for evaluation.
+func_show_eval_locale ()
+{
+    $debug_cmd
+
+    _G_cmd=$1
+    _G_fail_exp=${2-':'}
+
+    $opt_quiet || {
+      func_quote_for_expand "$_G_cmd"
+      eval "func_echo $func_quote_for_expand_result"
+    }
+
+    $opt_dry_run || {
+      eval "$_G_user_locale
+	    $_G_cmd"
+      _G_status=$?
+      eval "$_G_safe_locale"
+      if test 0 -ne "$_G_status"; then
+	eval "(exit $_G_status); $_G_fail_exp"
+      fi
+    }
+}
+
+
+# func_tr_sh
+# ----------
+# Turn $1 into a string suitable for a shell variable name.
+# Result is stored in $func_tr_sh_result.  All characters
+# not in the set a-zA-Z0-9_ are replaced with '_'. Further,
+# if $1 begins with a digit, a '_' is prepended as well.
+func_tr_sh ()
+{
+    $debug_cmd
+
+    case $1 in
+    [0-9]* | *[!a-zA-Z0-9_]*)
+      func_tr_sh_result=`$ECHO "$1" | $SED -e 's/^\([0-9]\)/_\1/' -e 's/[^a-zA-Z0-9_]/_/g'`
+      ;;
+    * )
+      func_tr_sh_result=$1
+      ;;
+    esac
+}
+
+
+# func_verbose ARG...
+# -------------------
+# Echo program name prefixed message in verbose mode only.
+func_verbose ()
+{
+    $debug_cmd
+
+    $opt_verbose && func_echo "$*"
+
+    :
+}
+
+
+# func_warn_and_continue ARG...
+# -----------------------------
+# Echo program name prefixed warning message to standard error.
+func_warn_and_continue ()
+{
+    $debug_cmd
+
+    $require_term_colors
+
+    func_echo_infix_1 "${tc_red}warning$tc_reset" "$*" >&2
+}
+
+
+# func_warning CATEGORY ARG...
+# ----------------------------
+# Echo program name prefixed warning message to standard error. Warning
+# messages can be filtered according to CATEGORY, where this function
+# elides messages where CATEGORY is not listed in the global variable
+# 'opt_warning_types'.
+func_warning ()
+{
+    $debug_cmd
+
+    # CATEGORY must be in the warning_categories list!
+    case " $warning_categories " in
+      *" $1 "*) ;;
+      *) func_internal_error "invalid warning category '$1'" ;;
+    esac
+
+    _G_category=$1
+    shift
+
+    case " $opt_warning_types " in
+      *" $_G_category "*) $warning_func ${1+"$@"} ;;
+    esac
+}
+
+
+# func_sort_ver VER1 VER2
+# -----------------------
+# 'sort -V' is not generally available.
+# Note this deviates from the version comparison in automake
+# in that it treats 1.5 < 1.5.0, and treats 1.4.4a < 1.4-p3a
+# but this should suffice as we won't be specifying old
+# version formats or redundant trailing .0 in bootstrap.conf.
+# If we did want full compatibility then we should probably
+# use m4_version_compare from autoconf.
+func_sort_ver ()
+{
+    $debug_cmd
+
+    printf '%s\n%s\n' "$1" "$2" \
+      | sort -t. -k 1,1n -k 2,2n -k 3,3n -k 4,4n -k 5,5n -k 6,6n -k 7,7n -k 8,8n -k 9,9n
+}
+
+# func_lt_ver PREV CURR
+# ---------------------
+# Return true if PREV and CURR are in the correct order according to
+# func_sort_ver, otherwise false.  Use it like this:
+#
+#  func_lt_ver "$prev_ver" "$proposed_ver" || func_fatal_error "..."
+func_lt_ver ()
+{
+    $debug_cmd
+
+    test "x$1" = x`func_sort_ver "$1" "$2" | $SED 1q`
+}
+
+
+# Local variables:
+# mode: shell-script
+# sh-indentation: 2
+# eval: (add-hook 'before-save-hook 'time-stamp)
+# time-stamp-pattern: "10/scriptversion=%:y-%02m-%02d.%02H; # UTC"
+# time-stamp-time-zone: "UTC"
+# End:
+#! /bin/sh
+
+# Set a version string for this script.
+scriptversion=2014-01-07.03; # UTC
+
+# A portable, pluggable option parser for Bourne shell.
+# Written by Gary V. Vaughan, 2010
+
+# Copyright (C) 2010-2015 Free Software Foundation, Inc.
+# This is free software; see the source for copying conditions.  There is NO
+# warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# Please report bugs or propose patches to gary@gnu.org.
+
+
+## ------ ##
+## Usage. ##
+## ------ ##
+
+# This file is a library for parsing options in your shell scripts along
+# with assorted other useful supporting features that you can make use
+# of too.
+#
+# For the simplest scripts you might need only:
+#
+#   #!/bin/sh
+#   . relative/path/to/funclib.sh
+#   . relative/path/to/options-parser
+#   scriptversion=1.0
+#   func_options ${1+"$@"}
+#   eval set dummy "$func_options_result"; shift
+#   ...rest of your script...
+#
+# In order for the '--version' option to work, you will need to have a
+# suitably formatted comment like the one at the top of this file
+# starting with '# Written by ' and ending with '# warranty; '.
+#
+# For '-h' and '--help' to work, you will also need a one line
+# description of your script's purpose in a comment directly above the
+# '# Written by ' line, like the one at the top of this file.
+#
+# The default options also support '--debug', which will turn on shell
+# execution tracing (see the comment above debug_cmd below for another
+# use), and '--verbose' and the func_verbose function to allow your script
+# to display verbose messages only when your user has specified
+# '--verbose'.
+#
+# After sourcing this file, you can plug processing for additional
+# options by amending the variables from the 'Configuration' section
+# below, and following the instructions in the 'Option parsing'
+# section further down.
+
+## -------------- ##
+## Configuration. ##
+## -------------- ##
+
+# You should override these variables in your script after sourcing this
+# file so that they reflect the customisations you have added to the
+# option parser.
+
+# The usage line for option parsing errors and the start of '-h' and
+# '--help' output messages. You can embed shell variables for delayed
+# expansion at the time the message is displayed, but you will need to
+# quote other shell meta-characters carefully to prevent them being
+# expanded when the contents are evaled.
+usage='$progpath [OPTION]...'
+
+# Short help message in response to '-h' and '--help'.  Add to this or
+# override it after sourcing this library to reflect the full set of
+# options your script accepts.
+usage_message="\
+       --debug        enable verbose shell tracing
+   -W, --warnings=CATEGORY
+                      report the warnings falling in CATEGORY [all]
+   -v, --verbose      verbosely report processing
+       --version      print version information and exit
+   -h, --help         print short or long help message and exit
+"
+
+# Additional text appended to 'usage_message' in response to '--help'.
+long_help_message="
+Warning categories include:
+       'all'          show all warnings
+       'none'         turn off all the warnings
+       'error'        warnings are treated as fatal errors"
+
+# Help message printed before fatal option parsing errors.
+fatal_help="Try '\$progname --help' for more information."
+
+
+
+## ------------------------- ##
+## Hook function management. ##
+## ------------------------- ##
+
+# This section contains functions for adding, removing, and running hooks
+# to the main code.  A hook is just a named list of of function, that can
+# be run in order later on.
+
+# func_hookable FUNC_NAME
+# -----------------------
+# Declare that FUNC_NAME will run hooks added with
+# 'func_add_hook FUNC_NAME ...'.
+func_hookable ()
+{
+    $debug_cmd
+
+    func_append hookable_fns " $1"
+}
+
+
+# func_add_hook FUNC_NAME HOOK_FUNC
+# ---------------------------------
+# Request that FUNC_NAME call HOOK_FUNC before it returns.  FUNC_NAME must
+# first have been declared "hookable" by a call to 'func_hookable'.
+func_add_hook ()
+{
+    $debug_cmd
+
+    case " $hookable_fns " in
+      *" $1 "*) ;;
+      *) func_fatal_error "'$1' does not accept hook functions." ;;
+    esac
+
+    eval func_append ${1}_hooks '" $2"'
+}
+
+
+# func_remove_hook FUNC_NAME HOOK_FUNC
+# ------------------------------------
+# Remove HOOK_FUNC from the list of functions called by FUNC_NAME.
+func_remove_hook ()
+{
+    $debug_cmd
+
+    eval ${1}_hooks='`$ECHO "\$'$1'_hooks" |$SED "s| '$2'||"`'
+}
+
+
+# func_run_hooks FUNC_NAME [ARG]...
+# ---------------------------------
+# Run all hook functions registered to FUNC_NAME.
+# It is assumed that the list of hook functions contains nothing more
+# than a whitespace-delimited list of legal shell function names, and
+# no effort is wasted trying to catch shell meta-characters or preserve
+# whitespace.
+func_run_hooks ()
+{
+    $debug_cmd
+
+    case " $hookable_fns " in
+      *" $1 "*) ;;
+      *) func_fatal_error "'$1' does not support hook funcions.n" ;;
+    esac
+
+    eval _G_hook_fns=\$$1_hooks; shift
+
+    for _G_hook in $_G_hook_fns; do
+      eval $_G_hook '"$@"'
+
+      # store returned options list back into positional
+      # parameters for next 'cmd' execution.
+      eval _G_hook_result=\$${_G_hook}_result
+      eval set dummy "$_G_hook_result"; shift
+    done
+
+    func_quote_for_eval ${1+"$@"}
+    func_run_hooks_result=$func_quote_for_eval_result
+}
+
+
+
+## --------------- ##
+## Option parsing. ##
+## --------------- ##
+
+# In order to add your own option parsing hooks, you must accept the
+# full positional parameter list in your hook function, remove any
+# options that you action, and then pass back the remaining unprocessed
+# options in '<hooked_function_name>_result', escaped suitably for
+# 'eval'.  Like this:
+#
+#    my_options_prep ()
+#    {
+#        $debug_cmd
+#
+#        # Extend the existing usage message.
+#        usage_message=$usage_message'
+#      -s, --silent       don'\''t print informational messages
+#    '
+#
+#        func_quote_for_eval ${1+"$@"}
+#        my_options_prep_result=$func_quote_for_eval_result
+#    }
+#    func_add_hook func_options_prep my_options_prep
+#
+#
+#    my_silent_option ()
+#    {
+#        $debug_cmd
+#
+#        # Note that for efficiency, we parse as many options as we can
+#        # recognise in a loop before passing the remainder back to the
+#        # caller on the first unrecognised argument we encounter.
+#        while test $# -gt 0; do
+#          opt=$1; shift
+#          case $opt in
+#            --silent|-s) opt_silent=: ;;
+#            # Separate non-argument short options:
+#            -s*)         func_split_short_opt "$_G_opt"
+#                         set dummy "$func_split_short_opt_name" \
+#                             "-$func_split_short_opt_arg" ${1+"$@"}
+#                         shift
+#                         ;;
+#            *)            set dummy "$_G_opt" "$*"; shift; break ;;
+#          esac
+#        done
+#
+#        func_quote_for_eval ${1+"$@"}
+#        my_silent_option_result=$func_quote_for_eval_result
+#    }
+#    func_add_hook func_parse_options my_silent_option
+#
+#
+#    my_option_validation ()
+#    {
+#        $debug_cmd
+#
+#        $opt_silent && $opt_verbose && func_fatal_help "\
+#    '--silent' and '--verbose' options are mutually exclusive."
+#
+#        func_quote_for_eval ${1+"$@"}
+#        my_option_validation_result=$func_quote_for_eval_result
+#    }
+#    func_add_hook func_validate_options my_option_validation
+#
+# You'll alse need to manually amend $usage_message to reflect the extra
+# options you parse.  It's preferable to append if you can, so that
+# multiple option parsing hooks can be added safely.
+
+
+# func_options [ARG]...
+# ---------------------
+# All the functions called inside func_options are hookable. See the
+# individual implementations for details.
+func_hookable func_options
+func_options ()
+{
+    $debug_cmd
+
+    func_options_prep ${1+"$@"}
+    eval func_parse_options \
+        ${func_options_prep_result+"$func_options_prep_result"}
+    eval func_validate_options \
+        ${func_parse_options_result+"$func_parse_options_result"}
+
+    eval func_run_hooks func_options \
+        ${func_validate_options_result+"$func_validate_options_result"}
+
+    # save modified positional parameters for caller
+    func_options_result=$func_run_hooks_result
+}
+
+
+# func_options_prep [ARG]...
+# --------------------------
+# All initialisations required before starting the option parse loop.
+# Note that when calling hook functions, we pass through the list of
+# positional parameters.  If a hook function modifies that list, and
+# needs to propogate that back to rest of this script, then the complete
+# modified list must be put in 'func_run_hooks_result' before
+# returning.
+func_hookable func_options_prep
+func_options_prep ()
+{
+    $debug_cmd
+
+    # Option defaults:
+    opt_verbose=false
+    opt_warning_types=
+
+    func_run_hooks func_options_prep ${1+"$@"}
+
+    # save modified positional parameters for caller
+    func_options_prep_result=$func_run_hooks_result
+}
+
+
+# func_parse_options [ARG]...
+# ---------------------------
+# The main option parsing loop.
+func_hookable func_parse_options
+func_parse_options ()
+{
+    $debug_cmd
+
+    func_parse_options_result=
+
+    # this just eases exit handling
+    while test $# -gt 0; do
+      # Defer to hook functions for initial option parsing, so they
+      # get priority in the event of reusing an option name.
+      func_run_hooks func_parse_options ${1+"$@"}
+
+      # Adjust func_parse_options positional parameters to match
+      eval set dummy "$func_run_hooks_result"; shift
+
+      # Break out of the loop if we already parsed every option.
+      test $# -gt 0 || break
+
+      _G_opt=$1
+      shift
+      case $_G_opt in
+        --debug|-x)   debug_cmd='set -x'
+                      func_echo "enabling shell trace mode"
+                      $debug_cmd
+                      ;;
+
+        --no-warnings|--no-warning|--no-warn)
+                      set dummy --warnings none ${1+"$@"}
+                      shift
+		      ;;
+
+        --warnings|--warning|-W)
+                      test $# = 0 && func_missing_arg $_G_opt && break
+                      case " $warning_categories $1" in
+                        *" $1 "*)
+                          # trailing space prevents matching last $1 above
+                          func_append_uniq opt_warning_types " $1"
+                          ;;
+                        *all)
+                          opt_warning_types=$warning_categories
+                          ;;
+                        *none)
+                          opt_warning_types=none
+                          warning_func=:
+                          ;;
+                        *error)
+                          opt_warning_types=$warning_categories
+                          warning_func=func_fatal_error
+                          ;;
+                        *)
+                          func_fatal_error \
+                             "unsupported warning category: '$1'"
+                          ;;
+                      esac
+                      shift
+                      ;;
+
+        --verbose|-v) opt_verbose=: ;;
+        --version)    func_version ;;
+        -\?|-h)       func_usage ;;
+        --help)       func_help ;;
+
+	# Separate optargs to long options (plugins may need this):
+	--*=*)        func_split_equals "$_G_opt"
+	              set dummy "$func_split_equals_lhs" \
+                          "$func_split_equals_rhs" ${1+"$@"}
+                      shift
+                      ;;
+
+       # Separate optargs to short options:
+        -W*)
+                      func_split_short_opt "$_G_opt"
+                      set dummy "$func_split_short_opt_name" \
+                          "$func_split_short_opt_arg" ${1+"$@"}
+                      shift
+                      ;;
+
+        # Separate non-argument short options:
+        -\?*|-h*|-v*|-x*)
+                      func_split_short_opt "$_G_opt"
+                      set dummy "$func_split_short_opt_name" \
+                          "-$func_split_short_opt_arg" ${1+"$@"}
+                      shift
+                      ;;
+
+        --)           break ;;
+        -*)           func_fatal_help "unrecognised option: '$_G_opt'" ;;
+        *)            set dummy "$_G_opt" ${1+"$@"}; shift; break ;;
+      esac
+    done
+
+    # save modified positional parameters for caller
+    func_quote_for_eval ${1+"$@"}
+    func_parse_options_result=$func_quote_for_eval_result
+}
+
+
+# func_validate_options [ARG]...
+# ------------------------------
+# Perform any sanity checks on option settings and/or unconsumed
+# arguments.
+func_hookable func_validate_options
+func_validate_options ()
+{
+    $debug_cmd
+
+    # Display all warnings if -W was not given.
+    test -n "$opt_warning_types" || opt_warning_types=" $warning_categories"
+
+    func_run_hooks func_validate_options ${1+"$@"}
+
+    # Bail if the options were screwed!
+    $exit_cmd $EXIT_FAILURE
+
+    # save modified positional parameters for caller
+    func_validate_options_result=$func_run_hooks_result
+}
+
+
+
+## ----------------- ##
+## Helper functions. ##
+## ----------------- ##
+
+# This section contains the helper functions used by the rest of the
+# hookable option parser framework in ascii-betical order.
+
+
+# func_fatal_help ARG...
+# ----------------------
+# Echo program name prefixed message to standard error, followed by
+# a help hint, and exit.
+func_fatal_help ()
+{
+    $debug_cmd
+
+    eval \$ECHO \""Usage: $usage"\"
+    eval \$ECHO \""$fatal_help"\"
+    func_error ${1+"$@"}
+    exit $EXIT_FAILURE
+}
+
+
+# func_help
+# ---------
+# Echo long help message to standard output and exit.
+func_help ()
+{
+    $debug_cmd
+
+    func_usage_message
+    $ECHO "$long_help_message"
+    exit 0
+}
+
+
+# func_missing_arg ARGNAME
+# ------------------------
+# Echo program name prefixed message to standard error and set global
+# exit_cmd.
+func_missing_arg ()
+{
+    $debug_cmd
+
+    func_error "Missing argument for '$1'."
+    exit_cmd=exit
+}
+
+
+# func_split_equals STRING
+# ------------------------
+# Set func_split_equals_lhs and func_split_equals_rhs shell variables after
+# splitting STRING at the '=' sign.
+test -z "$_G_HAVE_XSI_OPS" \
+    && (eval 'x=a/b/c;
+      test 5aa/bb/cc = "${#x}${x%%/*}${x%/*}${x#*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/src/gettext.h
+
+/* Convenience header for conditional use of GNU <libintl.h>.
+   Copyright (C) 1995-2024 Free Software Foundation, Inc.
+
+   This program is free software; you can redistribute it and/or modify it
+   under the terms of the GNU General Public License as published
+   by the Free Software Foundation; either version 3, or (at your option)
+   any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU General Public
+   License along with this program; if not, write to the Free Software
+   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,
+   USA.  */
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/src/gdbmimp.c, gdbm-1.24.tar.gz::gdbm-1.24/src/gdbmexp.c
+
+/* This file is part of GDBM, the GNU data base manager.
+   Copyright (C) 2007-2024 Free Software Foundation, Inc.
+
+   GDBM is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 3, or (at your option)
+   any later version.
+
+   GDBM is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with GDBM. If not, see <http://www.gnu.org/licenses/>.   */
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/src/lock.c
+
+/* This file is part of GDBM, the GNU data base manager.
+   Copyright (C) 2008-2024 Free Software Foundation, Inc.
+
+   GDBM is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 3, or (at your option)
+   any later version.
+
+   GDBM is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with GDBM. If not, see <http://www.gnu.org/licenses/>.   */
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/src/mmap.c
+
+/* This file is part of GDBM.
+   Copyright (C) 2007-2024 Free Software Foundation, Inc.
+
+   GDBM is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 3, or (at your option)
+   any later version.
+
+   GDBM is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with GDBM. If not, see <http://www.gnu.org/licenses/>.   */
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/src/gdbm.h.in
+
+/*  This file is part of GDBM, the GNU data base manager, by Philip A. Nelson.
+    Copyright (C) 1990-2024 Free Software Foundation, Inc.
+
+    GDBM is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2, or (at your option)
+    any later version.
+
+    GDBM is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with GDBM. If not, see <http://www.gnu.org/licenses/>.  
+
+    You may contact the author by:
+       e-mail:  phil@cs.wwu.edu
+      us-mail:  Philip A. Nelson
+                Computer Science Department
+                Western Washington University
+                Bellingham, WA 98226
+       
+*************************************************************************/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/src/recover.c
+
+/* This file is part of GDBM, the GNU data base manager.
+   Copyright (C) 2016-2024 Free Software Foundation, Inc.
+
+   GDBM is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 3, or (at your option)
+   any later version.
+
+   GDBM is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with GDBM. If not, see <http://www.gnu.org/licenses/>.   */
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/src/avail.c
+
+/* This file is part of GDBM, the GNU data base manager.
+   Copyright (C) 2021-2024 Free Software Foundation, Inc.
+
+   GDBM is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 3, or (at your option)
+   any later version.
+
+   GDBM is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with GDBM. If not, see <http://www.gnu.org/licenses/>.   */
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/src/debug.c
+
+/* This file is part of GDBM, the GNU data base manager.
+   Copyright 2016-2024 Free Software Foundation, Inc.
+
+   GDBM is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 3, or (at your option)
+   any later version.
+
+   GDBM is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with GDBM. If not, see <http://www.gnu.org/licenses/>.   */
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: gdbm-1.24.tar.gz::gdbm-1.24/src/gdbmfdesc.c
+
+/* This file is part of GDBM, the GNU data base manager.
+   Copyright (C) 1999-2024 Free Software Foundation, Inc.
+
+   GDBM is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 3, or (at your option)
+   any later version.
+
+   GDBM is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with GDBM. If not, see <http://www.gnu.org/licenses/>.   */
+===== END UPSTREAM NOTICE =====

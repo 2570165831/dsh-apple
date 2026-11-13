@@ -1,0 +1,80 @@
+diff --git a/kernel/signal.c b/kernel/signal.c
+--- a/kernel/signal.c
++++ b/kernel/signal.c
+@@ -818,7 +818,7 @@
+ }
+ 
+ static int do_sigaction(int sig, const struct sigaction_ *action, struct sigaction_ *oldaction) {
+-    if (sig >= NUM_SIGS)
++    if (sig < 1 || sig >= NUM_SIGS)
+         return _EINVAL;
+     if (!signal_is_blockable(sig))
+         return _EINVAL;
+@@ -834,6 +834,8 @@
+ }
+ 
+ dword_t sys_rt_sigaction(dword_t signum, addr_t action_addr, addr_t oldaction_addr, dword_t sigset_size) {
++    if (signum == 0 || signum >= NUM_SIGS)
++        return _EINVAL;
+     if (!sigset_size_valid(sigset_size))
+         return _EINVAL;
+     struct sigaction_ action = {}, oldaction;
+diff --git a/tests/regress/regress_sigaction_bounds.c b/tests/regress/regress_sigaction_bounds.c
+new file mode 100644
+--- /dev/null
++++ b/tests/regress/regress_sigaction_bounds.c
+@@ -0,0 +1,54 @@
++// Build: aarch64-linux-musl-gcc -static -O0 -Wall -o sigbounds regress_sigaction_bounds.c
++// Run inside iSH: /tmp/sigbounds
++#define _GNU_SOURCE
++#include <errno.h>
++#include <signal.h>
++#include <stdint.h>
++#include <stdio.h>
++#include <string.h>
++#include <sys/syscall.h>
++#include <unistd.h>
++
++static int pass, fail;
++
++static void check(int ok, const char *what) {
++    if (ok) {
++        pass++;
++        printf("  PASS  %s\n", what);
++    } else {
++        fail++;
++        printf("  FAIL  %s (errno=%d)\n", what, errno);
++    }
++}
++
++int main(void) {
++    uint32_t invalid[] = {0, 64, 0x80000000u, 0xffffffffu};
++    unsigned char action[32] = {0}, old[32], saved[32];
++    for (unsigned i = 0; i < sizeof(invalid) / sizeof(invalid[0]); i++) {
++        memset(old, 0xa5, sizeof(old));
++        errno = 0;
++        long res = syscall(SYS_rt_sigaction, invalid[i], NULL, old, 8);
++        check(res == -1 && errno == EINVAL, "invalid signal query -> EINVAL");
++        unsigned char untouched[32];
++        memset(untouched, 0xa5, sizeof(untouched));
++        check(memcmp(old, untouched, sizeof(old)) == 0, "failed query leaves output alone");
++        errno = 0;
++        res = syscall(SYS_rt_sigaction, invalid[i], action, NULL, 8);
++        check(res == -1 && errno == EINVAL, "invalid signal update -> EINVAL");
++    }
++
++    long res = syscall(SYS_rt_sigaction, SIGUSR1, NULL, saved, 8);
++    check(res == 0, "valid signal query succeeds");
++    if (res == 0) {
++        check(syscall(SYS_rt_sigaction, SIGUSR1, action, NULL, 8) == 0,
++                "valid signal update succeeds");
++        check(syscall(SYS_rt_sigaction, SIGUSR1, saved, NULL, 8) == 0,
++                "restore original action");
++    }
++    errno = 0;
++    check(syscall(SYS_rt_sigaction, SIGKILL, action, NULL, 8) == -1 && errno == EINVAL,
++            "SIGKILL still rejects updates");
++    check(kill(getpid(), 0) == 0, "kill(signal 0) still probes the process");
++    printf("%d passed, %d failed\n", pass, fail);
++    return fail != 0;
++}

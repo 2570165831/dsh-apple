@@ -28,7 +28,7 @@
 // imported. It settles the previous launch, decides this launch's mode, and
 // writes the new attempt. `noteProgress()`, `noteSuccess()` and `noteFailure()`
 // close or advance that attempt from Node. On iOS the page-ready signal is
-// Swift's (`WKWebView.didFinish`), which is why the success outcome arrives as a
+// Swift's (the DSH client readiness check), so the success outcome arrives as a
 // file rather than as a call; the same transition is available in-process as
 // `noteSuccess()` for any caller that does see it.
 //
@@ -747,7 +747,10 @@ export function beginLaunch(options = {}) {
   // consumed. Removing it here keeps the directory readable and stops an old
   // outcome from being counted twice.
   if (options.outcomeFile) consumeOutcomes(options.outcomeFile, outcomeRead.records, launchId);
-  if (options.backgroundFile) unlinkQuiet(options.backgroundFile);
+  // Swift can enter the background before Node begins. Keep this launch's mark.
+  if (options.backgroundFile && readTextFile(options.backgroundFile).value !== launchId) {
+    unlinkQuiet(options.backgroundFile);
+  }
   if (consumedRequest && options.requestFile) unlinkQuiet(options.requestFile);
 
   return {

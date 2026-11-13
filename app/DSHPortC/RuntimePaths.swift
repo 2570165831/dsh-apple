@@ -28,7 +28,9 @@
 //  is inside the app container, is not exposed by file sharing, and is not
 //  reachable from the Files app at all. `Library/Application Support/DSH` — the
 //  DSH home, with the sessions and the profile — is its sibling and stays
-//  exactly where it is.
+//  exactly where it is. Until reset recovery succeeds, the runtime files, boot
+//  state and diagnostics use `reset-staging/launch-<id>/` instead. Failed-launch
+//  evidence stays there until the user explicitly purges staging.
 //
 //  WHY `Library/Application Support` AND NOT `Library/Caches` OR `tmp`:
 //  the log and the status file are how a host-side script observes a run, and
@@ -72,23 +74,49 @@ enum RuntimePaths {
         return directory
     }
 
-    static var statusFile: URL { supportDirectory.appendingPathComponent("DSHPortC-status.json") }
-    static var logFile: URL { supportDirectory.appendingPathComponent("DSHPortC-node.log") }
-    static var sessionURLFile: URL { supportDirectory.appendingPathComponent("DSHPortC-session-url.txt") }
+    private static let resetLock = NSLock()
+    private static var resetSucceeded: Bool?
+
+    /// Lifecycle callbacks must not create runtime paths before recovery ends.
+    static var resetFinished: Bool {
+        resetLock.lock()
+        defer { resetLock.unlock() }
+        return resetSucceeded != nil
+    }
+
+    private static var runtimeDirectory: URL {
+        resetLock.lock()
+        let success = resetSucceeded == true
+        resetLock.unlock()
+        return success ? supportDirectory : resetStagingDirectory
+            .appendingPathComponent("launch-" + BootGuard.launchId, isDirectory: true)
+    }
+
+    static func finishReset(success: Bool) {
+        resetLock.lock()
+        resetSucceeded = success
+        resetLock.unlock()
+        try? FileManager.default.createDirectory(at: runtimeDirectory, withIntermediateDirectories: true)
+    }
+
+    static var statusFile: URL { runtimeDirectory.appendingPathComponent("DSHPortC-status.json") }
+    static var logFile: URL { runtimeDirectory.appendingPathComponent("DSHPortC-node.log") }
+    static var sessionURLFile: URL { runtimeDirectory.appendingPathComponent("DSHPortC-session-url.txt") }
 
     // MARK: - Step 19: the boot guard's directory
 
-    /// `Library/Application Support/DSHPortC/boot/`, created on demand.
+    /// `boot/` under the runtime directory, created on demand. Before successful
+    /// recovery this is `reset-staging/launch-<id>/boot/`, not the original path.
     ///
     /// Everything the boot guard and the reset planner exchange lives here, for
     /// the same reason the three files above do: `Documents/` is visible in the
     /// Files app, and none of this is a user document. `boot/` is also one of the
     /// paths a reset moves wholesale, which is why the reset REQUEST is kept
     /// beside it rather than inside it — see `resetRequestFile`.
-    static var bootDirectory: URL { directory(supportDirectory, "boot") }
+    static var bootDirectory: URL { directory(runtimeDirectory, "boot") }
 
-    /// `Library/Application Support/DSHPortC/diagnostics/`.
-    static var diagnosticsDirectory: URL { directory(supportDirectory, "diagnostics") }
+    /// `diagnostics/` under the same runtime directory as `boot/`.
+    static var diagnosticsDirectory: URL { directory(runtimeDirectory, "diagnostics") }
 
     /// Where an interrupted reset's moved-aside data waits.
     ///

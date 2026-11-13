@@ -84,8 +84,8 @@ must not be read as relicensing them.
 | Distribution | Alpine Linux 3.21, aarch64 |
 | Base image | `alpine-minirootfs-3.21.0-aarch64.tar.gz` |
 | Base image URL | <https://dl-cdn.alpinelinux.org/alpine/v3.21/releases/aarch64/alpine-minirootfs-3.21.0-aarch64.tar.gz> |
-| Corresponding source | Alpine aports, branch `3.21-stable`, at `https://gitlab.alpinelinux.org/alpine/aports/-/tree/3.21-stable/<repo>/<package>` (the read-only GitHub mirror is `https://github.com/alpinelinux/aports/tree/3.21-stable/<repo>/<package>`) |
-| Package metadata | `RootfsPackages.md` in this repository records the exact `pkgver-pkgrel` of every package in the built image, read from `/lib/apk/db/installed` inside the guest |
+| Recipe lookup (not a source archive) | Alpine aports, branch `3.21-stable`, at `https://gitlab.alpinelinux.org/alpine/aports/-/tree/3.21-stable/<repo>/<package>` (the read-only GitHub mirror is `https://github.com/alpinelinux/aports/tree/3.21-stable/<repo>/<package>`) |
+| Package metadata | `RootfsPackages.md` lists the 72 installed packages, exact `pkgver-pkgrel`, license expressions and source-package names recovered from the unchanged image's `/lib/apk/db/installed`. The database `c:` fields identify exact aports commits recorded in each source notice. |
 
 ### 4.1 The three runtimes added in step 24 — called out separately
 
@@ -102,8 +102,9 @@ rather than left to the generated list.
 
 Two notes that matter for compliance rather than for the build:
 
-* **`npm`'s Artistic-2.0 is the first non-copyleft, non-MIT-style license in this
-  image** besides the ISC and X11 items already present. It is GPL-3.0-compatible
+* **`npm` is declared Artistic-2.0 in Alpine metadata.** The generated per-package
+  license column, rather than this runtime summary, identifies the other license
+  families, including any ISC and X11 entries. Artistic-2.0 is GPL-3.0-compatible
   (the FSF lists Artistic-2.0 as compatible), so the aggregate is unaffected, but
   the notice is not optional: the package is distributed inside the app.
 * **`icu-libs` and `icu-data-en` arrive as a dependency of `nodejs`.** They are
@@ -143,15 +144,36 @@ busybox as GPL-3.0 would be wrong in both directions.
 | Why it is in the image | Alpine's `/bin/*` utilities are BusyBox applets; nothing runs in the guest without it |
 | Source-offer | GPLv2 §3(a): a distributor must provide the source of the exact package in their image. The aports recipe and upstream tarball for the recorded `pkgver-pkgrel` are the starting point; they are not kept in this repository. |
 
-Every package that ends up in the image is listed with its version in
-`RootfsPackages.md`, generated from the built image rather than from a plan.
-Licenses are in the tables above and in each package's Alpine metadata.
+Every package that ends up in the image is listed in `RootfsPackages.md`,
+generated from the built image rather than from a plan. New builds include the
+version, Alpine license expression and source-package name for every row.
+The existing image's database was recovered without rebuilding it; its package
+and version columns match the prior 72-entry list. The runtime and BusyBox
+tables above are summaries, not license coverage for the whole image.
+
+Supply each license and exception text in `LICENSES/rootfs/texts/` and the exact
+source package's copyright and component notices in `LICENSES/rootfs/packages/`.
+The collecting instructions and coverage limits are in `LICENSES/rootfs/README.md`.
+The tree now contains 52 source-package/version notice files and 26 terms/exception
+files. Source archives and local files were verified against exact aports recipes;
+the notices include locked Rust crates and recovered npm dependency material.
+Seven nested npm entries still lack a standalone exact-version full grant; their
+original declarations/links and available notices are retained, without inventing
+copyright lines. The presence check passes but does not resolve those limits.
+The generator reports missing or empty files and still exports a development
+image and draft table. `DSH_REQUIRE_NOTICES=1` makes missing
+material fatal before export. These presence checks do not establish the
+completeness of the recovered terms or replace a corresponding-source archive.
 
 **The list describes one build.** Only the base image is pinned; `apk add` installs
 whatever the Alpine 3.21 repositories offer that day, and a rebuild rewrites the
-list. Versions quoted in this file can therefore differ from a fresh build. Whoever
-distributes a build must keep the corresponding source of the packages actually in
-it: a moving branch of aports is not a guarantee that those recipes stay available.
+list. Versions quoted in this file can therefore differ from a fresh build.
+Before distribution, retain the exact aports commits, APKBUILD files, patches
+and upstream distfiles with checksums for the packages in that image, and supply
+the corresponding-source archive with the matching build. The moving branch
+links above are lookup starting points; they are not such an archive. Recording
+an origin or a package version does not identify its repository or aports commit.
+No per-build Alpine source archive is currently provided by this repository.
 
 ## 5. Reference and derived code
 
@@ -176,43 +198,76 @@ are compatible with that.
 
 ## 6. Bundled npm dependencies
 
-`payload/node_modules` is rebuilt from npm by `scripts/fetch-payload.sh` and is not
-kept in this repository. It contains 599 npm packages (519 MIT, 49 Apache-2.0, 15
-BSD-3-Clause, 10 ISC, 2 BSD-2-Clause, and one each of Python-2.0, Unlicense,
-0BSD and MIT-or-CC0-1.0), all transitively required by
-`@deepseek-ai/dsh@0.2.1-rc.2`. Most packages ship a `LICENSE` file inside their directory
-in `payload/node_modules/<name>/`, and those files are the authoritative notices
-for them. These 15 only declare a license in `package.json`, so a distributor has
-to supply the license text:
+`payload/node_modules` is checked into this private repository. Both direct
+packages, `@deepseek-ai/dsh` and
+`@deepseek-ai/dsh-experimental-agent-team-profile`, are pinned to `0.2.1-rc.5`.
+The lock file has 686 dependency entries; the trimmed iOS payload contains 602
+installed packages: 520 MIT, 51 Apache-2.0, 15 BSD-3-Clause, 10 ISC,
+2 BSD-2-Clause, and one each of Python-2.0, Unlicense, 0BSD and
+(MIT OR CC0-1.0). Counts include nested installed dependencies.
 
-- `@aws-sdk/credential-provider-http@3.972.76 (Apache-2.0)`
-- `@aws-sdk/credential-provider-login@3.972.81 (Apache-2.0)`
-- `@aws-sdk/nested-clients@3.997.48 (Apache-2.0)`
-- `@deepseek-ai/dsh-experimental-inspector@0.2.1-rc.2 (MIT)`
-- `@earendil-works/pi-ai@1.3.0 (MIT)`
-- `@earendil-works/pi-telemetry@1.3.0 (MIT)`
-- `@xterm/addon-serialize@0.14.0 (MIT)`
-- `@xterm/headless@6.0.0 (MIT)`
-- `brotli@1.3.3 (MIT)`
-- `data-uri-to-buffer@4.0.1 (MIT)`
-- `dfa@1.2.0 (MIT)`
-- `fontkit@2.0.4 (MIT)`
-- `proxy-agent-negotiate@1.1.0 (MIT)`
-- `saxes@6.0.0 (ISC)`
-- `standardwebhooks@1.1.1 (MIT)`
+The rc.5 update adds `@deepseek-ai/dsh-client-ui-entry-customization` (MIT),
+`@earendil-works/pi-schema@1.5.0` (MIT), and two nested copies of
+`@smithy/node-http-handler@4.14.1` (Apache-2.0), and removes `typebox`.
+The Smithy copies and entry-customization package carry root license texts.
+`pi-schema` carries `LICENSES/typebox-LICENSE` for its copied format validators,
+but no root license for its own work; the component text is retained, and the
+package's MIT grant has now been supplied separately from its exact monorepo tag.
 
-Counted from the packages present after `scripts/fetch-payload.sh`: the lock file
-has 84 more entries, which are not in the payload — 77 optional platform-specific
-packages and the native-code packages iOS cannot load (`sharp`, `koffi`,
-`node-pty`, `@vscode/ripgrep`, `sherpa-onnx-node`,
-`@deepseek-ai/libreoffice-kit` and its bundled `fflate`). `payload/package-lock.json` pins the exact versions, which is what makes the
-corresponding source obtainable. Changes to these packages are in
-`payload-build/payload.patch` and explained in `PATCHES.md`.
+Twelve version-matched supplements have been recovered under `LICENSES/npm/`,
+including the TypeBox component notice and inspector's bundled DevTools notices.
+Each records verified npm integrity and an immutable upstream source revision.
+Four packages declare MIT but publish no grant. `brotli@1.3.3`, `dfa@1.2.0`
+and `fontkit@2.0.4` serve only the removed LibreOffice package and are no longer
+shipped (see `payload/ios-pruning.json`). `proxy-agent-negotiate@1.1.0` ships;
+by the project owner's decision its supplement reproduces the MIT grant of its
+sibling `http-proxy-agent` at the same upstream revision (same repository and
+author), with that provenance stated in the file.
 
-## 6.1 What a built app does not include yet
+The remaining 87 lock entries are not installed in the iOS payload: 70 optional
+entries excluded by the host platform and 17 installed packages removed by the
+iOS policy (including platform binaries and the nested `fflate` of the removed
+LibreOffice package). The exact package and path exclusions are recorded in
+`payload/ios-pruning.json` and replayed, recoverably, by
+`scripts/prune-payload-ios.py`. This policy was checked against every omitted
+file in the old tracked payload; it preserves source files needed by packages
+such as Ajv and only globally omits declarations and source maps.
 
-The build does not copy `LICENSE`, this file or `LICENSES/` into the app, and the
-app has no screen showing them. That has to be added before giving anyone a copy.
+`payload/package-lock.json` records registry tarballs and integrity hashes;
+all resolved URLs use `https://registry.npmjs.org/`. Local source changes and
+the complete content-patch inventory are explained in `PATCHES.md`. The public
+export's fetch script and `payload-build/payload.patch` are not present in this
+private worktree and are not evidence of how this update was performed.
+
+The pending inventory is also in `LICENSES/npm/README.md`. Supply each missing
+package's complete upstream license, original copyright notices and any NOTICE
+in `LICENSES/npm/<name>@<version>.txt`, retaining the slash in scoped names.
+`python3 -B scripts/check-npm-licenses.py payload/node_modules LICENSES/npm`
+checks actual installed packages and currently exits 1 for the four missing texts.
+Its unit tests passing does not establish that the payload has complete notices.
+The public fetch script warns by default and fails with `DSH_REQUIRE_NOTICES=1`;
+app distribution checks also remain in effect.
+
+## 6.1 What a built app includes, and what is still missing
+
+The build copies `LICENSE`, this file, `RootfsPackages.md` and the entire
+`LICENSES/` tree into the app. About and Licences (关于与许可), reached from the
+debug menu with a two-finger long press, shows the three root files, both iSH
+notices and any supplied npm or guest `.txt` notices.
+
+The About screen and three root files were added in `ec86b85`; they are not
+pending work. That debug-menu entry alone is not a claim that the legal notices
+meet GPL §5(d). The four missing payload grants, the guest npm coverage limits and the per-build
+guest corresponding-source archive described above remain outstanding. The
+recovered files and passing presence checks do not establish distribution readiness.
+
+Each app build rechecks npm notices, guest texts, the image/database hashes and
+the displayed inventory. Default Debug builds warn on failure, including with
+old images. Release configurations, install/archive actions and the explicit
+`DSH_REQUIRE_NOTICES=1` build setting fail on missing or stale material.
+Distribution builds must use that switch for payload fetching, image generation
+and the app build. Passing checks does not verify legal completeness or implement
+source distribution.
 
 ## 7. Apple frameworks
 

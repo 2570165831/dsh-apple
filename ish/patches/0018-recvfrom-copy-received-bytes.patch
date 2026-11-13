@@ -1,0 +1,97 @@
+diff --git a/fs/sock.c b/fs/sock.c
+--- a/fs/sock.c
++++ b/fs/sock.c
+@@ -1192,7 +1192,8 @@
+         }
+     }
+ 
+-    if (user_write(buffer_addr, buffer, len)) {
++    size_t copy = (size_t) res < len ? (size_t) res : len;
++    if (copy && user_write(buffer_addr, buffer, copy)) {
+         free(buffer);
+         return _EFAULT;
+     }
+diff --git a/tests/regress/regress_socket_recv.c b/tests/regress/regress_socket_recv.c
+new file mode 100644
+--- /dev/null
++++ b/tests/regress/regress_socket_recv.c
+@@ -0,0 +1,79 @@
++// Short receives must leave the rest of the guest buffer untouched.
++// Build: aarch64-linux-musl-gcc -static -O0 -Wall -o socket_recv regress_socket_recv.c
++// Run:   ish -r <rootfs> /tmp/socket_recv
++#define _GNU_SOURCE
++#include <errno.h>
++#include <stdio.h>
++#include <string.h>
++#include <sys/socket.h>
++#include <sys/uio.h>
++#include <unistd.h>
++
++#define CHECK(cond) do { if (!(cond)) { \
++    printf("FAIL line %d (errno=%d)\n", __LINE__, errno); return 1; \
++} } while (0)
++
++static int tail_untouched(const unsigned char *buf, size_t start, size_t len) {
++    for (size_t i = start; i < len; i++)
++        if (buf[i] != 0xa5)
++            return 0;
++    return 1;
++}
++
++static int short_receive(int type, int nonblock) {
++    int fd[2];
++    CHECK(socketpair(AF_UNIX, type | nonblock, 0, fd) == 0);
++    unsigned char buf[64];
++    const char payload[] = "abc";
++
++    CHECK(send(fd[0], payload, 3, 0) == 3);
++    memset(buf, 0xa5, sizeof(buf));
++    CHECK(recv(fd[1], buf, sizeof(buf), MSG_PEEK) == 3);
++    CHECK(memcmp(buf, payload, 3) == 0 && tail_untouched(buf, 3, sizeof(buf)));
++    memset(buf, 0xa5, sizeof(buf));
++    CHECK(recvfrom(fd[1], buf, sizeof(buf), 0, NULL, NULL) == 3);
++    CHECK(memcmp(buf, payload, 3) == 0 && tail_untouched(buf, 3, sizeof(buf)));
++
++    // recvmsg already copies only the received prefix, across iovecs.
++    CHECK(send(fd[0], payload, 3, 0) == 3);
++    memset(buf, 0xa5, sizeof(buf));
++    struct iovec iov[] = {{buf, 2}, {buf + 2, sizeof(buf) - 2}};
++    struct msghdr m = {.msg_iov = iov, .msg_iovlen = 2};
++    CHECK(recvmsg(fd[1], &m, 0) == 3);
++    CHECK(memcmp(buf, payload, 3) == 0 && tail_untouched(buf, 3, sizeof(buf)));
++
++    if (type == SOCK_STREAM) {
++        CHECK(shutdown(fd[0], SHUT_WR) == 0);
++    } else {
++        CHECK(send(fd[0], NULL, 0, 0) == 0);
++    }
++    memset(buf, 0xa5, sizeof(buf));
++    CHECK(recv(fd[1], buf, sizeof(buf), 0) == 0);
++    CHECK(tail_untouched(buf, 0, sizeof(buf)));
++    if (type == SOCK_DGRAM) {
++        CHECK(send(fd[0], NULL, 0, 0) == 0);
++        CHECK(recv(fd[1], (void *) 1, sizeof(buf), 0) == 0);
++
++        memset(buf, 0x3c, sizeof(buf));
++        CHECK(send(fd[0], buf, sizeof(buf), 0) == sizeof(buf));
++        memset(buf, 0xa5, sizeof(buf));
++        ssize_t n = recv(fd[1], buf, 4, MSG_TRUNC);
++        CHECK(n == 4 || n == sizeof(buf));
++        for (size_t i = 0; i < 4; i++)
++            CHECK(buf[i] == 0x3c);
++        CHECK(tail_untouched(buf, 4, sizeof(buf)));
++    }
++    close(fd[0]);
++    close(fd[1]);
++    return 0;
++}
++
++int main(void) {
++    alarm(10);
++    CHECK(short_receive(SOCK_STREAM, 0) == 0);
++    CHECK(short_receive(SOCK_STREAM, SOCK_NONBLOCK) == 0);
++    CHECK(short_receive(SOCK_DGRAM, 0) == 0);
++    CHECK(short_receive(SOCK_DGRAM, SOCK_NONBLOCK) == 0);
++    puts("PASS socket receive lengths");
++    return 0;
++}

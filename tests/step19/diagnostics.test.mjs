@@ -17,6 +17,7 @@ import {
   DEFAULT_LIMITS, FORBIDDEN_NAMES, collect, exportOnce, isForbiddenPath, materialize,
   pruneExports, redactText, renderBundleText, safeResolve, snapshot, sourceList,
 } from '../../sim/diagnostics.mjs';
+import { REDACTION_CASES } from './diagnostics-fixtures.mjs';
 
 let base;
 
@@ -301,6 +302,34 @@ test('a config file the bundle reads has its key: value secrets removed', () => 
   assert.match(patch.content, /model: deepseek-chat/);
 });
 
+test('redactText covers the shared privacy regression cases', () => {
+  for (const entry of REDACTION_CASES) {
+    const result = redactText(entry.text);
+    for (const secret of entry.secrets) assert.equal(result.text.includes(secret), false, entry.name);
+    for (const kept of entry.kept ?? []) assert.ok(result.text.includes(kept), entry.name);
+    if (entry.omitted) {
+      assert.equal(result.text, '[omitted: multiline sensitive field]\n', entry.name);
+      assert.equal(result.counts['multiline-secret'], 1, entry.name);
+    }
+  }
+});
+
+test('materialized files, manifest and SUMMARY contain no planted private content', () => {
+  for (const entry of REDACTION_CASES) {
+    const tree = fixture();
+    const target = entry.source === 'profile'
+      ? join(tree.dshHome, 'profiles', 'ios-sim', 'cordis.patch.yml')
+      : join(tree.appSupport, entry.source === 'status' ? 'DSHPortC-status.json' : 'DSHPortC-node.log');
+    writeFileSync(target, entry.text);
+    const report = collect({ roots: roots(tree), now: '2026-11-02T00:00:00.000Z' });
+    const written = materialize({ report, outDir: join(tree.root, 'bundle') });
+    for (const file of [written.summaryPath, written.manifestPath, ...written.files]) {
+      const text = readFileSync(file, 'utf8');
+      for (const secret of entry.secrets) assert.equal(text.includes(secret), false, entry.name + ': ' + file);
+    }
+  }
+});
+
 test('the manifest and summary carry no absolute path from the device', () => {
   const tree = fixture();
   // Roots that look like a real container, under the test's own temp directory.
@@ -389,7 +418,7 @@ test('safeResolve refuses escapes and absolute input', () => {
 
 test('a large file is cut to the per-file limit from the tail', () => {
   const tree = fixture();
-  const big = `${`${'x'.repeat(99)}\n`.repeat(4100)}TAIL-MARKER-1234567890\n`;
+  const big = ('node| ' + 'x'.repeat(99) + '\n').repeat(4100) + 'node| TAIL-MARKER-1234567890\n';
   writeFileSync(join(tree.appSupport, 'DSHPortC-node.log'), big);
   const report = collect({
     roots: roots(tree),
@@ -420,7 +449,7 @@ test('a file over the per-file limit but inside the read window is marked "file"
 test('the read window never starts mid-line', () => {
   const tree = fixture();
   const lines = [];
-  for (let index = 0; index < 200; index += 1) lines.push(`line-${String(index).padStart(3, '0')}-${'z'.repeat(40)}`);
+  for (let index = 0; index < 200; index += 1) lines.push(`node| line-${String(index).padStart(3, '0')}-${'z'.repeat(40)}`);
   writeFileSync(join(tree.appSupport, 'DSHPortC-node.log'), `${lines.join('\n')}\n`);
   const report = collect({
     roots: roots(tree),
@@ -428,9 +457,41 @@ test('the read window never starts mid-line', () => {
     now: '2026-11-02T00:00:00.000Z',
   });
   const log = report.files.find((file) => file.id === 'app-log');
-  const body = log.content.split('\n').filter((line) => line.startsWith('line-'));
+  const body = log.content.split('\n').filter((line) => line.startsWith('node| line-'));
   assert.ok(body.length > 0);
-  assert.match(body[0], /^line-\d{3}-z+$/, 'the first kept line is complete');
+  assert.match(body[0], /^node\| line-\d{3}-z+$/, 'the first kept line is complete');
+});
+
+test('a cut log drops old notification continuations and keeps later records', () => {
+  const tree = fixture();
+  writeFileSync(join(tree.appSupport, 'DSHPortC-node.log'),
+    'dshportc: notify delivered question title=private\n' + (FAKE_PLAIN + '\n').repeat(200)
+      + 'dshportc: boot recovered\nnode| TAIL-AFTER-NOTIFICATION\n');
+  const report = collect({
+    roots: roots(tree), limits: { readWindowBytes: 1000 }, now: '2026-11-02T00:00:00.000Z',
+  });
+  const log = report.files.find((file) => file.id === 'app-log');
+  assert.equal(log.truncated, 'window');
+  assert.match(log.content, /boot recovered/);
+  assert.match(log.content, /TAIL-AFTER-NOTIFICATION/);
+  const written = materialize({ report, outDir: join(tree.root, 'bundle') });
+  for (const file of [written.summaryPath, written.manifestPath, ...written.files]) {
+    assert.equal(readFileSync(file, 'utf8').includes(FAKE_PLAIN), false, file);
+  }
+});
+
+test('a structured source cannot export a tail without its field context', () => {
+  for (const source of sourceList().filter((entry) => entry.id !== 'app-log')) {
+    const tree = fixture();
+    writeFileSync(join(roots(tree)[source.root], source.rel),
+      'credentials:\n  provider:\n' + ('    ' + FAKE_PLAIN + '\n').repeat(200));
+    const report = collect({
+      roots: roots(tree), limits: { readWindowBytes: 1000 }, now: '2026-11-02T00:00:00.000Z',
+    });
+    assert.equal(report.files.some((file) => file.id === source.id), false, source.id);
+    assert.ok(report.excluded.some((entry) => entry.path.endsWith(source.rel) && /field context/.test(entry.reason)));
+    assert.equal(renderBundleText(report).includes(FAKE_PLAIN), false, source.id);
+  }
 });
 
 test('the whole-bundle budget truncates the files at the end of the list', () => {

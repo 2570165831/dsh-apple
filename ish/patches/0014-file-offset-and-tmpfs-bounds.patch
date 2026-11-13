@@ -1,0 +1,199 @@
+diff --git a/fs/generic.c b/fs/generic.c
+--- a/fs/generic.c
++++ b/fs/generic.c
+@@ -339,14 +339,15 @@
+ int generic_seek(struct fd *fd, off_t_ off, int whence, size_t size) {
+     off_t_ new_off = fd->offset;
+     if (whence == LSEEK_SET) {
++        if (off < 0)
++            return _EINVAL;
+         fd->offset = off;
+     } else if (whence == LSEEK_CUR) {
+         if (__builtin_add_overflow(new_off, off, &new_off) || new_off < 0)
+             return _EINVAL;
+         fd->offset = new_off;
+     } else if (whence == LSEEK_END) {
+-        new_off = size + off;
+-        if (new_off < 0)
++        if (__builtin_add_overflow(size, off, &new_off) || new_off < 0)
+             return _EINVAL;
+         fd->offset = new_off;
+     } else {
+diff --git a/fs/proc.c b/fs/proc.c
+--- a/fs/proc.c
++++ b/fs/proc.c
+@@ -126,8 +126,7 @@
+     if (fd->proc.entry.meta->pread != NULL) {
+         if (whence == LSEEK_END)
+             return _EINVAL;
+-        // generic_seek checks for a negative result on the CUR and END paths
+-        // but not on LSEEK_SET, which stores the offset verbatim. Since
++        // Reject negative positions before passing them to generic_seek. Since
+         // fd->offset is unsigned, a negative would wrap to a huge value and
+         // then be truncated into a guest address by the pread handler, so
+         // reject it up front. Returning before generic_seek also leaves
+diff --git a/fs/tmp.c b/fs/tmp.c
+--- a/fs/tmp.c
++++ b/fs/tmp.c
+@@ -391,13 +391,15 @@
+         goto out;
+     assert(S_ISREG(inode->stat.mode));
+ 
+-    if (bufsize > inode->stat.size - fd->offset) {
+-        bufsize = inode->stat.size - fd->offset;
+-        if (fd->offset >= inode->stat.size)
+-            bufsize = 0;
+-    }
+-    memcpy(buf, inode->file_data + fd->offset, bufsize);
+-    fd->offset += bufsize;
++    size_t offset = fd->offset;
++    if (bufsize == 0 || offset >= inode->stat.size) {
++        res = 0;
++        goto out;
++    }
++    if (bufsize > inode->stat.size - offset)
++        bufsize = inode->stat.size - offset;
++    memcpy(buf, inode->file_data + offset, bufsize);
++    fd->offset = offset + bufsize;
+     res = bufsize;
+ 
+ out:
+@@ -414,13 +416,22 @@
+         goto out;
+     assert(S_ISREG(inode->stat.mode));
+ 
+-    if (inode->stat.size < fd->offset + bufsize) {
+-        res = tmpfs_file_resize(inode, fd->offset + bufsize);
++    if (bufsize == 0) {
++        res = 0;
++        goto out;
++    }
++    size_t offset = fd->offset;
++    size_t end;
++    res = _EFBIG;
++    if (__builtin_add_overflow(offset, bufsize, &end) || end > INT64_MAX)
++        goto out;
++    if (inode->stat.size < end) {
++        res = tmpfs_file_resize(inode, end);
+         if (res < 0)
+             goto out;
+     }
+-    memcpy(inode->file_data + fd->offset, buf, bufsize);
+-    fd->offset += bufsize;
++    memcpy(inode->file_data + offset, buf, bufsize);
++    fd->offset = end;
+     res = bufsize;
+ 
+ out:
+diff --git a/kernel/fs.c b/kernel/fs.c
+--- a/kernel/fs.c
++++ b/kernel/fs.c
+@@ -543,6 +543,8 @@
+     struct fd *fd = f_get(f);
+     if (fd == NULL)
+         return _EBADF;
++    if (off < 0)
++        return _EINVAL;
+     char *buf = malloc(size+1);
+     if (buf == NULL)
+         return _ENOMEM;
+@@ -580,6 +582,8 @@
+     struct fd *fd = f_get(f);
+     if (fd == NULL)
+         return _EBADF;
++    if (off < 0)
++        return _EINVAL;
+     char *buf = malloc(size+1);
+     if (buf == NULL)
+         return _ENOMEM;
+diff --git a/tests/regress/regress_tmpfs_bounds.c b/tests/regress/regress_tmpfs_bounds.c
+new file mode 100644
+--- /dev/null
++++ b/tests/regress/regress_tmpfs_bounds.c
+@@ -0,0 +1,86 @@
++// Build: aarch64-linux-musl-gcc -static -O0 -Wall -o tmpbounds regress_tmpfs_bounds.c
++// Run in a fresh standalone iSH instance: /tmp/tmpbounds
++#define _GNU_SOURCE
++#include <errno.h>
++#include <fcntl.h>
++#include <stdint.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++#include <sys/mount.h>
++#include <sys/stat.h>
++#include <unistd.h>
++
++static int pass, fail;
++
++static void check(int ok, const char *what) {
++    if (ok) {
++        pass++;
++        printf("  PASS  %s\n", what);
++    } else {
++        fail++;
++        printf("  FAIL  %s (errno=%d)\n", what, errno);
++    }
++}
++
++int main(void) {
++    char dir[] = "/tmp/tmpbounds-XXXXXX", path[128];
++    if (mkdtemp(dir) == NULL || mount("tmpfs", dir, "tmpfs", 0, "") < 0) {
++        perror("mount tmpfs");
++        return 1;
++    }
++    snprintf(path, sizeof(path), "%s/file", dir);
++    int fd = open(path, O_CREAT | O_RDWR, 0600);
++    if (fd < 0) {
++        perror("open tmpfs file");
++        return 1;
++    }
++    unsigned char data[256], out[257];
++    memset(data, 0x5a, sizeof(data));
++    check(write(fd, data, sizeof(data)) == sizeof(data), "seed tmpfs file");
++    check(lseek(fd, 4096, SEEK_SET) == 4096, "seek beyond EOF is allowed");
++    memset(out, 0xa5, sizeof(out));
++    check(read(fd, out, sizeof(out)) == 0, "read beyond EOF returns zero");
++    check(out[0] == 0xa5 && out[256] == 0xa5, "EOF leaves destination alone");
++    check(lseek(fd, 0, SEEK_CUR) == 4096, "EOF does not move the offset");
++
++    check(lseek(fd, 8, SEEK_SET) == 8, "set a known offset");
++    errno = 0;
++    check(lseek(fd, -256, SEEK_SET) == -1 && errno == EINVAL, "negative SEEK_SET -> EINVAL");
++    check(lseek(fd, 0, SEEK_CUR) == 8, "failed SEEK_SET preserves offset");
++    errno = 0;
++    check(pread(fd, out, sizeof(out), -256) == -1 && errno == EINVAL, "negative pread -> EINVAL");
++    errno = 0;
++    check(pwrite(fd, data, sizeof(data), -256) == -1 && errno == EINVAL, "negative pwrite -> EINVAL");
++    errno = 0;
++    check(lseek(fd, -257, SEEK_END) == -1 && errno == EINVAL, "negative resulting SEEK_END -> EINVAL");
++    errno = 0;
++    check(lseek(fd, -9, SEEK_CUR) == -1 && errno == EINVAL, "negative resulting SEEK_CUR -> EINVAL");
++    errno = 0;
++    check(lseek(fd, INT64_MAX, SEEK_END) == -1 && errno == EINVAL, "overflowing SEEK_END -> EINVAL");
++    errno = 0;
++    check(lseek(fd, INT64_MAX, SEEK_CUR) == -1 && errno == EINVAL, "overflowing SEEK_CUR -> EINVAL");
++    check(lseek(fd, 0, SEEK_CUR) == 8, "all failed operations preserve offset");
++
++    check(lseek(fd, INT64_MAX - 1, SEEK_SET) == INT64_MAX - 1, "seek near signed offset limit");
++    errno = 0;
++    check(write(fd, "test", 4) == -1 && errno == EFBIG, "overflowing write -> EFBIG");
++    check(lseek(fd, 0, SEEK_CUR) == INT64_MAX - 1, "failed write preserves offset");
++    check(write(fd, "", 0) == 0, "zero-length write does not grow the file");
++    check(read(fd, out, 1) == 0, "very large EOF offset is safe");
++    struct stat st;
++    check(fstat(fd, &st) == 0 && st.st_size == 256, "failed writes preserve file size");
++
++    check(lseek(fd, 512, SEEK_SET) == 512, "seek to create a small hole");
++    check(write(fd, "Q", 1) == 1, "write after a small hole succeeds");
++    check(pread(fd, out, sizeof(out), 256) == sizeof(out), "read back the hole");
++    int zero = 1;
++    for (unsigned i = 0; i < 256; i++)
++        if (out[i] != 0)
++            zero = 0;
++    check(zero && out[256] == 'Q', "hole is zero-filled and payload is intact");
++    close(fd);
++    // tmpfs umount is unimplemented; the standalone iSH process owns this mount.
++    printf("%d passed, %d failed\n", pass, fail);
++    return fail != 0;
++}

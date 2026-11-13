@@ -1,0 +1,39 @@
+Package: proxy-agent-negotiate@1.1.0
+Published package: https://registry.npmjs.org/proxy-agent-negotiate/-/proxy-agent-negotiate-1.1.0.tgz
+npm tarball integrity (verified): sha512-N8IBcM3UgCVzz2L2Lqv8DVntDnnC8/hiV4nEDUPkqq72TPUgYWjQc+bdZlBPZK9LzPAvOY//gAt0S0DApoOXWQ==
+Upstream revision: b7e5f7ccce1a3ac5b339cc4c587974e8989cbc16 (tag proxy-agent-negotiate@1.1.0)
+Source archive: https://codeload.github.com/TooTallNate/proxy-agents/tar.gz/b7e5f7ccce1a3ac5b339cc4c587974e8989cbc16
+Declared license: MIT (package.json "license"); author: Nathan Rajlich <nathan@tootallnate.net>
+
+Provenance of the text below: neither the published package nor its own
+directory in the upstream monorepo (packages/negotiate) ships a license file.
+By decision of this project's owner, the text below is copied verbatim from
+packages/http-proxy-agent/LICENSE at the same upstream revision — a sibling
+package in the same repository by the same author, also declared MIT
+(SHA-256 71368fd0f5b4129191e9afcd1e1ef2dc89a9090d3e4d80bbab92dafd032b3bef).
+It is the closest authentic upstream grant available; it is not a text
+published by upstream for this package itself.
+
+----------------------------------------------------------------------
+(The MIT License)
+
+Copyright (c) 2013 Nathan Rajlich <nathan@tootallnate.net>
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+'Software'), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

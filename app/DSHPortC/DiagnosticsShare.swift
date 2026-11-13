@@ -132,8 +132,9 @@ enum DiagnosticsShare {
     ///     `SUMMARY.txt`, `manifest.json` and `files/NN-*`.
     ///
     /// Every one of them is read through `copyRedacted`: regular files only (a
-    /// symbolic link is not followed), at most `maxFileBytes` from the end, and
-    /// through `redact`, which mirrors `redactText()` in `sim/diagnostics.mjs`.
+    /// symbolic link is not followed), at most `readWindowBytes` before redaction,
+    /// then capped at `maxFileBytes` and the remaining package budget. Cut logs
+    /// keep only prefixed records; other files need complete field context.
     /// The comments above say why each file *should* already be clean; this path
     /// runs exactly when something went wrong, so it does not rely on that.
     ///   * `SUMMARY.txt` — what is in the bundle, and the statement that Node did
@@ -208,7 +209,7 @@ enum DiagnosticsShare {
 
         生成时间：\(stamp)
         Node 未参与：这一份由 App 直接组装，因为这次启动没有走到 Node 应答那一步。
-        每个文件都经过 App 端脱敏（密钥、令牌、URL 账号密码、用户目录和容器编号），单个文件最多保留末尾 \(maxFileBytes / 1024) KB。
+        每个文件都经过 App 端脱敏（密钥、令牌、URL 账号密码、用户目录和容器编号），单个文件脱敏后最多保留末尾 \(maxFileBytes / 1024) KB，无法完整脱敏的文件省略。
 
         包内文件：
         \(copied.map { "  - \($0)" }.joined(separator: "\n"))
@@ -321,6 +322,7 @@ enum DiagnosticsShare {
     /// `sim/diagnostics.mjs`.
     static let maxFileBytes = 256 * 1024
     static let maxTotalBytes = 2 * 1024 * 1024
+    static let readWindowBytes = 1024 * 1024
 
     private enum CopyResult {
         case copied(String)
@@ -331,10 +333,9 @@ enum DiagnosticsShare {
     /// Copy one whitelisted file as redacted text.
     ///
     /// Only a regular file is read, and it is opened with `O_NOFOLLOW`, so a link
-    /// put where a log belongs cannot make the package read something else. Only
-    /// the tail is kept (a log in an error loop grows at the end, and the end is
-    /// where the failure is); the first partial line of a cut file is dropped,
-    /// as Node does, so a secret split by the cut cannot slip past the patterns.
+    /// put where a log belongs cannot make the package read something else. A
+    /// cut log keeps complete, prefixed records. Other files need field context.
+    /// Output is capped only after redaction, including when little budget remains.
     private static func copyRedacted(from source: URL, to destination: URL, budget: inout Int) -> CopyResult {
         let fileManager = FileManager.default
         guard let attributes = try? fileManager.attributesOfItem(atPath: source.path) else {
@@ -346,7 +347,11 @@ enum DiagnosticsShare {
         }
         guard budget > 0 else { return .skipped("超出整包大小上限，未包含") }
         let size = (attributes[.size] as? NSNumber)?.intValue ?? 0
-        let window = max(0, min(size, maxFileBytes, budget))
+        let window = max(0, min(size, readWindowBytes))
+        let cut = window < size
+        let isLog = source.lastPathComponent == "DSHPortC-node.log"
+            || source.lastPathComponent.hasSuffix("-appSupport_DSHPortC-node.log")
+        guard !cut || isLog else { return .skipped("超出完整脱敏的读取范围，未包含") }
 
         var bytes = Data()
         if window > 0 {
@@ -360,8 +365,7 @@ enum DiagnosticsShare {
                 return .skipped("读取失败")
             }
         }
-        let truncated = window < size
-        if truncated {
+        if cut {
             if let newline = bytes.firstIndex(of: 0x0A) {
                 bytes = bytes.subdata(in: bytes.index(after: newline)..<bytes.endIndex)
             } else {
@@ -369,20 +373,35 @@ enum DiagnosticsShare {
             }
         }
         if bytes.prefix(8192).contains(0) { return .skipped("二进制文件，未包含") }
-        guard let text = String(data: bytes, encoding: .utf8) else {
+        guard var text = String(data: bytes, encoding: .utf8) else {
             return .skipped("不是 UTF-8 文本，未包含")
         }
+        if cut {
+            // Match Node: a continuation from an old delivery message has no prefix.
+            text = text.components(separatedBy: "\n")
+                .filter { $0.hasPrefix("node| ") || $0.hasPrefix("dshportc: ") }
+                .joined(separator: "\n")
+        }
         guard let clean = redactOrNil(text) else { return .skipped("脱敏规则不可用，未包含") }
-        let body = truncated
-            ? "[truncated: kept the last \(bytes.count) of \(size) bytes]\n\(clean)"
-            : clean
+        let limit = min(maxFileBytes, budget)
+        let truncated = cut || clean.utf8.count > limit
+        let marker = truncated ? "[truncated: tail of \(size)-byte file]\n" : ""
+        let prefix = marker.utf8.count <= limit ? marker : ""
+        let body = prefix + tailText(clean, maxBytes: limit - prefix.utf8.count)
         do {
             try body.write(to: destination, atomically: true, encoding: .utf8)
         } catch {
             return .skipped("写入失败")
         }
         budget -= body.utf8.count
-        return .copied(truncated ? "只保留末尾 \(bytes.count) / \(size) 字节" : "")
+        return .copied(truncated ? "已截取末尾，包含 \(body.utf8.count) 字节" : "")
+    }
+
+    /// Keep a UTF-8 suffix after redaction, within the remaining output budget.
+    private static func tailText(_ text: String, maxBytes: Int) -> String {
+        var bytes = Data(text.utf8).suffix(max(0, maxBytes))
+        while let first = bytes.first, first & 0xC0 == 0x80 { bytes = bytes.dropFirst() }
+        return String(decoding: bytes, as: UTF8.self)
     }
 
     /// `redactOrNil`, or a placeholder when the rules are unavailable.
@@ -396,7 +415,8 @@ enum DiagnosticsShare {
     /// Returns nil when any pattern failed to compile: a rule list with a hole in
     /// it would look like it ran, so the caller leaves the file out instead.
     static func redactOrNil(_ text: String) -> String? {
-        guard let rules = redactionRules else { return nil }
+        guard let rules = redactionRules, let multiline = hasMultilineSecret(text) else { return nil }
+        if multiline { return "[omitted: multiline sensitive field]\n" }
         var out = NodeRunner.redact(text)
         for rule in rules { out = rule.apply(out) }
         return out
@@ -470,7 +490,7 @@ enum DiagnosticsShare {
     // The patterns, one for one with `REDACTIONS` in `sim/diagnostics.mjs`.
     // ICU set syntax differs from JavaScript's: `[`, `{`, `}`, `&` and `-` are
     // escaped inside brackets so none of them is read as a set operator.
-    private static let strongKeys = #"(?:api[_\-]?key|api[_\-]?token|access[_\-]?token|refresh[_\-]?token|id[_\-]?token|auth[_\-]?token|session[_\-]?token|bearer[_\-]?token|[_\-]token|access[_\-]?key|secret[_\-]?key|private[_\-]?key|client[_\-]?secret|secret|password|passwd|passphrase|credentials?)"#
+    private static let strongKeys = #"(?:api[_\-]?key|api[_\-]?token|access[_\-]?token|refresh[_\-]?token|id[_\-]?token|auth[_\-]?token|session[_\-]?token|bearer[_\-]?token|[_\-]token|access[_\-]?key|secret[_\-]?key|private[_\-]?key|client[_\-]?secret|secret|password|passwd|passphrase|credentials?|(?:set[_\-]?)?cookies?)"#
     private static let weakKeys = #"(?:token|auth|authorization|bearer|pwd)"#
     private static let fieldValue = #"("(?:[^"\\\n]|\\.)*"|'(?:[^'\n]|'')*'|[^\s"',\}\]][^\n]*?(?=[ \t\r]*$))"#
     private static let notRedacted = #"(?!["']?<redacted)"#
@@ -482,9 +502,81 @@ enum DiagnosticsShare {
         #"(^|[^A-Za-z0-9_\-])([A-Za-z0-9_\-]*?"# + strongKeys + #")="# + notRedacted
         + #"("(?:[^"\\\n]|\\.)*"|'[^'\n]*'|[^\s\&"'#;=][^\s\&"'#;]*)"#
 
+    private static let sensitiveFields: [NSRegularExpression]? = {
+        let patterns = [
+            #"(^[ \t]*(?:-[ \t]+)?|[^A-Za-z0-9_\-])(["']?)([A-Za-z0-9_\-]*?"# + strongKeys + #")\2[ \t]*:[ \t]*"#,
+            #"(^[ \t]*(?:-[ \t]+)?|[|>\{,\[][ \t]*)(["']?)("# + weakKeys + #")\2[ \t]*:[ \t]*"#,
+        ]
+        var result: [NSRegularExpression] = []
+        for pattern in patterns {
+            guard let regex = try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive]) else { return nil }
+            result.append(regex)
+        }
+        return result
+    }()
+
+    /// The same conservative field check as hasMultilineSecret in Node.
+    private static func hasMultilineSecret(_ text: String) -> Bool? {
+        guard let patterns = sensitiveFields else { return nil }
+        let lines = text.components(separatedBy: "\n").map { $0.hasSuffix("\r") ? String($0.dropLast()) : $0 }
+        for (index, line) in lines.enumerated() {
+            let source = line as NSString
+            for pattern in patterns {
+                for field in pattern.matches(in: line, range: NSRange(location: 0, length: source.length)) {
+                    let prefix = source.substring(with: field.range(at: 1))
+                    let atStart = field.range.location == 0
+                        && prefix.range(of: #"^[ \t]*(?:-[ \t]+)?$"#, options: .regularExpression) != nil
+                    let indent = atStart ? prefix.count : line.prefix { $0 == " " || $0 == "\t" }.count
+                    let value = source.substring(from: NSMaxRange(field.range))
+                        .replacingOccurrences(of: #"^(?:!\S+[ \t]+)+"#, with: "", options: .regularExpression)
+                        .trimmingCharacters(in: .whitespacesAndNewlines)
+                    if value.range(of: #"^[|>][+\-]?\d*[+\-]?(?:[ \t]+#.*)?$"#, options: .regularExpression) != nil
+                        || value.range(of: #"^"(?:[^"\\]|\\.)*\\?$|^'(?:[^']|'')*$"#, options: .regularExpression) != nil {
+                        return true
+                    }
+                    if value.hasPrefix("\"") || value.hasPrefix("'") { continue }
+                    // Only a key position can own an indented continuation, not an error sentence.
+                    let before = source.substring(to: NSMaxRange(field.range(at: 1)))
+                    if !atStart, before.range(of: #"[|>\{,\[][ \t]*$"#, options: .regularExpression) == nil { continue }
+                    var next = index + 1
+                    while next < lines.count,
+                          lines[next].range(of: #"^[ \t]*(?:#.*)?$"#, options: .regularExpression) != nil {
+                        next += 1
+                    }
+                    guard next < lines.count else { continue }
+                    let following = lines[next]
+                    let depth = following.prefix { $0 == " " || $0 == "\t" }.count
+                    let trimmed = following.replacingOccurrences(of: #"^[ \t]*"#, with: "", options: .regularExpression)
+                    let key = source.substring(with: field.range(at: 3)).lowercased()
+                    // Empty auth mappings are settings namespaces; check their child keys in turn.
+                    if key == "auth", value.range(of: #"^(?:#.*)?$"#, options: .regularExpression) != nil,
+                       trimmed.range(of: #"^["']?[^"' \t:]+["']?[ \t]*:(?:[ \t]|$)"#, options: .regularExpression) != nil {
+                        continue
+                    }
+                    if depth > indent || (depth == indent
+                        && trimmed.range(of: #"^-[ \t]+"#, options: .regularExpression) != nil) {
+                        return true
+                    }
+                }
+            }
+        }
+        return false
+    }
+
     private static let redactionRules: [RedactionRule]? = {
         let lines: NSRegularExpression.Options = [.caseInsensitive, .anchorsMatchLines]
         let specs: [(String, NSRegularExpression.Options, ([String]) -> String)] = [
+            // legacy-notification-log, bridge-payload, notification-content, cookie-values, cookie-pair
+            (#"^.*\bdshportc: notify delivered\b[^\n]*[ \t]title=[\s\S]*$"#, lines,
+             { _ in "[omitted: legacy notification content]\n" }),
+            (#"^.*\bDSHPORTC_(?:NOTIFY|BUSY)\b[^\n]*$"#, [.anchorsMatchLines],
+             { _ in "[omitted: bridge payload]" }),
+            (#"("(?:title|body)"\s*:\s*)(?!"<redacted>")"(?:[^"\\]|\\[\s\S])*""#,
+             [.caseInsensitive], { expand(#"$1"<redacted>""#, $0) }),
+            (#"((["']?)(?:set[_\-]?)?cookies?\2[ \t]*:[ \t]*)\[(?:"(?:[^"\\]|\\[\s\S])*"|'(?:[^']|'')*'|[^\]"'])*\]"#,
+             [.caseInsensitive], { expand(#"$1"<redacted>""#, $0) }),
+            (#"(["'](?:set[_\-]?)?cookies?["']\s*,\s*)("(?:[^"\\]|\\[\s\S])*"|'(?:[^']|'')*')"#,
+             [.caseInsensitive], { expand(#"$1"<redacted>""#, $0) }),
             // authorization-header, cookie-header
             (#"(^|[|>\s])authorization[ \t]*:[^\n]*$"#, lines, { expand("$1Authorization: <redacted>", $0) }),
             (#"(^|[|>\s])(?:set-)?cookie[ \t]*:[^\n]*$"#, lines, { expand("$1Cookie: <redacted>", $0) }),

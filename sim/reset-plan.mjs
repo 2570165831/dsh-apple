@@ -87,6 +87,9 @@ export const TIERS = Object.freeze({
   guest: Object.freeze([
     { at: 'container', rel: 'Library/Application Support/ish-root', kind: 'dir', reason: 'the Linux guest image; re-importing it from the bundle takes minutes and loses whatever was installed in it' },
   ]),
+  guestBackups: Object.freeze([
+    { at: 'container', rel: 'Library/Application Support/ish-root-previous', kind: 'dir', reason: 'old Linux guests; move to reset staging only on request, then confirm clearing staging to reclaim space' },
+  ]),
 });
 
 /** The four combinations the Swift sheet offers, as stable keys. */
@@ -280,11 +283,12 @@ export function dedupeNested(paths) {
   return kept;
 }
 
-function tierEntries({ keepConversations, keepSettings, includeGuestImage }) {
+function tierEntries({ keepConversations, keepSettings, includeGuestImage, includeGuestBackups }) {
   const entries = [...TIERS.always];
   if (keepConversations !== true) entries.push(...TIERS.conversations);
   if (keepSettings !== true) entries.push(...TIERS.settings);
   if (includeGuestImage === true) entries.push(...TIERS.guest);
+  if (includeGuestBackups === true) entries.push(...TIERS.guestBackups);
   return entries;
 }
 
@@ -303,6 +307,7 @@ function rootFor(at, { realRoot, dshHome, appSupport }) {
  * @param {boolean} options.keepConversations
  * @param {boolean} options.keepSettings
  * @param {boolean} [options.includeGuestImage] also drop the Linux guest image
+ * @param {boolean} [options.includeGuestBackups] also move old Linux guests to reset staging
  * @param {string} [options.dshHome] override, must be inside `root`
  * @param {string} [options.appSupport] override, must be inside `root`
  * @param {Date|number|string} [options.now]
@@ -312,11 +317,16 @@ function rootFor(at, { realRoot, dshHome, appSupport }) {
  */
 export function computeResetPlan(options = {}) {
   const {
-    root, keepConversations, keepSettings, includeGuestImage = false, now = new Date(),
+    root, keepConversations, keepSettings, includeGuestImage = false, includeGuestBackups = false,
+    now = new Date(),
   } = options;
   const { realRoot } = assertRoot(root);
   if (typeof keepConversations !== 'boolean' || typeof keepSettings !== 'boolean') {
     throw new ResetPlanError('keepConversations and keepSettings must be booleans', 'options-invalid');
+  }
+  if (includeGuestBackups === true
+      && lstatOrNull(join(realRoot, 'Library', 'Application Support', 'ish-root.install-backup')) !== null) {
+    throw new ResetPlanError('old guests are still needed for Linux image recovery; reopen the app before moving them', 'guest-recovery');
   }
   // An override keeps the caller's own spelling — `URL(...).path` and
   // `os.tmpdir()` both answer `/var/...` on a Mac and a phone, where the real
@@ -342,7 +352,7 @@ export function computeResetPlan(options = {}) {
   const missing = [];
   const covered = new Set();
 
-  for (const entry of tierEntries({ keepConversations, keepSettings, includeGuestImage })) {
+  for (const entry of tierEntries({ keepConversations, keepSettings, includeGuestImage, includeGuestBackups })) {
     const base = rootFor(entry.at, { realRoot, dshHome, appSupport });
     const absolute = resolve(base.path, entry.rel);
     const relFromRoot = boundary.relative(absolute);
@@ -416,6 +426,16 @@ export function computeResetPlan(options = {}) {
     }
   }
 
+  if (includeGuestBackups === false) {
+    for (const entry of TIERS.guestBackups) {
+      const absolute = resolve(realRoot, entry.rel);
+      const rel = boundary.relative(absolute);
+      if (rel !== null && existsSync(absolute)) {
+        keep.push({ path: absolute, relative: rel, reason: `kept: ${entry.reason}` });
+      }
+    }
+  }
+
   // Anything else in DSH_HOME is reported, never planned. A reset that removes a
   // directory it does not recognise is one build away from removing something
   // the user needs.
@@ -439,7 +459,7 @@ export function computeResetPlan(options = {}) {
     realRoot,
     dshHome,
     appSupport,
-    options: { keepConversations, keepSettings, includeGuestImage },
+    options: { keepConversations, keepSettings, includeGuestImage, includeGuestBackups },
     staging: {
       name: STAGING.name,
       path: join(realRoot, STAGING.relative),
@@ -524,7 +544,7 @@ export function previewCombos(options = {}) {
  * The paths are relative to the app data container and name no install, so the
  * same strings are correct on every device and after a reinstall.
  *
- * @returns {{always: object[], conversations: object[], settings: object[], guest: object[]}}
+ * @returns {{always: object[], conversations: object[], settings: object[], guest: object[], guestBackups: object[]}}
  *   for each tier, `{relative, kind, reason}` with `relative` container-relative
  */
 export function relativeTable() {
@@ -550,7 +570,7 @@ export function relativeTable() {
  *
  * @returns {Record<string, string[]>}
  */
-export function relativeCombos() {
+export function relativeCombos({ includeGuestBackups = false } = {}) {
   const table = relativeTable();
   const out = {};
   for (const key of COMBO_KEYS) {
@@ -559,6 +579,7 @@ export function relativeCombos() {
     const list = [...table.always];
     if (!keepConversations) list.push(...table.conversations);
     if (!keepSettings) list.push(...table.settings);
+    if (includeGuestBackups) list.push(...table.guestBackups);
     out[key] = dedupeNested(list.map((entry) => entry.relative));
   }
   return out;

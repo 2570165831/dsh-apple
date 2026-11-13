@@ -1,0 +1,3210 @@
+Source package: sqlite@3.48.0-r4
+Alpine aports revision (installed database c: field): ee0eac4d746e3a414cacb3186b3577ccc4342c07
+Recipe: https://raw.githubusercontent.com/alpinelinux/aports/ee0eac4d746e3a414cacb3186b3577ccc4342c07/main/sqlite/APKBUILD
+Recipe SHA-256: 8680c88bcb8fff55cc019a2e94a7ec836a5e413d7b2140cf0cc2e338e84a88c4
+Installed subpackages: sqlite-libs
+
+Sources verified against the exact APKBUILD checksums:
+https://distfiles.alpinelinux.org/distfiles/v3.21/sqlite-autoconf-3480000.tar.gz
+SHA-256: ac992f7fca3989de7ed1fe99c16363f848794c8c32a158dafd4eb927a2e02fd5
+SHA-512: c607cbc58cdef6910a87ddb6ae8aeabdab2769d6cc33aad04f31fc428ecc5a8eaf19f5d3a3590591aae2c920b106a684891d38efef712f91631602245f6f4d3d
+
+Alpine-local sources (immutable revision above):
+https://raw.githubusercontent.com/alpinelinux/aports/ee0eac4d746e3a414cacb3186b3577ccc4342c07/main/sqlite/CVE-2025-29088.patch
+SHA-256: af1d6f0703ae71bedc9ccbe974d7bbfa037da66a87d7d6ff9c59bc916da42b84
+https://raw.githubusercontent.com/alpinelinux/aports/ee0eac4d746e3a414cacb3186b3577ccc4342c07/main/sqlite/CVE-2025-29087.patch
+SHA-256: d08e0ceb237c52bbbfc1d904392e29cf51f4726a6f2ac8370c3e288007dbeace
+https://raw.githubusercontent.com/alpinelinux/aports/ee0eac4d746e3a414cacb3186b3577ccc4342c07/main/sqlite/CVE-2025-6965.patch
+SHA-256: 9d7b933716e86c599325d60d1a6467bdb2e2bc28098825450023226b07604280
+https://raw.githubusercontent.com/alpinelinux/aports/ee0eac4d746e3a414cacb3186b3577ccc4342c07/main/sqlite/pkgconf-libs-private.patch
+SHA-256: 5117a123c274b736ceb1c05689da448babb7ec1b03496df4ad21737b1a2aa824
+https://www.sqlite.org/src/raw?name=LICENSE.md&ci=version-3.48.0
+SHA-256: a7a58d6022c090c528e3167026167b3141d682efc6a3c188b473ba59f1788fc7
+
+The following are verbatim license/copyright/author files and source comment
+notices from these sources. Identical notices are printed once with all paths.
+The source collection can include build/test material beyond the shipped subset.
+This notice collection does not supply corresponding source.
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/Makefile.in
+
+# Copyright (C) 1994-2021 Free Software Foundation, Inc.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/aclocal.m4
+
+# Copyright (C) 1996-2021 Free Software Foundation, Inc.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/aclocal.m4
+
+# libtool.m4 - Configure libtool for the host system. -*-Autoconf-*-
+#
+#   Copyright (C) 1996-2001, 2003-2019, 2021-2022 Free Software
+#   Foundation, Inc.
+#   Written by Gordon Matzigkeit, 1996
+#
+# This file is free software; the Free Software Foundation gives
+# unlimited permission to copy and/or distribute it, with or without
+# modifications, as long as this notice is preserved.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/aclocal.m4
+
+# Copyright (C) 2014 Free Software Foundation, Inc.
+# This is free software; see the source for copying conditions.  There is NO
+# warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/aclocal.m4
+
+# GNU Libtool is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of of the License, or
+# (at your option) any later version.
+#
+# As a special exception to the GNU General Public License, if you
+# distribute this file as part of a program or library that is built
+# using GNU Libtool, you may include this file under the  same
+# distribution terms that you use for the rest of that program.
+#
+# GNU Libtool is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/aclocal.m4
+
+# Helper functions for option handling.                    -*- Autoconf -*-
+#
+#   Copyright (C) 2004-2005, 2007-2009, 2011-2019, 2021-2022 Free
+#   Software Foundation, Inc.
+#   Written by Gary V. Vaughan, 2004
+#
+# This file is free software; the Free Software Foundation gives
+# unlimited permission to copy and/or distribute it, with or without
+# modifications, as long as this notice is preserved.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/aclocal.m4
+
+# ltsugar.m4 -- libtool m4 base layer.                         -*-Autoconf-*-
+#
+# Copyright (C) 2004-2005, 2007-2008, 2011-2019, 2021-2022 Free Software
+# Foundation, Inc.
+# Written by Gary V. Vaughan, 2004
+#
+# This file is free software; the Free Software Foundation gives
+# unlimited permission to copy and/or distribute it, with or without
+# modifications, as long as this notice is preserved.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/aclocal.m4
+
+# ltversion.m4 -- version numbers			-*- Autoconf -*-
+#
+#   Copyright (C) 2004, 2011-2019, 2021-2022 Free Software Foundation,
+#   Inc.
+#   Written by Scott James Remnant, 2004
+#
+# This file is free software; the Free Software Foundation gives
+# unlimited permission to copy and/or distribute it, with or without
+# modifications, as long as this notice is preserved.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/aclocal.m4
+
+# lt~obsolete.m4 -- aclocal satisfying obsolete definitions.    -*-Autoconf-*-
+#
+#   Copyright (C) 2004-2005, 2007, 2009, 2011-2019, 2021-2022 Free
+#   Software Foundation, Inc.
+#   Written by Scott James Remnant, 2004.
+#
+# This file is free software; the Free Software Foundation gives
+# unlimited permission to copy and/or distribute it, with or without
+# modifications, as long as this notice is preserved.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/aclocal.m4
+
+# Copyright (C) 2002-2021 Free Software Foundation, Inc.
+#
+# This file is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/aclocal.m4, sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/aclocal.m4, sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/aclocal.m4, sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/aclocal.m4, sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/aclocal.m4, sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/aclocal.m4
+
+# Copyright (C) 2001-2021 Free Software Foundation, Inc.
+#
+# This file is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/aclocal.m4, sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/aclocal.m4
+
+# Copyright (C) 1997-2021 Free Software Foundation, Inc.
+#
+# This file is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/aclocal.m4, sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/aclocal.m4, sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/aclocal.m4
+
+# Copyright (C) 1999-2021 Free Software Foundation, Inc.
+#
+# This file is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/aclocal.m4, sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/aclocal.m4
+
+# Copyright (C) 1996-2021 Free Software Foundation, Inc.
+#
+# This file is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/aclocal.m4
+
+# Copyright (C) 2003-2021 Free Software Foundation, Inc.
+#
+# This file is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/aclocal.m4
+
+# Copyright (C) 2009-2021 Free Software Foundation, Inc.
+#
+# This file is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/aclocal.m4
+
+# Copyright (C) 2006-2021 Free Software Foundation, Inc.
+#
+# This file is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/aclocal.m4
+
+# Copyright (C) 2004-2021 Free Software Foundation, Inc.
+#
+# This file is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/shell.c
+
+/*
+** 2001 September 15
+**
+** The author disclaims copyright to this source code.  In place of
+** a legal notice, here is a blessing:
+**
+**    May you do good and not evil.
+**    May you find forgiveness for yourself and forgive others.
+**    May you share freely, never taking more than you give.
+**
+*************************************************************************
+** This file contains code to implement the "sqlite" command line
+** utility for accessing SQLite databases.
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/shell.c
+
+/*
+** 2024-09-24
+**
+** The author disclaims copyright to this source code.  In place of
+** a legal notice, here is a blessing:
+**
+**    May you do good and not evil.
+**    May you find forgiveness for yourself and forgive others.
+**    May you share freely, never taking more than you give.
+**
+*************************************************************************
+**
+** This header file contains definitions of interfaces that provide 
+** cross-platform I/O for UTF-8 content.
+**
+** On most platforms, the interfaces definitions in this file are
+** just #defines.  For example sqlite3_fopen() is a macro that resolves
+** to the standard fopen() in the C-library.
+**
+** But Windows does not have a standard C-library, at least not one that
+** can handle UTF-8.  So for windows build, the interfaces resolve to new
+** C-language routines contained in the separate sqlite3_stdio.c source file.
+**
+** So on all non-Windows platforms, simply #include this header file and
+** use the interfaces defined herein.  Then to run your application on Windows,
+** also link in the accompanying sqlite3_stdio.c source file when compiling
+** to get compatible interfaces.
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/shell.c
+
+/*
+** 2024-09-24
+**
+** The author disclaims copyright to this source code.  In place of
+** a legal notice, here is a blessing:
+**
+**    May you do good and not evil.
+**    May you find forgiveness for yourself and forgive others.
+**    May you share freely, never taking more than you give.
+**
+*************************************************************************
+**
+** Implementation of standard I/O interfaces for UTF-8 that are missing
+** on Windows.
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/shell.c
+
+/*
+** 2015 November 30
+**
+** The author disclaims copyright to this source code.  In place of
+** a legal notice, here is a blessing:
+**
+**    May you do good and not evil.
+**    May you find forgiveness for yourself and forgive others.
+**    May you share freely, never taking more than you give.
+**
+*************************************************************************
+** This file contains declarations for most of the opendir() family of
+** POSIX functions on Win32 using the MSVCRT.
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/shell.c
+
+/*
+** 2015 November 30
+**
+** The author disclaims copyright to this source code.  In place of
+** a legal notice, here is a blessing:
+**
+**    May you do good and not evil.
+**    May you find forgiveness for yourself and forgive others.
+**    May you share freely, never taking more than you give.
+**
+*************************************************************************
+** This file contains code to implement most of the opendir() family of
+** POSIX functions on Win32 using the MSVCRT.
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/shell.c
+
+/*
+** 2019-01-21
+**
+** The author disclaims copyright to this source code.  In place of
+** a legal notice, here is a blessing:
+**
+**    May you do good and not evil.
+**    May you find forgiveness for yourself and forgive others.
+**    May you share freely, never taking more than you give.
+**
+*************************************************************************
+**
+** This file implements an extension that uses the SQLITE_CONFIG_MALLOC
+** mechanism to add a tracing layer on top of SQLite.  If this extension
+** is registered prior to sqlite3_initialize(), it will cause all memory
+** allocation activities to be logged on standard output, or to some other
+** FILE specified by the initializer.
+**
+** This file needs to be compiled into the application that uses it.
+**
+** This extension is used to implement the --memtrace option of the
+** command-line shell.
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/shell.c
+
+/*
+** 2023-06-21
+**
+** The author disclaims copyright to this source code.  In place of
+** a legal notice, here is a blessing:
+**
+**    May you do good and not evil.
+**    May you find forgiveness for yourself and forgive others.
+**    May you share freely, never taking more than you give.
+**
+*************************************************************************
+**
+** This file implements an extension that uses the SQLITE_CONFIG_PCACHE2
+** mechanism to add a tracing layer on top of pluggable page cache of
+** SQLite.  If this extension is registered prior to sqlite3_initialize(),
+** it will cause all page cache activities to be logged on standard output,
+** or to some other FILE specified by the initializer.
+**
+** This file needs to be compiled into the application that uses it.
+**
+** This extension is used to implement the --pcachetrace option of the
+** command-line shell.
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/shell.c
+
+/*
+** 2017-03-08
+**
+** The author disclaims copyright to this source code.  In place of
+** a legal notice, here is a blessing:
+**
+**    May you do good and not evil.
+**    May you find forgiveness for yourself and forgive others.
+**    May you share freely, never taking more than you give.
+**
+******************************************************************************
+**
+** This SQLite extension implements functions that compute SHA3 hashes
+** in the way described by the (U.S.) NIST FIPS 202 SHA-3 Standard.
+** Three SQL functions are implemented:
+**
+**     sha3(X,SIZE)
+**     sha3_agg(Y,SIZE)
+**     sha3_query(Z,SIZE)
+**
+** The sha3(X) function computes the SHA3 hash of the input X, or NULL if
+** X is NULL.  If inputs X is text, the UTF-8 rendering of that text is
+** used to compute the hash.  If X is a BLOB, then the binary data of the
+** blob is used to compute the hash.  If X is an integer or real number,
+** then that number if converted into UTF-8 text and the hash is computed
+** over the text.
+**
+** The sha3_agg(Y) function computes the SHA3 hash of all Y inputs.  Since
+** order is important for the hash, it is recommended that the Y expression
+** by followed by an ORDER BY clause to guarantee that the inputs occur
+** in the desired order.
+**
+** The sha3_query(Y) function evaluates all queries in the SQL statements of Y
+** and returns a hash of their results.
+**
+** The SIZE argument is optional.  If omitted, the SHA3-256 hash algorithm
+** is used.  If SIZE is included it must be one of the integers 224, 256,
+** 384, or 512, to determine SHA3 hash variant that is computed.
+**
+** Because the sha3_agg() and sha3_query() functions compute a hash over
+** multiple values, the values are encode to use include type information.
+**
+** In sha3_agg(), the sequence of bytes that gets hashed for each input
+** Y depends on the datatype of Y:
+**
+**    typeof(Y)='null'         A single "N" is hashed.  (One byte)
+**
+**    typeof(Y)='integer'      The data hash is the character "I" followed
+**                             by an 8-byte big-endian binary of the
+**                             64-bit signed integer.  (Nine bytes total.)
+**
+**    typeof(Y)='real'         The character "F" followed by an 8-byte
+**                             big-ending binary of the double.  (Nine
+**                             bytes total.)
+**
+**    typeof(Y)='text'         The hash is over prefix "Tnnn:" followed
+**                             by the UTF8 encoding of the text.  The "nnn"
+**                             in the prefix is the minimum-length decimal
+**                             representation of the octet_length of the text.
+**                             Notice the ":" at the end of the prefix, which
+**                             is needed to separate the prefix from the
+**                             content in cases where the content starts
+**                             with a digit.
+**
+**    typeof(Y)='blob'         The hash is taken over prefix "Bnnn:" followed
+**                             by the binary content of the blob.  The "nnn"
+**                             in the prefix is the mimimum-length decimal
+**                             representation of the byte-length of the blob.
+**
+** According to the rules above, all of the following SELECT statements
+** should return TRUE:
+**
+**    SELECT sha3(1) = sha3('1');
+**
+**    SELECT sha3('hello') = sha3(x'68656c6c6f');
+**
+**    WITH a(x) AS (VALUES('xyzzy'))
+**      SELECT sha3_agg(x) = sha3('T5:xyzzy')            FROM a;
+**
+**    WITH a(x) AS (VALUES(x'010203'))
+**      SELECT sha3_agg(x) = sha3(x'42333a010203')       FROM a;
+**
+**    WITH a(x) AS (VALUES(0x123456))
+**      SELECT sha3_agg(x) = sha3(x'490000000000123456') FROM a;
+**
+**    WITH a(x) AS (VALUES(100.015625))
+**      SELECT sha3_agg(x) = sha3(x'464059010000000000') FROM a;
+**
+**    WITH a(x) AS (VALUES(NULL))
+**      SELECT sha3_agg(x) = sha3('N') FROM a;
+**
+**
+** In sha3_query(), individual column values are encoded as with
+** sha3_agg(), but with the addition that a single "R" character is
+** inserted at the start of each row.
+**
+** Note that sha3_agg() hashes rows for which Y is NULL.  Add a FILTER
+** clause if NULL rows should be excluded:
+**
+**    SELECT sha3_agg(x ORDER BY rowid) FILTER(WHERE x NOT NULL) FROM t1;
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/shell.c
+
+/*
+** 2017-01-27
+**
+** The author disclaims copyright to this source code.  In place of
+** a legal notice, here is a blessing:
+**
+**    May you do good and not evil.
+**    May you find forgiveness for yourself and forgive others.
+**    May you share freely, never taking more than you give.
+**
+******************************************************************************
+**
+** This SQLite extension implements functions that compute SHA1 hashes.
+** Two SQL functions are implemented:
+**
+**     sha1(X)
+**     sha1_query(Y)
+**
+** The sha1(X) function computes the SHA1 hash of the input X, or NULL if
+** X is NULL.
+**
+** The sha1_query(Y) function evalutes all queries in the SQL statements of Y
+** and returns a hash of their results.
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/shell.c
+
+/*
+** 2020-04-14
+**
+** The author disclaims copyright to this source code.  In place of
+** a legal notice, here is a blessing:
+**
+**    May you do good and not evil.
+**    May you find forgiveness for yourself and forgive others.
+**    May you share freely, never taking more than you give.
+**
+******************************************************************************
+**
+** This SQLite extension implements the UINT collating sequence.
+**
+** UINT works like BINARY for text, except that embedded strings
+** of digits compare in numeric order.
+**
+**     *   Leading zeros are handled properly, in the sense that
+**         they do not mess of the maginitude comparison of embedded
+**         strings of digits.  "x00123y" is equal to "x123y".
+**
+**     *   Only unsigned integers are recognized.  Plus and minus
+**         signs are ignored.  Decimal points and exponential notation
+**         are ignored.
+**
+**     *   Embedded integers can be of arbitrary length.  Comparison
+**         is *not* limited integers that can be expressed as a
+**         64-bit machine integer.
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/shell.c
+
+/*
+** 2020-06-22
+**
+** The author disclaims copyright to this source code.  In place of
+** a legal notice, here is a blessing:
+**
+**    May you do good and not evil.
+**    May you find forgiveness for yourself and forgive others.
+**    May you share freely, never taking more than you give.
+**
+******************************************************************************
+**
+** Routines to implement arbitrary-precision decimal math.
+**
+** The focus here is on simplicity and correctness, not performance.
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/shell.c
+
+/*
+** 2013-05-28
+**
+** The author disclaims copyright to this source code.  In place of
+** a legal notice, here is a blessing:
+**
+**    May you do good and not evil.
+**    May you find forgiveness for yourself and forgive others.
+**    May you share freely, never taking more than you give.
+**
+******************************************************************************
+**
+** This file contains code to implement the percentile(Y,P) SQL function
+** and similar as described below:
+**
+**   (1)  The percentile(Y,P) function is an aggregate function taking
+**        exactly two arguments.
+**
+**   (2)  If the P argument to percentile(Y,P) is not the same for every
+**        row in the aggregate then an error is thrown.  The word "same"
+**        in the previous sentence means that the value differ by less
+**        than 0.001.
+**
+**   (3)  If the P argument to percentile(Y,P) evaluates to anything other
+**        than a number in the range of 0.0 to 100.0 inclusive then an
+**        error is thrown.
+**
+**   (4)  If any Y argument to percentile(Y,P) evaluates to a value that
+**        is not NULL and is not numeric then an error is thrown.
+**
+**   (5)  If any Y argument to percentile(Y,P) evaluates to plus or minus
+**        infinity then an error is thrown.  (SQLite always interprets NaN
+**        values as NULL.)
+**
+**   (6)  Both Y and P in percentile(Y,P) can be arbitrary expressions,
+**        including CASE WHEN expressions.
+**
+**   (7)  The percentile(Y,P) aggregate is able to handle inputs of at least
+**        one million (1,000,000) rows.
+**
+**   (8)  If there are no non-NULL values for Y, then percentile(Y,P)
+**        returns NULL.
+**
+**   (9)  If there is exactly one non-NULL value for Y, the percentile(Y,P)
+**        returns the one Y value.
+**
+**  (10)  If there N non-NULL values of Y where N is two or more and
+**        the Y values are ordered from least to greatest and a graph is
+**        drawn from 0 to N-1 such that the height of the graph at J is
+**        the J-th Y value and such that straight lines are drawn between
+**        adjacent Y values, then the percentile(Y,P) function returns
+**        the height of the graph at P*(N-1)/100.
+**
+**  (11)  The percentile(Y,P) function always returns either a floating
+**        point number or NULL.
+**
+**  (12)  The percentile(Y,P) is implemented as a single C99 source-code
+**        file that compiles into a shared-library or DLL that can be loaded
+**        into SQLite using the sqlite3_load_extension() interface.
+**
+**  (13)  A separate median(Y) function is the equivalent percentile(Y,50).
+**
+**  (14)  A separate percentile_cont(Y,P) function is equivalent to
+**        percentile(Y,P/100.0).  In other words, the fraction value in
+**        the second argument is in the range of 0 to 1 instead of 0 to 100.
+**
+**  (15)  A separate percentile_disc(Y,P) function is like
+**        percentile_cont(Y,P) except that instead of returning the weighted
+**        average of the nearest two input values, it returns the next lower
+**        value.  So the percentile_disc(Y,P) will always return a value
+**        that was one of the inputs.
+**
+**  (16)  All of median(), percentile(Y,P), percentile_cont(Y,P) and
+**        percentile_disc(Y,P) can be used as window functions.
+**
+** Differences from standard SQL:
+**
+**  *  The percentile_cont(X,P) function is equivalent to the following in
+**     standard SQL:
+**
+**         (percentile_cont(P) WITHIN GROUP (ORDER BY X))
+**
+**     The SQLite syntax is much more compact.  The standard SQL syntax
+**     is also supported if SQLite is compiled with the
+**     -DSQLITE_ENABLE_ORDERED_SET_AGGREGATES option.
+**
+**  *  No median(X) function exists in the SQL standard.  App developers
+**     are expected to write "percentile_cont(0.5)WITHIN GROUP(ORDER BY X)".
+**
+**  *  No percentile(Y,P) function exists in the SQL standard.  Instead of
+**     percential(Y,P), developers must write this:
+**     "percentile_cont(P/100.0) WITHIN GROUP (ORDER BY Y)".  Note that
+**     the fraction parameter to percentile() goes from 0 to 100 whereas
+**     the fraction parameter in SQL standard percentile_cont() goes from
+**     0 to 1.
+**
+** Implementation notes as of 2024-08-31:
+**
+**  *  The regular aggregate-function versions of these routines work
+**     by accumulating all values in an array of doubles, then sorting
+**     that array using quicksort before computing the answer. Thus
+**     the runtime is O(NlogN) where N is the number of rows of input.
+**
+**  *  For the window-function versions of these routines, the array of
+**     inputs is sorted as soon as the first value is computed.  Thereafter,
+**     the array is kept in sorted order using an insert-sort.  This
+**     results in O(N*K) performance where K is the size of the window.
+**     One can imagine alternative implementations that give O(N*logN*logK)
+**     performance, but they require more complex logic and data structures.
+**     The developers have elected to keep the asymptotically slower
+**     algorithm for now, for simplicity, under the theory that window
+**     functions are seldom used and when they are, the window size K is
+**     often small.  The developers might revisit that decision later,
+**     should the need arise.
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/shell.c
+
+/*
+** 2022-11-18
+**
+** The author disclaims copyright to this source code.  In place of
+** a legal notice, here is a blessing:
+**
+**    May you do good and not evil.
+**    May you find forgiveness for yourself and forgive others.
+**    May you share freely, never taking more than you give.
+**
+*************************************************************************
+**
+** This is a SQLite extension for converting in either direction
+** between a (binary) blob and base64 text. Base64 can transit a
+** sane USASCII channel unmolested. It also plays nicely in CSV or
+** written as TCL brace-enclosed literals or SQL string literals,
+** and can be used unmodified in XML-like documents.
+**
+** This is an independent implementation of conversions specified in
+** RFC 4648, done on the above date by the author (Larry Brasfield)
+** who thereby has the right to put this into the public domain.
+**
+** The conversions meet RFC 4648 requirements, provided that this
+** C source specifies that line-feeds are included in the encoded
+** data to limit visible line lengths to 72 characters and to
+** terminate any encoded blob having non-zero length.
+**
+** Length limitations are not imposed except that the runtime
+** SQLite string or blob length limits are respected. Otherwise,
+** any length binary sequence can be represented and recovered.
+** Generated base64 sequences, with their line-feeds included,
+** can be concatenated; the result converted back to binary will
+** be the concatenation of the represented binary sequences.
+**
+** This SQLite3 extension creates a function, base64(x), which
+** either: converts text x containing base64 to a returned blob;
+** or converts a blob x to returned text containing base64. An
+** error will be thrown for other input argument types.
+**
+** This code relies on UTF-8 encoding only with respect to the
+** meaning of the first 128 (7-bit) codes matching that of USASCII.
+** It will fail miserably if somehow made to try to convert EBCDIC.
+** Because it is table-driven, it could be enhanced to handle that,
+** but the world and SQLite have moved on from that anachronism.
+**
+** To build the extension:
+** Set shell variable SQDIR=<your favorite SQLite checkout directory>
+** *Nix: gcc -O2 -shared -I$SQDIR -fPIC -o base64.so base64.c
+** OSX: gcc -O2 -dynamiclib -fPIC -I$SQDIR -o base64.dylib base64.c
+** Win32: gcc -O2 -shared -I%SQDIR% -o base64.dll base64.c
+** Win32: cl /Os -I%SQDIR% base64.c -link -dll -out:base64.dll
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/shell.c
+
+/*
+** 2022-11-16
+**
+** The author disclaims copyright to this source code.  In place of
+** a legal notice, here is a blessing:
+**
+**    May you do good and not evil.
+**    May you find forgiveness for yourself and forgive others.
+**    May you share freely, never taking more than you give.
+**
+*************************************************************************
+**
+** This is a utility for converting binary to base85 or vice-versa.
+** It can be built as a standalone program or an SQLite3 extension.
+**
+** Much like base64 representations, base85 can be sent through a
+** sane USASCII channel unmolested. It also plays nicely in CSV or
+** written as TCL brace-enclosed literals or SQL string literals.
+** It is not suited for unmodified use in XML-like documents.
+**
+** The encoding used resembles Ascii85, but was devised by the author
+** (Larry Brasfield) before Mozilla, Adobe, ZMODEM or other Ascii85
+** variant sources existed, in the 1984 timeframe on a VAX mainframe.
+** Further, this is an independent implementation of a base85 system.
+** Hence, the author has rightfully put this into the public domain.
+**
+** Base85 numerals are taken from the set of 7-bit USASCII codes,
+** excluding control characters and Space ! " ' ( ) { | } ~ Del
+** in code order representing digit values 0 to 84 (base 10.)
+**
+** Groups of 4 bytes, interpreted as big-endian 32-bit values,
+** are represented as 5-digit base85 numbers with MS to LS digit
+** order. Groups of 1-3 bytes are represented with 2-4 digits,
+** still big-endian but 8-24 bit values. (Using big-endian yields
+** the simplest transition to byte groups smaller than 4 bytes.
+** These byte groups can also be considered base-256 numbers.)
+** Groups of 0 bytes are represented with 0 digits and vice-versa.
+** No pad characters are used; Encoded base85 numeral sequence
+** (aka "group") length maps 1-to-1 to the decoded binary length.
+**
+** Any character not in the base85 numeral set delimits groups.
+** When base85 is streamed or stored in containers of indefinite
+** size, newline is used to separate it into sub-sequences of no
+** more than 80 digits so that fgets() can be used to read it.
+**
+** Length limitations are not imposed except that the runtime
+** SQLite string or blob length limits are respected. Otherwise,
+** any length binary sequence can be represented and recovered.
+** Base85 sequences can be concatenated by separating them with
+** a non-base85 character; the conversion to binary will then
+** be the concatenation of the represented binary sequences.
+
+** The standalone program either converts base85 on stdin to create
+** a binary file or converts a binary file to base85 on stdout.
+** Read or make it blurt its help for invocation details.
+**
+** The SQLite3 extension creates a function, base85(x), which will
+** either convert text base85 to a blob or a blob to text base85
+** and return the result (or throw an error for other types.)
+** Unless built with OMIT_BASE85_CHECKER defined, it also creates a
+** function, is_base85(t), which returns 1 iff the text t contains
+** nothing other than base85 numerals and whitespace, or 0 otherwise.
+**
+** To build the extension:
+** Set shell variable SQDIR=<your favorite SQLite checkout directory>
+** and variable OPTS to -DOMIT_BASE85_CHECKER if is_base85() unwanted.
+** *Nix: gcc -O2 -shared -I$SQDIR $OPTS -fPIC -o base85.so base85.c
+** OSX: gcc -O2 -dynamiclib -fPIC -I$SQDIR $OPTS -o base85.dylib base85.c
+** Win32: gcc -O2 -shared -I%SQDIR% %OPTS% -o base85.dll base85.c
+** Win32: cl /Os -I%SQDIR% %OPTS% base85.c -link -dll -out:base85.dll
+**
+** To build the standalone program, define PP symbol BASE85_STANDALONE. Eg.
+** *Nix or OSX: gcc -O2 -DBASE85_STANDALONE base85.c -o base85
+** Win32: gcc -O2 -DBASE85_STANDALONE -o base85.exe base85.c
+** Win32: cl /Os /MD -DBASE85_STANDALONE base85.c
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/shell.c
+
+/*
+** 2013-04-17
+**
+** The author disclaims copyright to this source code.  In place of
+** a legal notice, here is a blessing:
+**
+**    May you do good and not evil.
+**    May you find forgiveness for yourself and forgive others.
+**    May you share freely, never taking more than you give.
+**
+******************************************************************************
+**
+** This SQLite extension implements functions for the exact display
+** and input of IEEE754 Binary64 floating-point numbers.
+**
+**   ieee754(X)
+**   ieee754(Y,Z)
+**
+** In the first form, the value X should be a floating-point number.
+** The function will return a string of the form 'ieee754(Y,Z)' where
+** Y and Z are integers such that X==Y*pow(2,Z).
+**
+** In the second form, Y and Z are integers which are the mantissa and
+** base-2 exponent of a new floating point number.  The function returns
+** a floating-point value equal to Y*pow(2,Z).
+**
+** Examples:
+**
+**     ieee754(2.0)             ->     'ieee754(2,0)'
+**     ieee754(45.25)           ->     'ieee754(181,-2)'
+**     ieee754(2, 0)            ->     2.0
+**     ieee754(181, -2)         ->     45.25
+**
+** Two additional functions break apart the one-argument ieee754()
+** result into separate integer values:
+**
+**     ieee754_mantissa(45.25)  ->     181
+**     ieee754_exponent(45.25)  ->     -2
+**
+** These functions convert binary64 numbers into blobs and back again.
+**
+**     ieee754_from_blob(x'3ff0000000000000')  ->  1.0
+**     ieee754_to_blob(1.0)                    ->  x'3ff0000000000000'
+**
+** In all single-argument functions, if the argument is an 8-byte blob
+** then that blob is interpreted as a big-endian binary64 value.
+**
+**
+** EXACT DECIMAL REPRESENTATION OF BINARY64 VALUES
+** -----------------------------------------------
+**
+** This extension in combination with the separate 'decimal' extension
+** can be used to compute the exact decimal representation of binary64
+** values.  To begin, first compute a table of exponent values:
+**
+**    CREATE TABLE pow2(x INTEGER PRIMARY KEY, v TEXT);
+**    WITH RECURSIVE c(x,v) AS (
+**      VALUES(0,'1')
+**      UNION ALL
+**      SELECT x+1, decimal_mul(v,'2') FROM c WHERE x+1<=971
+**    ) INSERT INTO pow2(x,v) SELECT x, v FROM c;
+**    WITH RECURSIVE c(x,v) AS (
+**      VALUES(-1,'0.5')
+**      UNION ALL
+**      SELECT x-1, decimal_mul(v,'0.5') FROM c WHERE x-1>=-1075
+**    ) INSERT INTO pow2(x,v) SELECT x, v FROM c;
+**
+** Then, to compute the exact decimal representation of a floating
+** point value (the value 47.49 is used in the example) do:
+**
+**    WITH c(n) AS (VALUES(47.49))
+**          ---------------^^^^^---- Replace with whatever you want
+**    SELECT decimal_mul(ieee754_mantissa(c.n),pow2.v)
+**      FROM pow2, c WHERE pow2.x=ieee754_exponent(c.n);
+**
+** Here is a query to show various boundry values for the binary64
+** number format:
+**
+**    WITH c(name,bin) AS (VALUES
+**       ('minimum positive value',        x'0000000000000001'),
+**       ('maximum subnormal value',       x'000fffffffffffff'),
+**       ('mininum positive nornal value', x'0010000000000000'),
+**       ('maximum value',                 x'7fefffffffffffff'))
+**    SELECT c.name, decimal_mul(ieee754_mantissa(c.bin),pow2.v)
+**      FROM pow2, c WHERE pow2.x=ieee754_exponent(c.bin);
+**
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/shell.c
+
+/*
+** 2015-08-18, 2023-04-28
+**
+** The author disclaims copyright to this source code.  In place of
+** a legal notice, here is a blessing:
+**
+**    May you do good and not evil.
+**    May you find forgiveness for yourself and forgive others.
+**    May you share freely, never taking more than you give.
+**
+*************************************************************************
+**
+** This file demonstrates how to create a table-valued-function using
+** a virtual table.  This demo implements the generate_series() function
+** which gives the same results as the eponymous function in PostgreSQL,
+** within the limitation that its arguments are signed 64-bit integers.
+**
+** Considering its equivalents to generate_series(start,stop,step): A
+** value V[n] sequence is produced for integer n ascending from 0 where
+**  ( V[n] == start + n * step  &&  sgn(V[n] - stop) * sgn(step) >= 0 )
+** for each produced value (independent of production time ordering.)
+**
+** All parameters must be either integer or convertable to integer.
+** The start parameter is required.
+** The stop parameter defaults to (1<<32)-1 (aka 4294967295 or 0xffffffff)
+** The step parameter defaults to 1 and 0 is treated as 1.
+**
+** Examples:
+**
+**      SELECT * FROM generate_series(0,100,5);
+**
+** The query above returns integers from 0 through 100 counting by steps
+** of 5.
+**
+**      SELECT * FROM generate_series(0,100);
+**
+** Integers from 0 through 100 with a step size of 1.
+**
+**      SELECT * FROM generate_series(20) LIMIT 10;
+**
+** Integers 20 through 29.
+**
+**      SELECT * FROM generate_series(0,-100,-5);
+**
+** Integers 0 -5 -10 ... -100.
+**
+**      SELECT * FROM generate_series(0,-1);
+**
+** Empty sequence.
+**
+** HOW IT WORKS
+**
+** The generate_series "function" is really a virtual table with the
+** following schema:
+**
+**     CREATE TABLE generate_series(
+**       value,
+**       start HIDDEN,
+**       stop HIDDEN,
+**       step HIDDEN
+**     );
+**
+** The virtual table also has a rowid, logically equivalent to n+1 where
+** "n" is the ascending integer in the aforesaid production definition.
+**
+** Function arguments in queries against this virtual table are translated
+** into equality constraints against successive hidden columns.  In other
+** words, the following pairs of queries are equivalent to each other:
+**
+**    SELECT * FROM generate_series(0,100,5);
+**    SELECT * FROM generate_series WHERE start=0 AND stop=100 AND step=5;
+**
+**    SELECT * FROM generate_series(0,100);
+**    SELECT * FROM generate_series WHERE start=0 AND stop=100;
+**
+**    SELECT * FROM generate_series(20) LIMIT 10;
+**    SELECT * FROM generate_series WHERE start=20 LIMIT 10;
+**
+** The generate_series virtual table implementation leaves the xCreate method
+** set to NULL.  This means that it is not possible to do a CREATE VIRTUAL
+** TABLE command with "generate_series" as the USING argument.  Instead, there
+** is a single generate_series virtual table that is always available without
+** having to be created first.
+**
+** The xBestIndex method looks for equality constraints against the hidden
+** start, stop, and step columns, and if present, it uses those constraints
+** to bound the sequence of generated values.  If the equality constraints
+** are missing, it uses 0 for start, 4294967295 for stop, and 1 for step.
+** xBestIndex returns a small cost when both start and stop are available,
+** and a very large cost if either start or stop are unavailable.  This
+** encourages the query planner to order joins such that the bounds of the
+** series are well-defined.
+**
+** Update on 2024-08-22:
+** xBestIndex now also looks for equality and inequality constraints against
+** the value column and uses those constraints as additional bounds against
+** the sequence range.  Thus, a query like this:
+**
+**     SELECT value FROM generate_series($SA,$EA)
+**      WHERE value BETWEEN $SB AND $EB;
+**
+** Is logically the same as:
+**
+**     SELECT value FROM generate_series(max($SA,$SB),min($EA,$EB));
+**
+** Constraints on the value column can server as substitutes for constraints
+** on the hidden start and stop columns.  So, the following two queries
+** are equivalent:
+**
+**     SELECT value FROM generate_series($S,$E);
+**     SELECT value FROM generate_series WHERE value BETWEEN $S and $E;
+**
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/shell.c
+
+/*
+** 2012-11-13
+**
+** The author disclaims copyright to this source code.  In place of
+** a legal notice, here is a blessing:
+**
+**    May you do good and not evil.
+**    May you find forgiveness for yourself and forgive others.
+**    May you share freely, never taking more than you give.
+**
+******************************************************************************
+**
+** The code in this file implements a compact but reasonably
+** efficient regular-expression matcher for posix extended regular
+** expressions against UTF8 text.
+**
+** This file is an SQLite extension.  It registers a single function
+** named "regexp(A,B)" where A is the regular expression and B is the
+** string to be matched.  By registering this function, SQLite will also
+** then implement the "B regexp A" operator.  Note that with the function
+** the regular expression comes first, but with the operator it comes
+** second.
+**
+**  The following regular expression syntax is supported:
+**
+**     X*      zero or more occurrences of X
+**     X+      one or more occurrences of X
+**     X?      zero or one occurrences of X
+**     X{p,q}  between p and q occurrences of X
+**     (X)     match X
+**     X|Y     X or Y
+**     ^X      X occurring at the beginning of the string
+**     X$      X occurring at the end of the string
+**     .       Match any single character
+**     \c      Character c where c is one of \{}()[]|*+?.
+**     \c      C-language escapes for c in afnrtv.  ex: \t or \n
+**     \uXXXX  Where XXXX is exactly 4 hex digits, unicode value XXXX
+**     \xXX    Where XX is exactly 2 hex digits, unicode value XX
+**     [abc]   Any single character from the set abc
+**     [^abc]  Any single character not in the set abc
+**     [a-z]   Any single character in the range a-z
+**     [^a-z]  Any single character not in the range a-z
+**     \b      Word boundary
+**     \w      Word character.  [A-Za-z0-9_]
+**     \W      Non-word character
+**     \d      Digit
+**     \D      Non-digit
+**     \s      Whitespace character
+**     \S      Non-whitespace character
+**
+** A nondeterministic finite automaton (NFA) is used for matching, so the
+** performance is bounded by O(N*M) where N is the size of the regular
+** expression and M is the size of the input string.  The matcher never
+** exhibits exponential behavior.  Note that the X{p,q} operator expands
+** to p copies of X following by q-p copies of X? and that the size of the
+** regular expression in the O(N*M) performance bound is computed after
+** this expansion.
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/shell.c
+
+/*
+** 2014-06-13
+**
+** The author disclaims copyright to this source code.  In place of
+** a legal notice, here is a blessing:
+**
+**    May you do good and not evil.
+**    May you find forgiveness for yourself and forgive others.
+**    May you share freely, never taking more than you give.
+**
+******************************************************************************
+**
+** This SQLite extension implements SQL functions readfile() and
+** writefile(), and eponymous virtual type "fsdir".
+**
+** WRITEFILE(FILE, DATA [, MODE [, MTIME]]):
+**
+**   If neither of the optional arguments is present, then this UDF
+**   function writes blob DATA to file FILE. If successful, the number
+**   of bytes written is returned. If an error occurs, NULL is returned.
+**
+**   If the first option argument - MODE - is present, then it must
+**   be passed an integer value that corresponds to a POSIX mode
+**   value (file type + permissions, as returned in the stat.st_mode
+**   field by the stat() system call). Three types of files may
+**   be written/created:
+**
+**     regular files:  (mode & 0170000)==0100000
+**     symbolic links: (mode & 0170000)==0120000
+**     directories:    (mode & 0170000)==0040000
+**
+**   For a directory, the DATA is ignored. For a symbolic link, it is
+**   interpreted as text and used as the target of the link. For a
+**   regular file, it is interpreted as a blob and written into the
+**   named file. Regardless of the type of file, its permissions are
+**   set to (mode & 0777) before returning.
+**
+**   If the optional MTIME argument is present, then it is interpreted
+**   as an integer - the number of seconds since the unix epoch. The
+**   modification-time of the target file is set to this value before
+**   returning.
+**
+**   If five or more arguments are passed to this function and an
+**   error is encountered, an exception is raised.
+**
+** READFILE(FILE):
+**
+**   Read and return the contents of file FILE (type blob) from disk.
+**
+** FSDIR:
+**
+**   Used as follows:
+**
+**     SELECT * FROM fsdir($path [, $dir]);
+**
+**   Parameter $path is an absolute or relative pathname. If the file that it
+**   refers to does not exist, it is an error. If the path refers to a regular
+**   file or symbolic link, it returns a single row. Or, if the path refers
+**   to a directory, it returns one row for the directory, and one row for each
+**   file within the hierarchy rooted at $path.
+**
+**   Each row has the following columns:
+**
+**     name:  Path to file or directory (text value).
+**     mode:  Value of stat.st_mode for directory entry (an integer).
+**     mtime: Value of stat.st_mtime for directory entry (an integer).
+**     data:  For a regular file, a blob containing the file data. For a
+**            symlink, a text value containing the text of the link. For a
+**            directory, NULL.
+**
+**   If a non-NULL value is specified for the optional $dir parameter and
+**   $path is a relative path, then $path is interpreted relative to $dir. 
+**   And the paths returned in the "name" column of the table are also 
+**   relative to directory $dir.
+**
+** Notes on building this extension for Windows:
+**   Unless linked statically with the SQLite library, a preprocessor
+**   symbol, FILEIO_WIN32_DLL, must be #define'd to create a stand-alone
+**   DLL form of this extension for WIN32. See its use below for details.
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/shell.c
+
+/*
+** 2017-07-10
+**
+** The author disclaims copyright to this source code.  In place of
+** a legal notice, here is a blessing:
+**
+**    May you do good and not evil.
+**    May you find forgiveness for yourself and forgive others.
+**    May you share freely, never taking more than you give.
+**
+*************************************************************************
+**
+** This file implements an eponymous virtual table that returns suggested
+** completions for a partial SQL input.
+**
+** Suggested usage:
+**
+**     SELECT DISTINCT candidate COLLATE nocase
+**       FROM completion($prefix,$wholeline)
+**      ORDER BY 1;
+**
+** The two query parameters are optional.  $prefix is the text of the
+** current word being typed and that is to be completed.  $wholeline is
+** the complete input line, used for context.
+**
+** The raw completion() table might return the same candidate multiple
+** times, for example if the same column name is used to two or more
+** tables.  And the candidates are returned in an arbitrary order.  Hence,
+** the DISTINCT and ORDER BY are recommended.
+**
+** This virtual table operates at the speed of human typing, and so there
+** is no attempt to make it fast.  Even a slow implementation will be much
+** faster than any human can type.
+**
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/shell.c
+
+/*
+** 2017-10-20
+**
+** The author disclaims copyright to this source code.  In place of
+** a legal notice, here is a blessing:
+**
+**    May you do good and not evil.
+**    May you find forgiveness for yourself and forgive others.
+**    May you share freely, never taking more than you give.
+**
+******************************************************************************
+**
+** This file implements a VFS shim that allows an SQLite database to be
+** appended onto the end of some other file, such as an executable.
+**
+** A special record must appear at the end of the file that identifies the
+** file as an appended database and provides the offset to the first page
+** of the exposed content. (Or, it is the length of the content prefix.)
+** For best performance page 1 should be located at a disk page boundary,
+** though that is not required.
+**
+** When opening a database using this VFS, the connection might treat
+** the file as an ordinary SQLite database, or it might treat it as a
+** database appended onto some other file.  The decision is made by
+** applying the following rules in order:
+**
+**  (1)  An empty file is an ordinary database.
+**
+**  (2)  If the file ends with the appendvfs trailer string
+**       "Start-Of-SQLite3-NNNNNNNN" that file is an appended database.
+**
+**  (3)  If the file begins with the standard SQLite prefix string
+**       "SQLite format 3", that file is an ordinary database.
+**
+**  (4)  If none of the above apply and the SQLITE_OPEN_CREATE flag is
+**       set, then a new database is appended to the already existing file.
+**
+**  (5)  Otherwise, SQLITE_CANTOPEN is returned.
+**
+** To avoid unnecessary complications with the PENDING_BYTE, the size of
+** the file containing the database is limited to 1GiB. (1073741824 bytes)
+** This VFS will not read or write past the 1GiB mark.  This restriction
+** might be lifted in future versions.  For now, if you need a larger
+** database, then keep it in a separate file.
+**
+** If the file being opened is a plain database (not an appended one), then
+** this shim is a pass-through into the default underlying VFS. (rule 3)
+**/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/shell.c
+
+/*
+** 2017-12-26
+**
+** The author disclaims copyright to this source code.  In place of
+** a legal notice, here is a blessing:
+**
+**    May you do good and not evil.
+**    May you find forgiveness for yourself and forgive others.
+**    May you share freely, never taking more than you give.
+**
+******************************************************************************
+**
+** This file implements a virtual table for reading and writing ZIP archive
+** files.
+**
+** Usage example:
+**
+**     SELECT name, sz, datetime(mtime,'unixepoch') FROM zipfile($filename);
+**
+** Current limitations:
+**
+**    *  No support for encryption
+**    *  No support for ZIP archives spanning multiple files
+**    *  No support for zip64 extensions
+**    *  Only the "inflate/deflate" (zlib) compression method is supported
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/shell.c
+
+/*
+** 2017-12-17
+**
+** The author disclaims copyright to this source code.  In place of
+** a legal notice, here is a blessing:
+**
+**    May you do good and not evil.
+**    May you find forgiveness for yourself and forgive others.
+**    May you share freely, never taking more than you give.
+**
+******************************************************************************
+**
+** Utility functions sqlar_compress() and sqlar_uncompress(). Useful
+** for working with sqlar archives and used by the shell tool's built-in
+** sqlar support.
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/shell.c
+
+/*
+** 2017 April 07
+**
+** The author disclaims copyright to this source code.  In place of
+** a legal notice, here is a blessing:
+**
+**    May you do good and not evil.
+**    May you find forgiveness for yourself and forgive others.
+**    May you share freely, never taking more than you give.
+**
+*************************************************************************
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/shell.c
+
+/*
+** 2017 April 09
+**
+** The author disclaims copyright to this source code.  In place of
+** a legal notice, here is a blessing:
+**
+**    May you do good and not evil.
+**    May you find forgiveness for yourself and forgive others.
+**    May you share freely, never taking more than you give.
+**
+*************************************************************************
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/shell.c, sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/shell.c
+
+/*
+** 2024-02-08
+**
+** The author disclaims copyright to this source code.  In place of
+** a legal notice, here is a blessing:
+**
+**    May you do good and not evil.
+**    May you find forgiveness for yourself and forgive others.
+**    May you share freely, never taking more than you give.
+**
+*************************************************************************
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/shell.c
+
+/*
+** 2024-05-24
+**
+** The author disclaims copyright to this source code.  In place of
+** a legal notice, here is a blessing:
+**
+**    May you do good and not evil.
+**    May you find forgiveness for yourself and forgive others.
+**    May you share freely, never taking more than you give.
+**
+******************************************************************************
+**
+** An SQL function that return pseudo-random non-negative integers.
+**
+**      SELECT stmtrand(123);
+**
+** A special feature of this function is that the same sequence of random
+** integers is returned for each invocation of the statement.  This makes
+** the results repeatable, and hence useful for testing.  The argument is
+** an integer which is the seed for the random number sequence.  The seed
+** is used by the first invocation of this function only and is ignored
+** for all subsequent calls within the same statement.
+**
+** Resetting a statement (sqlite3_reset()) also resets the random number
+** sequence.
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/shell.c
+
+/*
+** 2011 March 16
+**
+** The author disclaims copyright to this source code.  In place of
+** a legal notice, here is a blessing:
+**
+**    May you do good and not evil.
+**    May you find forgiveness for yourself and forgive others.
+**    May you share freely, never taking more than you give.
+**
+******************************************************************************
+**
+** This file contains code implements a VFS shim that writes diagnostic
+** output for each VFS call, similar to "strace".
+**
+** USAGE:
+**
+** This source file exports a single symbol which is the name of a
+** function:
+**
+**   int vfstrace_register(
+**     const char *zTraceName,         // Name of the newly constructed VFS
+**     const char *zOldVfsName,        // Name of the underlying VFS
+**     int (*xOut)(const char*,void*), // Output routine.  ex: fputs
+**     void *pOutArg,                  // 2nd argument to xOut.  ex: stderr
+**     int makeDefault                 // Make the new VFS the default
+**   );
+**
+** Applications that want to trace their VFS usage must provide a callback
+** function with this prototype:
+**
+**   int traceOutput(const char *zMessage, void *pAppData);
+**
+** This function will "output" the trace messages, where "output" can
+** mean different things to different applications.  The traceOutput function
+** for the command-line shell (see shell.c) is "fputs" from the standard
+** library, which means that all trace output is written on the stream
+** specified by the second argument.  In the case of the command-line shell
+** the second argument is stderr.  Other applications might choose to output
+** trace information to a file, over a socket, or write it into a buffer.
+**
+** The vfstrace_register() function creates a new "shim" VFS named by
+** the zTraceName parameter.  A "shim" VFS is an SQLite backend that does
+** not really perform the duties of a true backend, but simply filters or
+** interprets VFS calls before passing them off to another VFS which does
+** the actual work.  In this case the other VFS - the one that does the
+** real work - is identified by the second parameter, zOldVfsName.  If
+** the 2nd parameter is NULL then the default VFS is used.  The common
+** case is for the 2nd parameter to be NULL.
+**
+** The third and fourth parameters are the pointer to the output function
+** and the second argument to the output function.  For the SQLite
+** command-line shell, when the -vfstrace option is used, these parameters
+** are fputs and stderr, respectively.
+**
+** The fifth argument is true (non-zero) to cause the newly created VFS
+** to become the default VFS.  The common case is for the fifth parameter
+** to be true.
+**
+** The call to vfstrace_register() simply creates the shim VFS that does
+** tracing.  The application must also arrange to use the new VFS for
+** all database connections that are created and for which tracing is 
+** desired.  This can be done by specifying the trace VFS using URI filename
+** notation, or by specifying the trace VFS as the 4th parameter to
+** sqlite3_open_v2() or by making the trace VFS be the default (by setting
+** the 5th parameter of vfstrace_register() to 1).
+**
+**
+** ENABLING VFSTRACE IN A COMMAND-LINE SHELL
+**
+** The SQLite command line shell implemented by the shell.c source file
+** can be used with this module.  To compile in -vfstrace support, first
+** gather this file (test_vfstrace.c), the shell source file (shell.c),
+** and the SQLite amalgamation source files (sqlite3.c, sqlite3.h) into
+** the working directory.  Then compile using a command like the following:
+**
+**    gcc -o sqlite3 -Os -I. -DSQLITE_ENABLE_VFSTRACE \
+**        -DSQLITE_THREADSAFE=0 -DSQLITE_ENABLE_FTS3 -DSQLITE_ENABLE_RTREE \
+**        -DHAVE_READLINE -DHAVE_USLEEP=1 \
+**        shell.c test_vfstrace.c sqlite3.c -ldl -lreadline -lncurses
+**
+** The gcc command above works on Linux and provides (in addition to the
+** -vfstrace option) support for FTS3 and FTS4, RTREE, and command-line
+** editing using the readline library.  The command-line shell does not
+** use threads so we added -DSQLITE_THREADSAFE=0 just to make the code
+** run a little faster.   For compiling on a Mac, you'll probably need
+** to omit the -DHAVE_READLINE, the -lreadline, and the -lncurses options.
+** The compilation could be simplified to just this:
+**
+**    gcc -DSQLITE_ENABLE_VFSTRACE \
+**         shell.c test_vfstrace.c sqlite3.c -ldl -lpthread
+**
+** In this second example, all unnecessary options have been removed
+** Note that since the code is now threadsafe, we had to add the -lpthread
+** option to pull in the pthreads library.
+**
+** To cross-compile for windows using MinGW, a command like this might
+** work:
+**
+**    /opt/mingw/bin/i386-mingw32msvc-gcc -o sqlite3.exe -Os -I \
+**         -DSQLITE_THREADSAFE=0 -DSQLITE_ENABLE_VFSTRACE \
+**         shell.c test_vfstrace.c sqlite3.c
+**
+** Similar compiler commands will work on different systems.  The key
+** invariants are (1) you must have -DSQLITE_ENABLE_VFSTRACE so that
+** the shell.c source file will know to include the -vfstrace command-line
+** option and (2) you must compile and link the three source files
+** shell,c, test_vfstrace.c, and sqlite3.c.
+**
+** RUNTIME CONTROL OF VFSTRACE OUTPUT
+**
+** The application can use the "vfstrace" pragma to control which VFS
+** APIs are traced.  To disable all output:
+**
+**    PRAGMA vfstrace('-all');
+**
+** To enable all output (which is the default setting):
+**
+**    PRAGMA vfstrace('+all');
+**
+** Individual APIs can be enabled or disabled by name, with or without
+** the initial "x" character.  For example, to set up for tracing lock
+** primatives only:
+**
+**    PRAGMA vfstrace('-all, +Lock,Unlock,ShmLock');
+**
+** The argument to the vfstrace pragma ignores capitalization and any
+** characters other than alphabetics, '+', and '-'.
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/shell.c
+
+/*
+** 2022-08-27
+**
+** The author disclaims copyright to this source code.  In place of
+** a legal notice, here is a blessing:
+**
+**    May you do good and not evil.
+**    May you find forgiveness for yourself and forgive others.
+**    May you share freely, never taking more than you give.
+**
+*************************************************************************
+**
+** This file contains the public interface to the "recover" extension -
+** an SQLite extension designed to recover data from corrupted database
+** files.
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/shell.c
+
+/*
+** 2019-04-17
+**
+** The author disclaims copyright to this source code.  In place of
+** a legal notice, here is a blessing:
+**
+**    May you do good and not evil.
+**    May you find forgiveness for yourself and forgive others.
+**    May you share freely, never taking more than you give.
+**
+******************************************************************************
+**
+** This file contains an implementation of two eponymous virtual tables,
+** "sqlite_dbdata" and "sqlite_dbptr". Both modules require that the
+** "sqlite_dbpage" eponymous virtual table be available.
+**
+** SQLITE_DBDATA:
+**   sqlite_dbdata is used to extract data directly from a database b-tree
+**   page and its associated overflow pages, bypassing the b-tree layer.
+**   The table schema is equivalent to:
+**
+**     CREATE TABLE sqlite_dbdata(
+**       pgno INTEGER,
+**       cell INTEGER,
+**       field INTEGER,
+**       value ANY,
+**       schema TEXT HIDDEN
+**     );
+**
+**   IMPORTANT: THE VIRTUAL TABLE SCHEMA ABOVE IS SUBJECT TO CHANGE. IN THE
+**   FUTURE NEW NON-HIDDEN COLUMNS MAY BE ADDED BETWEEN "value" AND
+**   "schema".
+**
+**   Each page of the database is inspected. If it cannot be interpreted as
+**   a b-tree page, or if it is a b-tree page containing 0 entries, the
+**   sqlite_dbdata table contains no rows for that page.  Otherwise, the
+**   table contains one row for each field in the record associated with
+**   each cell on the page. For intkey b-trees, the key value is stored in
+**   field -1.
+**
+**   For example, for the database:
+**
+**     CREATE TABLE t1(a, b);     -- root page is page 2
+**     INSERT INTO t1(rowid, a, b) VALUES(5, 'v', 'five');
+**     INSERT INTO t1(rowid, a, b) VALUES(10, 'x', 'ten');
+**
+**   the sqlite_dbdata table contains, as well as from entries related to 
+**   page 1, content equivalent to:
+**
+**     INSERT INTO sqlite_dbdata(pgno, cell, field, value) VALUES
+**         (2, 0, -1, 5     ),
+**         (2, 0,  0, 'v'   ),
+**         (2, 0,  1, 'five'),
+**         (2, 1, -1, 10    ),
+**         (2, 1,  0, 'x'   ),
+**         (2, 1,  1, 'ten' );
+**
+**   If database corruption is encountered, this module does not report an
+**   error. Instead, it attempts to extract as much data as possible and
+**   ignores the corruption.
+**
+** SQLITE_DBPTR:
+**   The sqlite_dbptr table has the following schema:
+**
+**     CREATE TABLE sqlite_dbptr(
+**       pgno INTEGER,
+**       child INTEGER,
+**       schema TEXT HIDDEN
+**     );
+**
+**   It contains one entry for each b-tree pointer between a parent and
+**   child page in the database.
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/shell.c
+
+/*
+** 2022-08-27
+**
+** The author disclaims copyright to this source code.  In place of
+** a legal notice, here is a blessing:
+**
+**    May you do good and not evil.
+**    May you find forgiveness for yourself and forgive others.
+**    May you share freely, never taking more than you give.
+**
+*************************************************************************
+**
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/sqlite3.h
+
+/*
+** 2001-09-15
+**
+** The author disclaims copyright to this source code.  In place of
+** a legal notice, here is a blessing:
+**
+**    May you do good and not evil.
+**    May you find forgiveness for yourself and forgive others.
+**    May you share freely, never taking more than you give.
+**
+*************************************************************************
+** This header file defines the interface that the SQLite library
+** presents to client programs.  If a C-function, structure, datatype,
+** or constant definition does not appear in this file, then it is
+** not a published API of SQLite, is subject to change without
+** notice, and should not be referenced by programs that use SQLite.
+**
+** Some of the definitions that are in this file are marked as
+** "experimental".  Experimental interfaces are normally new
+** features recently added to SQLite.  We do not anticipate changes
+** to experimental interfaces but reserve the right to make minor changes
+** if experience from use "in the wild" suggest such changes are prudent.
+**
+** The official C-language API documentation for SQLite is derived
+** from comments in this file.  This file is the authoritative source
+** on how SQLite interfaces are supposed to operate.
+**
+** The name of this file under configuration management is "sqlite.h.in".
+** The makefile makes some minor changes to this file (such as inserting
+** the version number) and changes its name to "sqlite3.h" as
+** part of the build process.
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/sqlite3.h
+
+/*
+** 2010 August 30
+**
+** The author disclaims copyright to this source code.  In place of
+** a legal notice, here is a blessing:
+**
+**    May you do good and not evil.
+**    May you find forgiveness for yourself and forgive others.
+**    May you share freely, never taking more than you give.
+**
+*************************************************************************
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/sqlite3.h
+
+/*
+** 2014 May 31
+**
+** The author disclaims copyright to this source code.  In place of
+** a legal notice, here is a blessing:
+**
+**    May you do good and not evil.
+**    May you find forgiveness for yourself and forgive others.
+**    May you share freely, never taking more than you give.
+**
+******************************************************************************
+**
+** Interfaces to extend FTS5. Using the interfaces defined in this file,
+** FTS5 may be extended with:
+**
+**     * custom tokenizers, and
+**     * custom auxiliary functions.
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/ltmain.sh
+
+# Copyright (C) 1996-2019, 2021-2022 Free Software Foundation, Inc.
+# This is free software; see the source for copying conditions.  There is NO
+# warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/ltmain.sh
+
+# GNU Libtool is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# As a special exception to the GNU General Public License,
+# if you distribute this file as part of a program or library that
+# is built using GNU Libtool, you may include this file under the
+# same distribution terms that you use for the rest of that program.
+#
+# GNU Libtool is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/ltmain.sh
+
+# This is free software.  There is NO warranty; not even for
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#
+# Copyright (C) 2004-2019, 2021 Bootstrap Authors
+#
+# This file is dual licensed under the terms of the MIT license
+# <https://opensource.org/license/MIT>, and GPL version 2 or later
+# <http://www.gnu.org/licenses/gpl-2.0.html>.  You must apply one of
+# these licenses when using or redistributing this software or any of
+# the files within it.  See the URLs above, or the file `LICENSE`
+# included in the Bootstrap distribution for the full license texts.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/ltmain.sh
+
+/*) ;; *) break ;; esac
+
+        # ...otherwise throw away the child directory and loop
+        _G_directory_path=`$ECHO "$_G_directory_path" | $SED -e "$sed_dirname"`
+      done
+      _G_dir_list=`$ECHO "$_G_dir_list" | $SED 's|:*$||'`
+
+      func_mkdir_p_IFS=$IFS; IFS=:
+      for _G_dir in $_G_dir_list; do
+	IFS=$func_mkdir_p_IFS
+        # mkdir can fail with a 'File exist' error if two processes
+        # try to create one of the directories concurrently.  Don't
+        # stop in that case!
+        $MKDIR "$_G_dir" 2>/dev/null || :
+      done
+      IFS=$func_mkdir_p_IFS
+
+      # Bail out if we (or some other process) failed to create a directory.
+      test -d "$_G_directory_path" || \
+        func_fatal_error "Failed to create '$1'"
+    fi
+}
+
+
+# func_mktempdir [BASENAME]
+# -------------------------
+# Make a temporary directory that won't clash with other running
+# libtool processes, and avoids race conditions if possible.  If
+# given, BASENAME is the basename for that directory.
+func_mktempdir ()
+{
+    $debug_cmd
+
+    _G_template=${TMPDIR-/tmp}/${1-$progname}
+
+    if test : = "$opt_dry_run"; then
+      # Return a directory name, but don't create it in dry-run mode
+      _G_tmpdir=$_G_template-$$
+    else
+
+      # If mktemp works, use that first and foremost
+      _G_tmpdir=`mktemp -d "$_G_template-XXXXXXXX" 2>/dev/null`
+
+      if test ! -d "$_G_tmpdir"; then
+        # Failing that, at least try and use $RANDOM to avoid a race
+        _G_tmpdir=$_G_template-${RANDOM-0}$$
+
+        func_mktempdir_umask=`umask`
+        umask 0077
+        $MKDIR "$_G_tmpdir"
+        umask $func_mktempdir_umask
+      fi
+
+      # If we're not in dry-run mode, bomb out on failure
+      test -d "$_G_tmpdir" || \
+        func_fatal_error "cannot create temporary directory '$_G_tmpdir'"
+    fi
+
+    $ECHO "$_G_tmpdir"
+}
+
+
+# func_normal_abspath PATH
+# ------------------------
+# Remove doubled-up and trailing slashes, "." path components,
+# and cancel out any ".." path components in PATH after making
+# it an absolute path.
+func_normal_abspath ()
+{
+    $debug_cmd
+
+    # These SED scripts presuppose an absolute path with a trailing slash.
+    _G_pathcar='s|^/\([^/]*\).*$|\1|'
+    _G_pathcdr='s|^/[^/]*||'
+    _G_removedotparts=':dotsl
+		s|/\./|/|g
+		t dotsl
+		s|/\.$|/|'
+    _G_collapseslashes='s|/\{1,\}|/|g'
+    _G_finalslash='s|/*$|/|'
+
+    # Start from root dir and reassemble the path.
+    func_normal_abspath_result=
+    func_normal_abspath_tpath=$1
+    func_normal_abspath_altnamespace=
+    case $func_normal_abspath_tpath in
+      "")
+        # Empty path, that just means $cwd.
+        func_stripname '' '/' "`pwd`"
+        func_normal_abspath_result=$func_stripname_result
+        return
+        ;;
+      # The next three entries are used to spot a run of precisely
+      # two leading slashes without using negated character classes;
+      # we take advantage of case's first-match behaviour.
+      ///*)
+        # Unusual form of absolute path, do nothing.
+        ;;
+      //*)
+        # Not necessarily an ordinary path; POSIX reserves leading '//'
+        # and for example Cygwin uses it to access remote file shares
+        # over CIFS/SMB, so we conserve a leading double slash if found.
+        func_normal_abspath_altnamespace=/
+        ;;
+      /*)
+        # Absolute path, do nothing.
+        ;;
+      *)
+        # Relative path, prepend $cwd.
+        func_normal_abspath_tpath=`pwd`/$func_normal_abspath_tpath
+        ;;
+    esac
+
+    # Cancel out all the simple stuff to save iterations.  We also want
+    # the path to end with a slash for ease of parsing, so make sure
+    # there is one (and only one) here.
+    func_normal_abspath_tpath=`$ECHO "$func_normal_abspath_tpath" | $SED \
+          -e "$_G_removedotparts" -e "$_G_collapseslashes" -e "$_G_finalslash"`
+    while :; do
+      # Processed it all yet?
+      if test / = "$func_normal_abspath_tpath"; then
+        # If we ascended to the root using ".." the result may be empty now.
+        if test -z "$func_normal_abspath_result"; then
+          func_normal_abspath_result=/
+        fi
+        break
+      fi
+      func_normal_abspath_tcomponent=`$ECHO "$func_normal_abspath_tpath" | $SED \
+          -e "$_G_pathcar"`
+      func_normal_abspath_tpath=`$ECHO "$func_normal_abspath_tpath" | $SED \
+          -e "$_G_pathcdr"`
+      # Figure out what to do with it
+      case $func_normal_abspath_tcomponent in
+        "")
+          # Trailing empty path component, ignore it.
+          ;;
+        ..)
+          # Parent dir; strip last assembled component from result.
+          func_dirname "$func_normal_abspath_result"
+          func_normal_abspath_result=$func_dirname_result
+          ;;
+        *)
+          # Actual path component, append it.
+          func_append func_normal_abspath_result "/$func_normal_abspath_tcomponent"
+          ;;
+      esac
+    done
+    # Restore leading double-slash if one was found on entry.
+    func_normal_abspath_result=$func_normal_abspath_altnamespace$func_normal_abspath_result
+}
+
+
+# func_notquiet ARG...
+# --------------------
+# Echo program name prefixed message only when not in quiet mode.
+func_notquiet ()
+{
+    $debug_cmd
+
+    $opt_quiet || func_echo ${1+"$@"}
+
+    # A bug in bash halts the script if the last line of a function
+    # fails when set -e is in force, so we need another command to
+    # work around that:
+    :
+}
+
+
+# func_relative_path SRCDIR DSTDIR
+# --------------------------------
+# Set func_relative_path_result to the relative path from SRCDIR to DSTDIR.
+func_relative_path ()
+{
+    $debug_cmd
+
+    func_relative_path_result=
+    func_normal_abspath "$1"
+    func_relative_path_tlibdir=$func_normal_abspath_result
+    func_normal_abspath "$2"
+    func_relative_path_tbindir=$func_normal_abspath_result
+
+    # Ascend the tree starting from libdir
+    while :; do
+      # check if we have found a prefix of bindir
+      case $func_relative_path_tbindir in
+        $func_relative_path_tlibdir)
+          # found an exact match
+          func_relative_path_tcancelled=
+          break
+          ;;
+        $func_relative_path_tlibdir*)
+          # found a matching prefix
+          func_stripname "$func_relative_path_tlibdir" '' "$func_relative_path_tbindir"
+          func_relative_path_tcancelled=$func_stripname_result
+          if test -z "$func_relative_path_result"; then
+            func_relative_path_result=.
+          fi
+          break
+          ;;
+        *)
+          func_dirname $func_relative_path_tlibdir
+          func_relative_path_tlibdir=$func_dirname_result
+          if test -z "$func_relative_path_tlibdir"; then
+            # Have to descend all the way to the root!
+            func_relative_path_result=../$func_relative_path_result
+            func_relative_path_tcancelled=$func_relative_path_tbindir
+            break
+          fi
+          func_relative_path_result=../$func_relative_path_result
+          ;;
+      esac
+    done
+
+    # Now calculate path; take care to avoid doubling-up slashes.
+    func_stripname '' '/' "$func_relative_path_result"
+    func_relative_path_result=$func_stripname_result
+    func_stripname '/' '/' "$func_relative_path_tcancelled"
+    if test -n "$func_stripname_result"; then
+      func_append func_relative_path_result "/$func_stripname_result"
+    fi
+
+    # Normalisation. If bindir is libdir, return '.' else relative path.
+    if test -n "$func_relative_path_result"; then
+      func_stripname './' '' "$func_relative_path_result"
+      func_relative_path_result=$func_stripname_result
+    fi
+
+    test -n "$func_relative_path_result" || func_relative_path_result=.
+
+    :
+}
+
+
+# func_quote_portable EVAL ARG
+# ----------------------------
+# Internal function to portably implement func_quote_arg.  Note that we still
+# keep attention to performance here so we as much as possible try to avoid
+# calling sed binary (so far O(N) complexity as long as func_append is O(1)).
+func_quote_portable ()
+{
+    $debug_cmd
+
+    $require_check_ifs_backslash
+
+    func_quote_portable_result=$2
+
+    # one-time-loop (easy break)
+    while true
+    do
+      if $1; then
+        func_quote_portable_result=`$ECHO "$2" | $SED \
+          -e "$sed_double_quote_subst" -e "$sed_double_backslash"`
+        break
+      fi
+
+      # Quote for eval.
+      case $func_quote_portable_result in
+        *[\\\`\"\$]*)
+          # Fallback to sed for $func_check_bs_ifs_broken=:, or when the string
+          # contains the shell wildcard characters.
+          case $check_ifs_backshlash_broken$func_quote_portable_result in
+            :*|*[\[\*\?]*)
+              func_quote_portable_result=`$ECHO "$func_quote_portable_result" \
+                  | $SED "$sed_quote_subst"`
+              break
+              ;;
+          esac
+
+          func_quote_portable_old_IFS=$IFS
+          for _G_char in '\' '`' '"' '$'
+          do
+            # STATE($1) PREV($2) SEPARATOR($3)
+            set start "" ""
+            func_quote_portable_result=dummy"$_G_char$func_quote_portable_result$_G_char"dummy
+            IFS=$_G_char
+            for _G_part in $func_quote_portable_result
+            do
+              case $1 in
+              quote)
+                func_append func_quote_portable_result "$3$2"
+                set quote "$_G_part" "\\$_G_char"
+                ;;
+              start)
+                set first "" ""
+                func_quote_portable_result=
+                ;;
+              first)
+                set quote "$_G_part" ""
+                ;;
+              esac
+            done
+          done
+          IFS=$func_quote_portable_old_IFS
+          ;;
+        *) ;;
+      esac
+      break
+    done
+
+    func_quote_portable_unquoted_result=$func_quote_portable_result
+    case $func_quote_portable_result in
+      # double-quote args containing shell metacharacters to delay
+      # word splitting, command substitution and variable expansion
+      # for a subsequent eval.
+      # many bourne shells cannot handle close brackets correctly
+      # in scan sets, so we specify it separately.
+      *[\[\~\#\^\&\*\(\)\{\}\|\;\<\>\?\'\ \	]*|*]*|"")
+        func_quote_portable_result=\"$func_quote_portable_result\"
+        ;;
+    esac
+}
+
+
+# func_quotefast_eval ARG
+# -----------------------
+# Quote one ARG (internal).  This is equivalent to 'func_quote_arg eval ARG',
+# but optimized for speed.  Result is stored in $func_quotefast_eval.
+if test xyes = `(x=; printf -v x %q yes; echo x"$x") 2>/dev/null`; then
+  printf -v _GL_test_printf_tilde %q '~'
+  if test '\~' = "$_GL_test_printf_tilde"; then
+    func_quotefast_eval ()
+    {
+      printf -v func_quotefast_eval_result %q "$1"
+    }
+  else
+    # Broken older Bash implementations.  Make those faster too if possible.
+    func_quotefast_eval ()
+    {
+      case $1 in
+        '~'*)
+          func_quote_portable false "$1"
+          func_quotefast_eval_result=$func_quote_portable_result
+          ;;
+        *)
+          printf -v func_quotefast_eval_result %q "$1"
+          ;;
+      esac
+    }
+  fi
+else
+  func_quotefast_eval ()
+  {
+    func_quote_portable false "$1"
+    func_quotefast_eval_result=$func_quote_portable_result
+  }
+fi
+
+
+# func_quote_arg MODEs ARG
+# ------------------------
+# Quote one ARG to be evaled later.  MODEs argument may contain zero or more
+# specifiers listed below separated by ',' character.  This function returns two
+# values:
+#   i) func_quote_arg_result
+#      double-quoted (when needed), suitable for a subsequent eval
+#  ii) func_quote_arg_unquoted_result
+#      has all characters that are still active within double
+#      quotes backslashified.  Available only if 'unquoted' is specified.
+#
+# Available modes:
+# ----------------
+# 'eval' (default)
+#       - escape shell special characters
+# 'expand'
+#       - the same as 'eval';  but do not quote variable references
+# 'pretty'
+#       - request aesthetic output, i.e. '"a b"' instead of 'a\ b'.  This might
+#         be used later in func_quote to get output like: 'echo "a b"' instead
+#         of 'echo a\ b'.  This is slower than default on some shells.
+# 'unquoted'
+#       - produce also $func_quote_arg_unquoted_result which does not contain
+#         wrapping double-quotes.
+#
+# Examples for 'func_quote_arg pretty,unquoted string':
+#
+#   string      | *_result              | *_unquoted_result
+#   ------------+-----------------------+-------------------
+#   "           | \"                    | \"
+#   a b         | "a b"                 | a b
+#   "a b"       | "\"a b\""             | \"a b\"
+#   *           | "*"                   | *
+#   z="${x-$y}" | "z=\"\${x-\$y}\""     | z=\"\${x-\$y}\"
+#
+# Examples for 'func_quote_arg pretty,unquoted,expand string':
+#
+#   string        |   *_result          |  *_unquoted_result
+#   --------------+---------------------+--------------------
+#   z="${x-$y}"   | "z=\"${x-$y}\""     | z=\"${x-$y}\"
+func_quote_arg ()
+{
+    _G_quote_expand=false
+    case ,$1, in
+      *,expand,*)
+        _G_quote_expand=:
+        ;;
+    esac
+
+    case ,$1, in
+      *,pretty,*|*,expand,*|*,unquoted,*)
+        func_quote_portable $_G_quote_expand "$2"
+        func_quote_arg_result=$func_quote_portable_result
+        func_quote_arg_unquoted_result=$func_quote_portable_unquoted_result
+        ;;
+      *)
+        # Faster quote-for-eval for some shells.
+        func_quotefast_eval "$2"
+        func_quote_arg_result=$func_quotefast_eval_result
+        ;;
+    esac
+}
+
+
+# func_quote MODEs ARGs...
+# ------------------------
+# Quote all ARGs to be evaled later and join them into single command.  See
+# func_quote_arg's description for more info.
+func_quote ()
+{
+    $debug_cmd
+    _G_func_quote_mode=$1 ; shift
+    func_quote_result=
+    while test 0 -lt $#; do
+      func_quote_arg "$_G_func_quote_mode" "$1"
+      if test -n "$func_quote_result"; then
+        func_append func_quote_result " $func_quote_arg_result"
+      else
+        func_append func_quote_result "$func_quote_arg_result"
+      fi
+      shift
+    done
+}
+
+
+# func_stripname PREFIX SUFFIX NAME
+# ---------------------------------
+# strip PREFIX and SUFFIX from NAME, and store in func_stripname_result.
+# PREFIX and SUFFIX must not contain globbing or regex special
+# characters, hashes, percent signs, but SUFFIX may contain a leading
+# dot (in which case that matches only a dot).
+if test yes = "$_G_HAVE_XSI_OPS"; then
+  eval 'func_stripname ()
+  {
+    $debug_cmd
+
+    # pdksh 5.2.14 does not do ${X%$Y} correctly if both X and Y are
+    # positional parameters, so assign one to ordinary variable first.
+    func_stripname_result=$3
+    func_stripname_result=${func_stripname_result#"$1"}
+    func_stripname_result=${func_stripname_result%"$2"}
+  }'
+else
+  func_stripname ()
+  {
+    $debug_cmd
+
+    case $2 in
+      .*) func_stripname_result=`$ECHO "$3" | $SED -e "s%^$1%%" -e "s%\\\\$2\$%%"`;;
+      *)  func_stripname_result=`$ECHO "$3" | $SED -e "s%^$1%%" -e "s%$2\$%%"`;;
+    esac
+  }
+fi
+
+
+# func_show_eval CMD [FAIL_EXP]
+# -----------------------------
+# Unless opt_quiet is true, then output CMD.  Then, if opt_dryrun is
+# not true, evaluate CMD.  If the evaluation of CMD fails, and FAIL_EXP
+# is given, then evaluate it.
+func_show_eval ()
+{
+    $debug_cmd
+
+    _G_cmd=$1
+    _G_fail_exp=${2-':'}
+
+    func_quote_arg pretty,expand "$_G_cmd"
+    eval "func_notquiet $func_quote_arg_result"
+
+    $opt_dry_run || {
+      eval "$_G_cmd"
+      _G_status=$?
+      if test 0 -ne "$_G_status"; then
+	eval "(exit $_G_status); $_G_fail_exp"
+      fi
+    }
+}
+
+
+# func_show_eval_locale CMD [FAIL_EXP]
+# ------------------------------------
+# Unless opt_quiet is true, then output CMD.  Then, if opt_dryrun is
+# not true, evaluate CMD.  If the evaluation of CMD fails, and FAIL_EXP
+# is given, then evaluate it.  Use the saved locale for evaluation.
+func_show_eval_locale ()
+{
+    $debug_cmd
+
+    _G_cmd=$1
+    _G_fail_exp=${2-':'}
+
+    $opt_quiet || {
+      func_quote_arg expand,pretty "$_G_cmd"
+      eval "func_echo $func_quote_arg_result"
+    }
+
+    $opt_dry_run || {
+      eval "$_G_user_locale
+	    $_G_cmd"
+      _G_status=$?
+      eval "$_G_safe_locale"
+      if test 0 -ne "$_G_status"; then
+	eval "(exit $_G_status); $_G_fail_exp"
+      fi
+    }
+}
+
+
+# func_tr_sh
+# ----------
+# Turn $1 into a string suitable for a shell variable name.
+# Result is stored in $func_tr_sh_result.  All characters
+# not in the set a-zA-Z0-9_ are replaced with '_'. Further,
+# if $1 begins with a digit, a '_' is prepended as well.
+func_tr_sh ()
+{
+    $debug_cmd
+
+    case $1 in
+    [0-9]* | *[!a-zA-Z0-9_]*)
+      func_tr_sh_result=`$ECHO "$1" | $SED -e 's/^\([0-9]\)/_\1/' -e 's/[^a-zA-Z0-9_]/_/g'`
+      ;;
+    * )
+      func_tr_sh_result=$1
+      ;;
+    esac
+}
+
+
+# func_verbose ARG...
+# -------------------
+# Echo program name prefixed message in verbose mode only.
+func_verbose ()
+{
+    $debug_cmd
+
+    $opt_verbose && func_echo "$*"
+
+    :
+}
+
+
+# func_warn_and_continue ARG...
+# -----------------------------
+# Echo program name prefixed warning message to standard error.
+func_warn_and_continue ()
+{
+    $debug_cmd
+
+    $require_term_colors
+
+    func_echo_infix_1 "${tc_red}warning$tc_reset" "$*" >&2
+}
+
+
+# func_warning CATEGORY ARG...
+# ----------------------------
+# Echo program name prefixed warning message to standard error. Warning
+# messages can be filtered according to CATEGORY, where this function
+# elides messages where CATEGORY is not listed in the global variable
+# 'opt_warning_types'.
+func_warning ()
+{
+    $debug_cmd
+
+    # CATEGORY must be in the warning_categories list!
+    case " $warning_categories " in
+      *" $1 "*) ;;
+      *) func_internal_error "invalid warning category '$1'" ;;
+    esac
+
+    _G_category=$1
+    shift
+
+    case " $opt_warning_types " in
+      *" $_G_category "*) $warning_func ${1+"$@"} ;;
+    esac
+}
+
+
+# func_sort_ver VER1 VER2
+# -----------------------
+# 'sort -V' is not generally available.
+# Note this deviates from the version comparison in automake
+# in that it treats 1.5 < 1.5.0, and treats 1.4.4a < 1.4-p3a
+# but this should suffice as we won't be specifying old
+# version formats or redundant trailing .0 in bootstrap.conf.
+# If we did want full compatibility then we should probably
+# use m4_version_compare from autoconf.
+func_sort_ver ()
+{
+    $debug_cmd
+
+    printf '%s\n%s\n' "$1" "$2" \
+      | sort -t. -k 1,1n -k 2,2n -k 3,3n -k 4,4n -k 5,5n -k 6,6n -k 7,7n -k 8,8n -k 9,9n
+}
+
+# func_lt_ver PREV CURR
+# ---------------------
+# Return true if PREV and CURR are in the correct order according to
+# func_sort_ver, otherwise false.  Use it like this:
+#
+#  func_lt_ver "$prev_ver" "$proposed_ver" || func_fatal_error "..."
+func_lt_ver ()
+{
+    $debug_cmd
+
+    test "x$1" = x`func_sort_ver "$1" "$2" | $SED 1q`
+}
+
+
+# Local variables:
+# mode: shell-script
+# sh-indentation: 2
+# eval: (add-hook 'before-save-hook 'time-stamp)
+# time-stamp-pattern: "10/scriptversion=%:y-%02m-%02d.%02H; # UTC"
+# time-stamp-time-zone: "UTC"
+# End:
+#! /bin/sh
+
+# A portable, pluggable option parser for Bourne shell.
+# Written by Gary V. Vaughan, 2010
+
+# This is free software.  There is NO warranty; not even for
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#
+# Copyright (C) 2010-2019, 2021 Bootstrap Authors
+#
+# This file is dual licensed under the terms of the MIT license
+# <https://opensource.org/license/MIT>, and GPL version 2 or later
+# <http://www.gnu.org/licenses/gpl-2.0.html>.  You must apply one of
+# these licenses when using or redistributing this software or any of
+# the files within it.  See the URLs above, or the file `LICENSE`
+# included in the Bootstrap distribution for the full license texts.
+
+# Please report bugs or propose patches to:
+# <https://github.com/gnulib-modules/bootstrap/issues>
+
+# Set a version string for this script.
+scriptversion=2019-02-19.15; # UTC
+
+
+## ------ ##
+## Usage. ##
+## ------ ##
+
+# This file is a library for parsing options in your shell scripts along
+# with assorted other useful supporting features that you can make use
+# of too.
+#
+# For the simplest scripts you might need only:
+#
+#   #!/bin/sh
+#   . relative/path/to/funclib.sh
+#   . relative/path/to/options-parser
+#   scriptversion=1.0
+#   func_options ${1+"$@"}
+#   eval set dummy "$func_options_result"; shift
+#   ...rest of your script...
+#
+# In order for the '--version' option to work, you will need to have a
+# suitably formatted comment like the one at the top of this file
+# starting with '# Written by ' and ending with '# Copyright'.
+#
+# For '-h' and '--help' to work, you will also need a one line
+# description of your script's purpose in a comment directly above the
+# '# Written by ' line, like the one at the top of this file.
+#
+# The default options also support '--debug', which will turn on shell
+# execution tracing (see the comment above debug_cmd below for another
+# use), and '--verbose' and the func_verbose function to allow your script
+# to display verbose messages only when your user has specified
+# '--verbose'.
+#
+# After sourcing this file, you can plug in processing for additional
+# options by amending the variables from the 'Configuration' section
+# below, and following the instructions in the 'Option parsing'
+# section further down.
+
+## -------------- ##
+## Configuration. ##
+## -------------- ##
+
+# You should override these variables in your script after sourcing this
+# file so that they reflect the customisations you have added to the
+# option parser.
+
+# The usage line for option parsing errors and the start of '-h' and
+# '--help' output messages. You can embed shell variables for delayed
+# expansion at the time the message is displayed, but you will need to
+# quote other shell meta-characters carefully to prevent them being
+# expanded when the contents are evaled.
+usage='$progpath [OPTION]...'
+
+# Short help message in response to '-h' and '--help'.  Add to this or
+# override it after sourcing this library to reflect the full set of
+# options your script accepts.
+usage_message="\
+       --debug        enable verbose shell tracing
+   -W, --warnings=CATEGORY
+                      report the warnings falling in CATEGORY [all]
+   -v, --verbose      verbosely report processing
+       --version      print version information and exit
+   -h, --help         print short or long help message and exit
+"
+
+# Additional text appended to 'usage_message' in response to '--help'.
+long_help_message="
+Warning categories include:
+       'all'          show all warnings
+       'none'         turn off all the warnings
+       'error'        warnings are treated as fatal errors"
+
+# Help message printed before fatal option parsing errors.
+fatal_help="Try '\$progname --help' for more information."
+
+
+
+## ------------------------- ##
+## Hook function management. ##
+## ------------------------- ##
+
+# This section contains functions for adding, removing, and running hooks
+# in the main code.  A hook is just a list of function names that can be
+# run in order later on.
+
+# func_hookable FUNC_NAME
+# -----------------------
+# Declare that FUNC_NAME will run hooks added with
+# 'func_add_hook FUNC_NAME ...'.
+func_hookable ()
+{
+    $debug_cmd
+
+    func_append hookable_fns " $1"
+}
+
+
+# func_add_hook FUNC_NAME HOOK_FUNC
+# ---------------------------------
+# Request that FUNC_NAME call HOOK_FUNC before it returns.  FUNC_NAME must
+# first have been declared "hookable" by a call to 'func_hookable'.
+func_add_hook ()
+{
+    $debug_cmd
+
+    case " $hookable_fns " in
+      *" $1 "*) ;;
+      *) func_fatal_error "'$1' does not accept hook functions." ;;
+    esac
+
+    eval func_append ${1}_hooks '" $2"'
+}
+
+
+# func_remove_hook FUNC_NAME HOOK_FUNC
+# ------------------------------------
+# Remove HOOK_FUNC from the list of hook functions to be called by
+# FUNC_NAME.
+func_remove_hook ()
+{
+    $debug_cmd
+
+    eval ${1}_hooks='`$ECHO "\$'$1'_hooks" |$SED "s| '$2'||"`'
+}
+
+
+# func_propagate_result FUNC_NAME_A FUNC_NAME_B
+# ---------------------------------------------
+# If the *_result variable of FUNC_NAME_A _is set_, assign its value to
+# *_result variable of FUNC_NAME_B.
+func_propagate_result ()
+{
+    $debug_cmd
+
+    func_propagate_result_result=:
+    if eval "test \"\${${1}_result+set}\" = set"
+    then
+      eval "${2}_result=\$${1}_result"
+    else
+      func_propagate_result_result=false
+    fi
+}
+
+
+# func_run_hooks FUNC_NAME [ARG]...
+# ---------------------------------
+# Run all hook functions registered to FUNC_NAME.
+# It's assumed that the list of hook functions contains nothing more
+# than a whitespace-delimited list of legal shell function names, and
+# no effort is wasted trying to catch shell meta-characters or preserve
+# whitespace.
+func_run_hooks ()
+{
+    $debug_cmd
+
+    _G_rc_run_hooks=false
+
+    case " $hookable_fns " in
+      *" $1 "*) ;;
+      *) func_fatal_error "'$1' does not support hook functions." ;;
+    esac
+
+    eval _G_hook_fns=\$$1_hooks; shift
+
+    for _G_hook in $_G_hook_fns; do
+      func_unset "${_G_hook}_result"
+      eval $_G_hook '${1+"$@"}'
+      func_propagate_result $_G_hook func_run_hooks
+      if $func_propagate_result_result; then
+        eval set dummy "$func_run_hooks_result"; shift
+      fi
+    done
+}
+
+
+
+## --------------- ##
+## Option parsing. ##
+## --------------- ##
+
+# In order to add your own option parsing hooks, you must accept the
+# full positional parameter list from your hook function.  You may remove
+# or edit any options that you action, and then pass back the remaining
+# unprocessed options in '<hooked_function_name>_result', escaped
+# suitably for 'eval'.
+#
+# The '<hooked_function_name>_result' variable is automatically unset
+# before your hook gets called; for best performance, only set the
+# *_result variable when necessary (i.e. don't call the 'func_quote'
+# function unnecessarily because it can be an expensive operation on some
+# machines).
+#
+# Like this:
+#
+#    my_options_prep ()
+#    {
+#        $debug_cmd
+#
+#        # Extend the existing usage message.
+#        usage_message=$usage_message'
+#      -s, --silent       don'\''t print informational messages
+#    '
+#        # No change in '$@' (ignored completely by this hook).  Leave
+#        # my_options_prep_result variable intact.
+#    }
+#    func_add_hook func_options_prep my_options_prep
+#
+#
+#    my_silent_option ()
+#    {
+#        $debug_cmd
+#
+#        args_changed=false
+#
+#        # Note that, for efficiency, we parse as many options as we can
+#        # recognise in a loop before passing the remainder back to the
+#        # caller on the first unrecognised argument we encounter.
+#        while test $# -gt 0; do
+#          opt=$1; shift
+#          case $opt in
+#            --silent|-s) opt_silent=:
+#                         args_changed=:
+#                         ;;
+#            # Separate non-argument short options:
+#            -s*)         func_split_short_opt "$_G_opt"
+#                         set dummy "$func_split_short_opt_name" \
+#                             "-$func_split_short_opt_arg" ${1+"$@"}
+#                         shift
+#                         args_changed=:
+#                         ;;
+#            *)           # Make sure the first unrecognised option "$_G_opt"
+#                         # is added back to "$@" in case we need it later,
+#                         # if $args_changed was set to 'true'.
+#                         set dummy "$_G_opt" ${1+"$@"}; shift; break ;;
+#          esac
+#        done
+#
+#        # Only call 'func_quote' here if we processed at least one argument.
+#        if $args_changed; then
+#          func_quote eval ${1+"$@"}
+#          my_silent_option_result=$func_quote_result
+#        fi
+#    }
+#    func_add_hook func_parse_options my_silent_option
+#
+#
+#    my_option_validation ()
+#    {
+#        $debug_cmd
+#
+#        $opt_silent && $opt_verbose && func_fatal_help "\
+#    '--silent' and '--verbose' options are mutually exclusive."
+#    }
+#    func_add_hook func_validate_options my_option_validation
+#
+# You'll also need to manually amend $usage_message to reflect the extra
+# options you parse.  It's preferable to append if you can, so that
+# multiple option parsing hooks can be added safely.
+
+
+# func_options_finish [ARG]...
+# ----------------------------
+# Finishing the option parse loop (call 'func_options' hooks ATM).
+func_options_finish ()
+{
+    $debug_cmd
+
+    func_run_hooks func_options ${1+"$@"}
+    func_propagate_result func_run_hooks func_options_finish
+}
+
+
+# func_options [ARG]...
+# ---------------------
+# All the functions called inside func_options are hookable. See the
+# individual implementations for details.
+func_hookable func_options
+func_options ()
+{
+    $debug_cmd
+
+    _G_options_quoted=false
+
+    for my_func in options_prep parse_options validate_options options_finish
+    do
+      func_unset func_${my_func}_result
+      func_unset func_run_hooks_result
+      eval func_$my_func '${1+"$@"}'
+      func_propagate_result func_$my_func func_options
+      if $func_propagate_result_result; then
+        eval set dummy "$func_options_result"; shift
+        _G_options_quoted=:
+      fi
+    done
+
+    $_G_options_quoted || {
+      # As we (func_options) are top-level options-parser function and
+      # nobody quoted "$@" for us yet, we need to do it explicitly for
+      # caller.
+      func_quote eval ${1+"$@"}
+      func_options_result=$func_quote_result
+    }
+}
+
+
+# func_options_prep [ARG]...
+# --------------------------
+# All initialisations required before starting the option parse loop.
+# Note that when calling hook functions, we pass through the list of
+# positional parameters.  If a hook function modifies that list, and
+# needs to propagate that back to rest of this script, then the complete
+# modified list must be put in 'func_run_hooks_result' before returning.
+func_hookable func_options_prep
+func_options_prep ()
+{
+    $debug_cmd
+
+    # Option defaults:
+    opt_verbose=false
+    opt_warning_types=
+
+    func_run_hooks func_options_prep ${1+"$@"}
+    func_propagate_result func_run_hooks func_options_prep
+}
+
+
+# func_parse_options [ARG]...
+# ---------------------------
+# The main option parsing loop.
+func_hookable func_parse_options
+func_parse_options ()
+{
+    $debug_cmd
+
+    _G_parse_options_requote=false
+    # this just eases exit handling
+    while test $# -gt 0; do
+      # Defer to hook functions for initial option parsing, so they
+      # get priority in the event of reusing an option name.
+      func_run_hooks func_parse_options ${1+"$@"}
+      func_propagate_result func_run_hooks func_parse_options
+      if $func_propagate_result_result; then
+        eval set dummy "$func_parse_options_result"; shift
+        # Even though we may have changed "$@", we passed the "$@" array
+        # down into the hook and it quoted it for us (because we are in
+        # this if-branch).  No need to quote it again.
+        _G_parse_options_requote=false
+      fi
+
+      # Break out of the loop if we already parsed every option.
+      test $# -gt 0 || break
+
+      # We expect that one of the options parsed in this function matches
+      # and thus we remove _G_opt from "$@" and need to re-quote.
+      _G_match_parse_options=:
+      _G_opt=$1
+      shift
+      case $_G_opt in
+        --debug|-x)   debug_cmd='set -x'
+                      func_echo "enabling shell trace mode" >&2
+                      $debug_cmd
+                      ;;
+
+        --no-warnings|--no-warning|--no-warn)
+                      set dummy --warnings none ${1+"$@"}
+                      shift
+		      ;;
+
+        --warnings|--warning|-W)
+                      if test $# = 0 && func_missing_arg $_G_opt; then
+                        _G_parse_options_requote=:
+                        break
+                      fi
+                      case " $warning_categories $1" in
+                        *" $1 "*)
+                          # trailing space prevents matching last $1 above
+                          func_append_uniq opt_warning_types " $1"
+                          ;;
+                        *all)
+                          opt_warning_types=$warning_categories
+                          ;;
+                        *none)
+                          opt_warning_types=none
+                          warning_func=:
+                          ;;
+                        *error)
+                          opt_warning_types=$warning_categories
+                          warning_func=func_fatal_error
+                          ;;
+                        *)
+                          func_fatal_error \
+                             "unsupported warning category: '$1'"
+                          ;;
+                      esac
+                      shift
+                      ;;
+
+        --verbose|-v) opt_verbose=: ;;
+        --version)    func_version ;;
+        -\?|-h)       func_usage ;;
+        --help)       func_help ;;
+
+	# Separate optargs to long options (plugins may need this):
+	--*=*)        func_split_equals "$_G_opt"
+	              set dummy "$func_split_equals_lhs" \
+                          "$func_split_equals_rhs" ${1+"$@"}
+                      shift
+                      ;;
+
+       # Separate optargs to short options:
+        -W*)
+                      func_split_short_opt "$_G_opt"
+                      set dummy "$func_split_short_opt_name" \
+                          "$func_split_short_opt_arg" ${1+"$@"}
+                      shift
+                      ;;
+
+        # Separate non-argument short options:
+        -\?*|-h*|-v*|-x*)
+                      func_split_short_opt "$_G_opt"
+                      set dummy "$func_split_short_opt_name" \
+                          "-$func_split_short_opt_arg" ${1+"$@"}
+                      shift
+                      ;;
+
+        --)           _G_parse_options_requote=: ; break ;;
+        -*)           func_fatal_help "unrecognised option: '$_G_opt'" ;;
+        *)            set dummy "$_G_opt" ${1+"$@"}; shift
+                      _G_match_parse_options=false
+                      break
+                      ;;
+      esac
+
+      if $_G_match_parse_options; then
+        _G_parse_options_requote=:
+      fi
+    done
+
+    if $_G_parse_options_requote; then
+      # save modified positional parameters for caller
+      func_quote eval ${1+"$@"}
+      func_parse_options_result=$func_quote_result
+    fi
+}
+
+
+# func_validate_options [ARG]...
+# ------------------------------
+# Perform any sanity checks on option settings and/or unconsumed
+# arguments.
+func_hookable func_validate_options
+func_validate_options ()
+{
+    $debug_cmd
+
+    # Display all warnings if -W was not given.
+    test -n "$opt_warning_types" || opt_warning_types=" $warning_categories"
+
+    func_run_hooks func_validate_options ${1+"$@"}
+    func_propagate_result func_run_hooks func_validate_options
+
+    # Bail if the options were screwed!
+    $exit_cmd $EXIT_FAILURE
+}
+
+
+
+## ----------------- ##
+## Helper functions. ##
+## ----------------- ##
+
+# This section contains the helper functions used by the rest of the
+# hookable option parser framework in ascii-betical order.
+
+
+# func_fatal_help ARG...
+# ----------------------
+# Echo program name prefixed message to standard error, followed by
+# a help hint, and exit.
+func_fatal_help ()
+{
+    $debug_cmd
+
+    eval \$ECHO \""Usage: $usage"\"
+    eval \$ECHO \""$fatal_help"\"
+    func_error ${1+"$@"}
+    exit $EXIT_FAILURE
+}
+
+
+# func_help
+# ---------
+# Echo long help message to standard output and exit.
+func_help ()
+{
+    $debug_cmd
+
+    func_usage_message
+    $ECHO "$long_help_message"
+    exit 0
+}
+
+
+# func_missing_arg ARGNAME
+# ------------------------
+# Echo program name prefixed message to standard error and set global
+# exit_cmd.
+func_missing_arg ()
+{
+    $debug_cmd
+
+    func_error "Missing argument for '$1'."
+    exit_cmd=exit
+}
+
+
+# func_split_equals STRING
+# ------------------------
+# Set func_split_equals_lhs and func_split_equals_rhs shell variables
+# after splitting STRING at the '=' sign.
+test -z "$_G_HAVE_XSI_OPS" \
+    && (eval 'x=a/b/c;
+      test 5aa/bb/cc = "${#x}${x%%/*}${x%/*}${x#*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/ltmain.sh
+
+# func_version
+# ------------
+# Echo version message to standard output and exit.
+# The version message is extracted from the calling file's header
+# comments, with leading '# ' stripped:
+#   1. First display the progname and version
+#   2. Followed by the header comment line matching  /^# Written by /
+#   3. Then a blank line followed by the first following line matching
+#      /^# Copyright /
+#   4. Immediately followed by any lines between the previous matches,
+#      except lines preceding the intervening completely blank line.
+# For example, see the header comments of this file.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/tea/tclconfig/tcl.m4
+
+# tcl.m4 --
+#
+#	This file provides a set of autoconf macros to help TEA-enable
+#	a Tcl extension.
+#
+# Copyright (c) 1999-2000 Ajuba Solutions.
+# Copyright (c) 2002-2005 ActiveState Corporation.
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/tea/Makefile.in
+
+# Makefile.in --
+#
+#	This file is a Makefile for Sample TEA Extension.  If it has the name
+#	"Makefile.in" then it is a template for a Makefile;  to generate the
+#	actual Makefile, run "./configure", which is a configuration script
+#	generated by the "autoconf" program (constructs like "@foo@" will get
+#	replaced in the actual Makefile.
+#
+# Copyright (c) 1999 Scriptics Corporation.
+# Copyright (c) 2002-2005 ActiveState Corporation.
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/tea/win/nmakehlp.c
+
+/*
+ * ----------------------------------------------------------------------------
+ * nmakehlp.c --
+ *
+ *	This is used to fix limitations within nmake and the environment.
+ *
+ * Copyright (c) 2002 by David Gravereaux.
+ * Copyright (c) 2006 by Pat Thoyts
+ *
+ * See the file "license.terms" for information on usage and redistribution of
+ * this file, and for a DISCLAIMER OF ALL WARRANTIES.
+ * ----------------------------------------------------------------------------
+ */
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/tea/license.terms
+
+The author disclaims copyright to this source code.  In place of
+a legal notice, here is a blessing:
+
+    May you do good and not evil.
+    May you find forgiveness for yourself and forgive others.
+    May you share freely, never taking more than you give.
+
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/tea/generic/tclsqlite3.c
+
+/*
+** 2001 September 15
+**
+** The author disclaims copyright to this source code.  In place of
+** a legal notice, here is a blessing:
+**
+**    May you do good and not evil.
+**    May you find forgiveness for yourself and forgive others.
+**    May you share freely, never taking more than you give.
+**
+*************************************************************************
+** A TCL Interface to SQLite.  Append this file to sqlite3.c and
+** compile the whole thing to build a TCL-enabled version of SQLite.
+**
+** Compile-time options:
+**
+**  -DTCLSH         Add a "main()" routine that works as a tclsh.
+**
+**  -DTCLSH_INIT_PROC=name
+**
+**                  Invoke name(interp) to initialize the Tcl interpreter.
+**                  If name(interp) returns a non-NULL string, then run
+**                  that string as a Tcl script to launch the application.
+**                  If name(interp) returns NULL, then run the regular
+**                  tclsh-emulator code.
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: sqlite-autoconf-3480000.tar.gz::sqlite-autoconf-3480000/sqlite3ext.h
+
+/*
+** 2006 June 7
+**
+** The author disclaims copyright to this source code.  In place of
+** a legal notice, here is a blessing:
+**
+**    May you do good and not evil.
+**    May you find forgiveness for yourself and forgive others.
+**    May you share freely, never taking more than you give.
+**
+*************************************************************************
+** This header file defines the SQLite interface for use by
+** shared libraries that want to be imported as extensions into
+** an SQLite instance.  Shared libraries that intend to be loaded
+** as extensions by SQLite should #include this file instead of 
+** sqlite3.h.
+*/
+===== END UPSTREAM NOTICE =====
+
+===== BEGIN UPSTREAM NOTICE =====
+Paths: local/sqlite-3480000-LICENSE.md
+
+License Information
+===================
+
+SQLite Is Public Domain
+-----------------------
+
+The SQLite source code, including all of the files in the directories
+listed in the bullets below are 
+[Public Domain](https://sqlite.org/copyright.html).
+The authors have submitted written affidavits releasing their work to
+the public for any use.  Every byte of the public-domain code can be
+traced back to the original authors.  The files of this repository
+that are public domain include the following:
+
+  *  All of the primary SQLite source code files found in the
+     [src/ directory](https://sqlite.org/src/tree/src?type=tree&expand)
+  *  All of the test cases and testing code in the
+     [test/ directory](https://sqlite.org/src/tree/test?type=tree&expand)
+  *  All of the SQLite extension source code and test cases in the
+     [ext/ directory](https://sqlite.org/src/tree/ext?type=tree&expand)
+  *  All code that ends up in the "sqlite3.c" and "sqlite3.h" build products
+     that actually implement the SQLite RDBMS.
+  *  All of the code used to compile the
+     [command-line interface](https://sqlite.org/cli.html)
+  *  All of the code used to build various utility programs such as
+     "sqldiff", "sqlite3_rsync", and "sqlite3_analyzer".
+
+
+The public domain source files usually contain a header comment
+similar to the following to make it clear that the software is
+public domain.
+
+> ~~~
+The author disclaims copyright to this source code.  In place of
+a legal notice, here is a blessing:
+
+  *   May you do good and not evil.
+  *   May you find forgiveness for yourself and forgive others.
+  *   May you share freely, never taking more than you give.
+~~~
+
+Almost every file you find in this source repository will be
+public domain.  But there are a small number of exceptions:
+
+Non-Public-Domain Code Included With This Source Repository AS A Convenience
+----------------------------------------------------------------------------
+
+This repository contains a (relatively) small amount of non-public-domain
+code used to help implement the configuration and build logic.  In other
+words, there are some non-public-domain files used to implement:
+
+> ~~~
+./configure && make
+~~~
+
+In all cases, the non-public-domain files included with this
+repository have generous BSD-style licenses.  So anyone is free to
+use any of the code in this source repository for any purpose, though
+attribution may be required to reuse or republish the configure and
+build scripts.  None of the non-public-domain code ever actually reaches
+the build products, such as "sqlite3.c", however, so no attribution is
+required to use SQLite itself.  The non-public-domain code consists of
+scripts used to help compile SQLite.  The non-public-domain code is
+technically not part of SQLite.  The non-public-domain code is
+included in this repository as a convenience to developers, so that those
+who want to build SQLite do not need to go download a bunch of
+third-party build scripts in order to compile SQLite.
+
+Non-public-domain code included in this respository includes:
+
+  *  The ["autosetup"](http://msteveb.github.io/autosetup/) configuration
+     system that is contained (mostly) the autosetup/ directory, but also
+     includes the "./configure" script at the top-level of this archive.
+     Autosetup has a separate BSD-style license.  See the
+     [autosetup/LICENSE](http://msteveb.github.io/autosetup/license/)
+     for details.
+
+  *  There are BSD-style licenses on some of the configuration
+     software found in the legacy autoconf/ directory and its
+     subdirectories.
+
+The following unix shell command is can be run from the top-level
+of this source repository in order to remove all non-public-domain
+code:
+
+> ~~~
+rm -rf configure autosetup autoconf
+~~~
+
+If you unpack this source repository and then run the command above, what
+is left will be 100% public domain.
+
+===== END UPSTREAM NOTICE =====

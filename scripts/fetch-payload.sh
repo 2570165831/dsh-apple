@@ -4,6 +4,7 @@
 #   2. apply payload-build/payload.patch (see PATCHES.md for why each change exists)
 #   3. drop everything the app does not ship
 #   4. check every remaining file against payload-build/manifest.sha256.gz
+#   5. report missing license texts; require them with DSH_REQUIRE_NOTICES=1
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 TMP="$(mktemp -d "$ROOT/payload/.fetch.XXXXXX")"
@@ -38,5 +39,11 @@ if seen != len(want):
     sys.exit(f'payload: {len(want) - seen} expected files are missing')
 print(f'payload: {seen} files verified, {removed} dropped')
 PY
+if ! python3 "$ROOT/scripts/check-npm-licenses.py" "$TMP/node_modules" "$ROOT/LICENSES/npm"; then
+    if [ "${DSH_REQUIRE_NOTICES:-0}" = 1 ]; then
+        exit 1
+    fi
+    echo "warning: npm notices are incomplete; this payload is for development only" >&2
+fi
 rm -rf "$ROOT/payload/node_modules"
 mv "$TMP/node_modules" "$ROOT/payload/node_modules"

@@ -56,6 +56,8 @@ PROFILES_DIR = File.join(ROOT, 'profiles')
 PLUGINS_DIR = File.join(ROOT, 'plugins')
 
 abort "missing NodeMobile.xcframework at #{NODE_FRAMEWORK}" unless Dir.exist?(NODE_FRAMEWORK)
+privacy_manifest = File.join(APP_DIR, TARGET_NAME, 'PrivacyInfo.xcprivacy')
+abort "missing #{privacy_manifest}" unless File.file?(privacy_manifest)
 
 FileUtils.rm_rf(PROJECT_PATH)
 project = Xcodeproj::Project.new(PROJECT_PATH)
@@ -131,6 +133,10 @@ if Dir.exist?(settings_bundle)
   target.add_resources([ref])
 end
 
+# Required-reason API declarations belong at the app bundle root.
+ref = group.new_reference('PrivacyInfo.xcprivacy')
+target.add_resources([ref])
+
 # ------------------------------------------------- folder-reference resources
 # `payload/` and `sim/` are copied as directory trees, not flattened, so the JS
 # side can resolve paths relative to the bundle without a manifest.
@@ -159,15 +165,46 @@ end
   target.add_resources([ref])
 end
 
-# The licence texts the About sheet shows. GPL-3.0 wants them to travel with every
-# copy of the app, and bundling the repository's own files keeps the two identical.
-%w[LICENSE THIRD_PARTY_NOTICES.md RootfsPackages.md].each do |name|
+# The legal texts the About sheet shows. GPL-3.0 wants the licence texts to travel
+# with every copy; the privacy policy is bundled from the same source as well.
+%w[LICENSE THIRD_PARTY_NOTICES.md RootfsPackages.md PRIVACY.md].each do |name|
   abs = File.join(ROOT, name)
   abort "missing #{abs}" unless File.exist?(abs)
   ref = project.main_group.new_reference(abs, :group)
   ref.name = name
   target.add_resources([ref])
 end
+
+add_folder_reference(project, target, File.join(ROOT, 'LICENSES'), 'LICENSES')
+
+# Recheck cached payloads and images, including builds launched from Xcode.
+licences = target.new_shell_script_build_phase('Check bundled licences')
+licences.shell_path = '/bin/bash'
+licences.shell_script = <<~SH
+  set -euo pipefail
+  ROOT="$SRCROOT/.."
+  required="${DSH_REQUIRE_NOTICES:-0}"
+  case "${CONFIGURATION:-}:${ACTION:-}" in
+    Release:*|*:install|*:archive) required=1 ;;
+  esac
+  failed=0
+  python3 "$ROOT/scripts/check-npm-licenses.py" "$ROOT/payload/node_modules" "$ROOT/LICENSES/npm" || failed=1
+  (
+    cd "$ROOT/build/rootfs" && shasum -a 256 -c ROOTFS-NOTICES.sha256
+  ) || failed=1
+  (
+    set -o pipefail
+    python3 "$ROOT/scripts/rootfs-notices.py" "$ROOT/build/rootfs/ROOTFS-INSTALLED.txt" "$ROOT/LICENSES/rootfs" | cmp - "$ROOT/RootfsPackages.md"
+  ) || failed=1
+  if [ "$failed" = 1 ]; then
+    if [ "$required" = 1 ]; then
+      echo "error: distribution requires complete, image-matched notices; see LICENSES/" >&2
+      exit 1
+    fi
+    echo "warning: bundled notices are incomplete or stale; this build is for development only" >&2
+  fi
+SH
+licences.always_out_of_date = '1'
 
 add_folder_reference(project, target, PAYLOAD_DIR, 'payload')
 
@@ -208,6 +245,7 @@ target.build_configurations.each do |config|
   s = config.build_settings
   s['PRODUCT_BUNDLE_IDENTIFIER'] = BUNDLE_ID
   s['PRODUCT_NAME'] = '$(TARGET_NAME)'
+  s['DSH_REQUIRE_NOTICES'] = ENV.fetch('DSH_REQUIRE_NOTICES', '0')
   s['INFOPLIST_FILE'] = 'DSHPortC/Info.plist'
   s['GENERATE_INFOPLIST_FILE'] = 'NO'
   s['SWIFT_VERSION'] = '5.0'
